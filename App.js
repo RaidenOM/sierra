@@ -1,20 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import AllChats from "./screens/AllChats";
+import AllContacts from "./screens/AllContacts";
+import ChatScreen from "./screens/ChatScreen";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import ProfileScreen from "./screens/ProfileScreen";
+import { AppContextProvider } from "./store/app-context";
 
-export default function App() {
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+function HomeTab() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen component={AllChats} name="AllChats" />
+      <Tab.Screen component={AllContacts} name="AllContacts" />
+    </Tab.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <AppContextProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            component={HomeTab}
+            name="HomeTab"
+            options={{ title: "Sierra" }}
+          />
+          <Stack.Screen component={ChatScreen} name="ChatScreen" />
+          <Stack.Screen component={ProfileScreen} name="ProfileScreen" />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AppContextProvider>
+  );
+}
