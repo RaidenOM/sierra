@@ -8,12 +8,12 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { users } from "../backend"; // Import the users array
+import { users } from "../backend";
 
 function ProfileScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { userId } = route.params; // Get userId from route parameters
+  const { userId } = route.params;
 
   // Find the user by ID
   const user = users.find((u) => u.id === userId);
@@ -45,7 +45,7 @@ function ProfileScreen() {
           style: "destructive",
           onPress: () => {
             Alert.alert("User Deleted", `${user.username} has been deleted.`);
-            navigation.goBack(); // Navigate back after deletion
+            navigation.goBack();
           },
         },
       ]

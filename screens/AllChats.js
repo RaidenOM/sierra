@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { Text, View, StyleSheet, FlatList } from "react-native";
-import { users } from "../backend"; // Import the messages and users from backend
+import { users } from "../backend";
 import ChatItem from "../components/ChatItem";
 import { useContext, useEffect } from "react";
 import { AppContext } from "../store/app-context";
@@ -12,28 +12,23 @@ function AllChats() {
 
   // Function to get the latest message between currentUser and a given receiver
   const getLatestMessage = (receiverId) => {
-    // Filter messages between currentUser and receiver
     const filteredMessages = fetchMessagesBetweenUsers(
       currentUserId,
       receiverId
     );
 
-    // Sort the messages by sentAt (newest first)
     const sortedMessages = filteredMessages.sort((a, b) => {
       const dateA = new Date(a.sentAt);
       const dateB = new Date(b.sentAt);
-      return dateB - dateA; // Sort by date in descending order (newest first)
+      return dateB - dateA;
     });
 
-    // Return the latest message or a placeholder if no messages exist
     return sortedMessages.length > 0 ? sortedMessages[0] : null;
   };
 
   // Function to filter users that have at least one message with the currentUser
   const getUsersWithMessages = () => {
-    // Filter users to get only those with whom the currentUser has exchanged messages
     return users.filter((user) => {
-      // Find the messages exchanged between currentUser and this user
       const receiverInfo = user;
 
       const hasMessages = messages.some(
@@ -44,7 +39,7 @@ function AllChats() {
             message.receiverId === currentUserId)
       );
 
-      return hasMessages; // Only return users with whom there are messages
+      return hasMessages;
     });
   };
 
@@ -59,17 +54,16 @@ function AllChats() {
     <View style={styles.container}>
       <Text style={styles.title}>Chats</Text>
       <FlatList
-        data={getUsersWithMessages()} // Only show users who have exchanged messages with currentUser
+        data={getUsersWithMessages()}
         renderItem={({ item }) => {
-          // Get the latest message for each chat
           const latestMessage = getLatestMessage(item.id);
 
           return (
             <ChatItem
               name={item.username}
               profilePhoto={item.profilePhoto}
-              recentMessage={latestMessage.message || "No message"} // Pass the latest message to ChatItem
-              onPress={() => navigateToChat(item.id)} // Navigate to chat screen
+              recentMessage={latestMessage.message || "No message"}
+              onPress={() => navigateToChat(item.id)}
               isSent={latestMessage.senderId === currentUserId}
             />
           );

@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { users } from "../backend"; // Import the messages and users from backend
+import { users } from "../backend";
 import { useLayoutEffect } from "react";
 import { AppContext } from "../store/app-context";
 
@@ -20,7 +20,7 @@ function ChatScreen() {
     useContext(AppContext);
   const { receiverId } = route.params;
 
-  const [newMessage, setNewMessage] = useState(""); // State for the input message
+  const [newMessage, setNewMessage] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({ title: receiverInfo.username });
@@ -36,7 +36,7 @@ function ChatScreen() {
   const sortedMessages = filteredMessages.sort((a, b) => {
     const dateA = new Date(a.sentAt);
     const dateB = new Date(b.sentAt);
-    return dateA - dateB; // Sort by date (ascending)
+    return dateA - dateB;
   });
 
   const renderItem = ({ item }) => {
@@ -78,15 +78,15 @@ function ChatScreen() {
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       const newMsg = {
-        id: Date.now(), // Use a unique ID
+        id: Date.now(),
         senderId: currentUserId,
         receiverId: receiverId,
         message: newMessage.trim(),
         sentAt: new Date().toISOString(),
       };
 
-      addMessage(newMsg); // Add to context
-      setNewMessage(""); // Clear input
+      addMessage(newMsg);
+      setNewMessage("");
     }
   };
 
@@ -96,7 +96,7 @@ function ChatScreen() {
         data={sortedMessages}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ paddingBottom: 10 }} // Adds some space at the bottom of the FlatList
+        contentContainerStyle={{ paddingBottom: 10 }}
       />
       {/* Input and Send Button */}
       <View style={styles.inputContainer}>
@@ -122,15 +122,15 @@ const styles = StyleSheet.create({
   messageContainer: {
     flexDirection: "row",
     marginBottom: 15,
-    alignItems: "flex-start", // Aligns profile image and messages vertically
+    alignItems: "flex-start",
   },
   currentUserMessage: {
-    justifyContent: "flex-end", // Messages from the current user are aligned to the right
-    flexDirection: "row", // Ensures current user's messages are on the right side
+    justifyContent: "flex-end",
+    flexDirection: "row",
   },
   receiverMessage: {
-    justifyContent: "flex-start", // Messages from the receiver are aligned to the left
-    flexDirection: "row", // Receiver's messages are on the left side
+    justifyContent: "flex-start",
+    flexDirection: "row",
   },
   profileImage: {
     width: 40,
@@ -139,13 +139,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   messageBubble: {
-    backgroundColor: "#f1f1f1", // Light background for receiver messages
+    backgroundColor: "#f1f1f1",
     padding: 10,
     borderRadius: 15,
-    maxWidth: "75%", // Ensures messages are not too wide
+    maxWidth: "75%",
   },
   currentUserBubble: {
-    backgroundColor: "#0078d4", // Blue color for current user's messages
+    backgroundColor: "#0078d4",
   },
   messageText: {
     color: "#000",
