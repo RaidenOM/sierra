@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+# backend files
+SierraBackend/
+
 # Expo
 .expo/
 dist/
