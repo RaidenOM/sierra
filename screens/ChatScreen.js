@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useLayoutEffect } from "react";
 import {
   Text,
   View,
@@ -8,97 +8,161 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { users } from "../backend";
-import { useLayoutEffect } from "react";
-import { AppContext } from "../store/app-context";
+import { useRoute } from "@react-navigation/native";
+import axios from "axios";
+import { UserContext } from "../store/user-context";
 
 function ChatScreen() {
   const route = useRoute();
-  const navigation = useNavigation();
-  const { currentUserId, addMessage, fetchMessagesBetweenUsers } =
-    useContext(AppContext);
+  const { user } = useContext(UserContext);
   const { receiverId } = route.params;
 
+  const [receiver, setReceiver] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({ title: receiverInfo.username });
+  // Fetch receiver information
+  useEffect(() => {
+    async function findReceiverInfo() {
+      try {
+        const response = await axios.get(
+          `http://192.168.31.6:3000/users/${receiverId}`
+        );
+        setReceiver(response.data);
+      } catch (error) {
+        console.error("Error fetching receiver info", error);
+      }
+    }
+    findReceiverInfo();
   }, [receiverId]);
 
-  // Find the receiver's information (username, profile photo)
-  const receiverInfo = users.find((user) => user.id === receiverId);
-  const currentUserInfo = users.find((user) => user.id === currentUserId);
+  // Fetch messages between the current user and the receiver
+  useEffect(() => {
+    async function fetchMessages() {
+      try {
+        const response = await axios.get(
+          `http://192.168.31.6:3000/messages/${user._id}/${receiverId}`
+        );
+        setMessages(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching messages", error);
+      }
+    }
 
-  // Filter messages between currentUser and receiver
-  let filteredMessages = fetchMessagesBetweenUsers(currentUserId, receiverId);
+    if (receiver) {
+      fetchMessages();
+    }
+  }, [user.id, receiverId, receiver]);
 
-  const sortedMessages = filteredMessages.sort((a, b) => {
+  // Sort messages based on sentAt field
+  const sortedMessages = messages.sort((a, b) => {
     const dateA = new Date(a.sentAt);
     const dateB = new Date(b.sentAt);
     return dateA - dateB;
   });
 
-  const renderItem = ({ item }) => {
-    // Check if the current message was sent by the currentUser
-    const isCurrentUser = item.senderId === currentUserInfo.id;
+  // Helper function to format dates
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const renderItem = ({ item, index }) => {
+    const isCurrentUser = item.senderId === user._id;
+
+    // Format the timestamp
+    const formattedTime = new Date(item.sentAt).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    // Check if the current message is the first of a new day
+    const showDateSeparator =
+      index === 0 ||
+      formatDate(sortedMessages[index].sentAt) !==
+        formatDate(sortedMessages[index - 1].sentAt);
 
     return (
-      <View
-        style={[
-          styles.messageContainer,
-          isCurrentUser ? styles.currentUserMessage : styles.receiverMessage,
-        ]}
-      >
-        {!isCurrentUser && (
-          <Image
-            source={{ uri: receiverInfo.profilePhoto }}
-            style={styles.profileImage}
-          />
+      <>
+        {showDateSeparator && (
+          <View style={styles.dateSeparator}>
+            <Text style={styles.dateText}>{formatDate(item.sentAt)}</Text>
+          </View>
         )}
         <View
           style={[
-            styles.messageBubble,
-            isCurrentUser && styles.currentUserBubble,
+            styles.messageContainer,
+            isCurrentUser ? styles.currentUserMessage : styles.receiverMessage,
           ]}
         >
-          <Text style={styles.messageText}>{item.message}</Text>
+          {!isCurrentUser && (
+            <Image
+              source={{ uri: receiver.profilePhoto }}
+              style={styles.profileImage}
+            />
+          )}
+          <View
+            style={[
+              styles.messageBubble,
+              isCurrentUser && styles.currentUserBubble,
+            ]}
+          >
+            <Text style={styles.messageText}>{item.message}</Text>
+            <Text style={styles.timestamp}>{formattedTime}</Text>
+          </View>
+          {isCurrentUser && (
+            <Image
+              source={{ uri: user.profilePhoto }}
+              style={styles.profileImage}
+            />
+          )}
         </View>
-        {isCurrentUser && (
-          <Image
-            source={{ uri: currentUserInfo.profilePhoto }}
-            style={styles.profileImage}
-          />
-        )}
-      </View>
+      </>
     );
   };
 
-  // Function to handle sending messages
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      const newMsg = {
-        id: Date.now(),
-        senderId: currentUserId,
+      const message = {
+        senderId: user._id,
         receiverId: receiverId,
         message: newMessage.trim(),
-        sentAt: new Date().toISOString(),
       };
 
-      addMessage(newMsg);
-      setNewMessage("");
+      try {
+        const response = await axios.post(
+          "http://192.168.31.6:3000/messages",
+          message
+        );
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          response.data.savedMessage,
+        ]);
+        setNewMessage(""); // Clear input after sending
+      } catch (error) {
+        console.error("Error sending message", error);
+      }
     }
   };
+
+  if (loading) {
+    return <Text>Loading messages...</Text>;
+  }
 
   return (
     <View style={styles.container}>
       <FlatList
         data={sortedMessages}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item._id.toString()}
         contentContainerStyle={{ paddingBottom: 10 }}
       />
-      {/* Input and Send Button */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.textInput}
@@ -118,6 +182,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  dateSeparator: {
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  dateText: {
+    backgroundColor: "#e0e0e0",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    color: "#555",
+    fontSize: 14,
   },
   messageContainer: {
     flexDirection: "row",
@@ -150,6 +226,12 @@ const styles = StyleSheet.create({
   messageText: {
     color: "#000",
     fontSize: 16,
+  },
+  timestamp: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 5,
+    alignSelf: "flex-end",
   },
   inputContainer: {
     flexDirection: "row",

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { UserContext } from "../store/user-context";
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { setIsAuthenticating } = useContext(UserContext);
 
   const handleLogin = async () => {
     try {
@@ -17,7 +19,7 @@ export default function LoginScreen({ navigation }) {
       const data = await response.json();
       if (response.ok) {
         await AsyncStorage.setItem("token", data.token);
-        navigation.reset({ index: 0, routes: [{ name: "HomeTab" }] });
+        setIsAuthenticating(true);
       } else {
         alert(data.message);
       }

@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, Button } from "react-native";
 import { UserContext } from "../store/user-context"; // Import the UserContext
 
 export default function UserProfileScreen({ navigation }) {
-  const { user } = useContext(UserContext); // Access user data from the context
+  const { user, logout } = useContext(UserContext); // Access user data from the context
 
   // Check if user data is available
   if (!user) {
@@ -19,6 +19,7 @@ export default function UserProfileScreen({ navigation }) {
         title="Edit Profile"
         onPress={() => navigation.navigate("EditProfileScreen")}
       />
+      <Button title="Logout" onPress={logout} />
     </View>
   );
 }

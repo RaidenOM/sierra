@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Text,
   View,
@@ -9,14 +9,26 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { users } from "../backend";
+import axios from "axios";
+import { useState } from "react";
 
 function ProfileScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { userId } = route.params;
+  const { id } = route.params;
 
-  // Find the user by ID
-  const user = users.find((u) => u.id === userId);
+  const [user, setUser] = useState(null);
+
+  //fetch user details from server
+  useEffect(() => {
+    const fetchUser = async () => {
+      const response = await axios.get(`http://192.168.31.6:3000/users/${id}`);
+      const user = response.data;
+      setUser(user);
+    };
+
+    fetchUser();
+  }, [id]);
 
   if (!user) {
     return (
@@ -29,7 +41,7 @@ function ProfileScreen() {
   // Function to handle chatting with the user
   const handleChat = () => {
     navigation.navigate("ChatScreen", {
-      receiverId: user.id,
+      receiverId: user._id,
     });
   };
 

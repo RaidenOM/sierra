@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useState, useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,11 +10,13 @@ import ProfileScreen from "./screens/ProfileScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import { AppContextProvider } from "./store/app-context";
-import { Button } from "react-native";
+import { Button, StyleSheet, View } from "react-native";
 import { UserContext, UserProvider } from "./store/user-context";
 import { Text } from "react-native";
 import UserProfileScreen from "./screens/UserProfileScreen";
+import AddContactScreen from "./screens/AddContactScreen";
 
+// Create navigators
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -28,57 +30,94 @@ function HomeTab() {
   );
 }
 
-// Main App Component
-export default function App() {
+function Navigation() {
   const { user, loading } = useContext(UserContext);
-  const navigation = useNavigation();
 
   if (loading) {
-    return <Text>Loading...</Text>; // Show loading state until user data is fetched
+    return <Text>Loading...</Text>;
   }
 
   return (
+    <NavigationContainer>
+      {!user ? <AuthStack /> : <MainAppStack />}
+    </NavigationContainer>
+  );
+}
+
+function AuthStack() {
+  return (
     <Stack.Navigator>
-      {!user ? (
-        // Authentication Stack
-        <>
-          <Stack.Screen
-            component={LoginScreen}
-            name="LoginScreen"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            component={RegisterScreen}
-            name="RegisterScreen"
-            options={{ headerShown: false }}
-          />
-        </>
-      ) : (
-        // Home Stack
-        <>
-          <Stack.Screen
-            component={HomeTab}
-            name="HomeTab"
-            options={{
-              title: "Sierra",
-              headerRight: ({ tintColor }) => (
-                <Button
-                  title="Profile"
-                  onPress={() => {
-                    navigation.navigate("UserProfileScreen");
-                  }}
-                />
-              ),
-            }}
-          />
-          <Stack.Screen component={ChatScreen} name="ChatScreen" />
-          <Stack.Screen component={ProfileScreen} name="ProfileScreen" />
-          <Stack.Screen
-            component={UserProfileScreen}
-            name="UserProfileScreen"
-          />
-        </>
-      )}
+      <Stack.Screen
+        component={LoginScreen}
+        name="LoginScreen"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={RegisterScreen}
+        name="RegisterScreen"
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
+
+function MainAppStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="HomeTab"
+        component={HomeTab}
+        options={({ navigation }) => ({
+          title: "Sierra",
+          headerRight: () => (
+            <View style={styles.headerButtonContainer}>
+              <Button
+                title="Profile"
+                onPress={() => {
+                  navigation.navigate("UserProfileScreen");
+                }}
+              />
+              <Button
+                title="Add Contact"
+                onPress={() => {
+                  navigation.navigate("AddContactScreen");
+                }}
+              />
+              <Button
+                title="Clear Data"
+                onPress={() => {
+                  clearData();
+                }}
+              />
+            </View>
+          ),
+        })}
+      />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
+      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Stack.Screen name="UserProfileScreen" component={UserProfileScreen} />
+      <Stack.Screen name="AddContactScreen" component={AddContactScreen} />
+    </Stack.Navigator>
+  );
+}
+
+async function clearData() {
+  await AsyncStorage.clear();
+}
+
+// Main App Component
+export default function App() {
+  return (
+    <AppContextProvider>
+      <UserProvider>
+        <Navigation />
+      </UserProvider>
+    </AppContextProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  headerButtonContainer: {
+    flexDirection: "row",
+  },
+});

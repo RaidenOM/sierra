@@ -8,6 +8,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null); // Store user data here
   const [loading, setLoading] = useState(true);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -22,6 +23,7 @@ export const UserProvider = ({ children }) => {
           });
 
           setUser(response.data); // Set user data after fetching
+          setIsAuthenticating(false);
         }
       } catch (error) {
         console.error("Failed to fetch user data", error);
@@ -31,11 +33,7 @@ export const UserProvider = ({ children }) => {
     };
 
     fetchUserData();
-  }, []);
-
-  const login = (userData) => {
-    setUser(userData);
-  };
+  }, [isAuthenticating]);
 
   const logout = async () => {
     await AsyncStorage.removeItem("token");
@@ -43,7 +41,9 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, loading }}>
+    <UserContext.Provider
+      value={{ user, logout, loading, setIsAuthenticating }}
+    >
       {children}
     </UserContext.Provider>
   );
