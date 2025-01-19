@@ -8,19 +8,23 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import { UserContext } from "../store/user-context";
+import { useRef } from "react";
 
 function ChatScreen() {
   const route = useRoute();
-  const { user } = useContext(UserContext);
+  const navigation = useNavigation();
+  const { user, socket } = useContext(UserContext);
   const { receiverId } = route.params;
 
   const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const flatListRef = useRef(null);
 
   // Fetch receiver information
   useEffect(() => {
@@ -55,6 +59,40 @@ function ChatScreen() {
       fetchMessages();
     }
   }, [user.id, receiverId, receiver]);
+
+  // bind handler to handler emits from server
+  useEffect(() => {
+    socket.on("new-message", (newMessage) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+
+    return () => {
+      socket.off("new-message");
+    };
+  }, []);
+
+  // bind handler to handler emits from server
+  useEffect(() => {
+    socket.on("message-sent", (newMessage) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+
+    return () => {
+      socket.off("message-sent");
+    };
+  });
+
+  // Scroll to the bottom on mount and when new messages arrive
+  useLayoutEffect(() => {
+    if (!loading && messages.length > 0) {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }
+  }, [messages, loading]);
+
+  // useLayoutEffect to set the title for ChatScreen
+  useLayoutEffect(() => {
+    if (receiver) navigation.setOptions({ title: receiver.username });
+  }, [receiver]);
 
   // Sort messages based on sentAt field
   const sortedMessages = messages.sort((a, b) => {
@@ -136,14 +174,7 @@ function ChatScreen() {
       };
 
       try {
-        const response = await axios.post(
-          "http://192.168.31.6:3000/messages",
-          message
-        );
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          response.data.savedMessage,
-        ]);
+        socket.emit("send-message", message);
         setNewMessage(""); // Clear input after sending
       } catch (error) {
         console.error("Error sending message", error);
@@ -158,6 +189,7 @@ function ChatScreen() {
   return (
     <View style={styles.container}>
       <FlatList
+        ref={flatListRef}
         data={sortedMessages}
         renderItem={renderItem}
         keyExtractor={(item) => item._id.toString()}

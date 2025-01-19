@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { io } from "socket.io-client";
+
+// connect socket io to backend
+const socket = io("http://192.168.31.6:3000", {
+  transports: ["websocket"],
+});
 
 // Create a context to hold the user data
 export const UserContext = createContext();
@@ -35,6 +41,13 @@ export const UserProvider = ({ children }) => {
     fetchUserData();
   }, [isAuthenticating]);
 
+  // join room if successsful login
+  useEffect(() => {
+    if (user) {
+      socket.emit("join-room", user._id);
+    }
+  }, [user]);
+
   const logout = async () => {
     await AsyncStorage.removeItem("token");
     setUser(null); // Clear user data on logout
@@ -42,7 +55,7 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, logout, loading, setIsAuthenticating }}
+      value={{ user, logout, loading, setIsAuthenticating, socket }}
     >
       {children}
     </UserContext.Provider>
