@@ -71,7 +71,11 @@ function Navigation() {
 
 function AuthStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        animation: "slide_from_right",
+      }}
+    >
       <Stack.Screen
         component={LoginScreen}
         name="LoginScreen"
@@ -94,6 +98,7 @@ function MainAppStack() {
           backgroundColor: "#9b59b6",
           shadowOpacity: 0.3,
         },
+        animation: "slide_from_right",
         headerTintColor: "white",
       }}
     >
