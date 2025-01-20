@@ -30,36 +30,45 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ececec",
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    marginVertical: 5,
+    borderRadius: 12,
+    backgroundColor: "#fff",
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   profilePhoto: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginRight: 12,
+    marginRight: 15,
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
   textContainer: {
     flex: 1,
     justifyContent: "center",
   },
   name: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: "bold",
     color: "#333",
   },
   messageContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 4,
+    marginTop: 6,
   },
   icon: {
-    marginRight: 6,
+    marginRight: 8,
   },
   recentMessage: {
     fontSize: 14,
-    color: "#555",
+    color: "#666",
   },
 });
 

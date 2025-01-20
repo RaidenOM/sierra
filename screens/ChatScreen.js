@@ -7,11 +7,13 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import { UserContext } from "../store/user-context";
 import { useRef } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 function ChatScreen() {
   const route = useRoute();
@@ -31,7 +33,7 @@ function ChatScreen() {
     async function findReceiverInfo() {
       try {
         const response = await axios.get(
-          `http://192.168.31.6:3000/users/${receiverId}`
+          `https://sierra-backend.onrender.com/users/${receiverId}`
         );
         setReceiver(response.data);
       } catch (error) {
@@ -46,7 +48,7 @@ function ChatScreen() {
     async function fetchMessages() {
       try {
         const response = await axios.get(
-          `http://192.168.31.6:3000/messages/${user._id}/${receiverId}`
+          `https://sierra-backend.onrender.com/messages/${user._id}/${receiverId}`
         );
         setMessages(response.data);
         setLoading(false);
@@ -183,7 +185,12 @@ function ChatScreen() {
   };
 
   if (loading) {
-    return <Text>Loading messages...</Text>;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+        <Text style={styles.loadingText}>Loading Chats...</Text>
+      </View>
+    );
   }
 
   return (
@@ -203,7 +210,9 @@ function ChatScreen() {
           onChangeText={setNewMessage}
         />
         <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
-          <Text style={styles.sendButtonText}>→</Text>
+          <Text style={styles.sendButtonText}>
+            <Ionicons name="arrow-forward" />
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -261,7 +270,7 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     fontSize: 12,
-    color: "#888",
+    color: "#333",
     marginTop: 5,
     alignSelf: "flex-end",
   },
@@ -295,6 +304,17 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f0f4f8",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
   },
 });
 

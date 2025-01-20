@@ -4,15 +4,14 @@ import axios from "axios";
 import { io } from "socket.io-client";
 
 // connect socket io to backend
-const socket = io("http://192.168.31.6:3000", {
+const socket = io("https://sierra-backend.onrender.com", {
   transports: ["websocket"],
 });
 
-// Create a context to hold the user data
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // Store user data here
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
@@ -22,13 +21,16 @@ export const UserProvider = ({ children }) => {
         const token = await AsyncStorage.getItem("token");
 
         if (token) {
-          const response = await axios.get("http://192.168.31.6:3000/profile", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const response = await axios.get(
+            "https://sierra-backend.onrender.com/profile",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
-          setUser(response.data); // Set user data after fetching
+          setUser(response.data);
           setIsAuthenticating(false);
         }
       } catch (error) {
@@ -50,7 +52,7 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     await AsyncStorage.removeItem("token");
-    setUser(null); // Clear user data on logout
+    setUser(null);
   };
 
   return (

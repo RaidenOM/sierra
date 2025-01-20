@@ -1,76 +1,107 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View, Alert } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import ContactItem from "../components/ContactItem";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 
 function AllContacts() {
-  const [contacts, setContacts] = useState([]); // Store the contact list
+  const [contacts, setContacts] = useState([]);
   const isFocused = useIsFocused();
-  const [loading, setLoading] = useState(true); // To show loading state
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
-  // Fetch contacts from AsyncStorage and user profiles from the server
   useEffect(() => {
     const fetchContacts = async () => {
       try {
         const storedContacts = await AsyncStorage.getItem("contacts");
         if (storedContacts) {
           const contactList = JSON.parse(storedContacts);
-          console.log(contactList);
-          // Fetch profiles for each contact
-          const profilePromises = contactList.map((contact) =>
-            axios.get(`http://192.168.31.6:3000/users/${contact.id}`)
-          );
 
-          // Wait for all profile data to be fetched
+          const profilePromises = contactList.map((contact) => {
+            console.log(contact.id);
+            return axios.get(
+              `https://sierra-backend.onrender.com/users/${contact.id}`
+            );
+          });
+
           const profileResponses = await Promise.all(profilePromises);
           const profileData = profileResponses.map((response) => response.data);
           setContacts(profileData);
-        } else {
-          Alert.alert("No contacts", "You have no contacts saved.");
         }
       } catch (error) {
         console.error("Failed to fetch contacts", error);
         Alert.alert("Error", "Unable to fetch contacts.");
       } finally {
-        setLoading(false); // Stop loading after fetching data
+        setLoading(false);
       }
     };
 
     fetchContacts();
   }, [isFocused]);
 
-  // Function to navigate to Profile Screen
   const navigateToProfile = (userId) => {
-    navigation.navigate("ProfileScreen", { id: userId });
+    navigation.navigate("ProfileScreen", {
+      id: userId,
+      handleContactDelete: handleContactDelete,
+    });
   };
 
-  // Show loading indicator while fetching data
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text>Loading Contacts...</Text>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007bff" />
+        <Text style={styles.loadingText}>Fetching Contacts...</Text>
       </View>
     );
+  }
+
+  async function handleContactDelete(id) {
+    try {
+      const storedContacts = await AsyncStorage.getItem("contacts");
+      if (storedContacts) {
+        const contactsList = JSON.parse(storedContacts);
+        const newContactsList = contactsList.filter(
+          (contact) => contact.id !== id
+        );
+        const jsonValue = JSON.stringify(newContactsList);
+        await AsyncStorage.setItem("contacts", jsonValue);
+      }
+    } catch (error) {
+      console.error("Failed to delete contact", error);
+      Alert.alert("Error", "Unable to delete contact.");
+    }
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Contacts</Text>
-      <FlatList
-        data={contacts}
-        keyExtractor={(item) => item._id.toString()}
-        renderItem={({ item }) => (
-          <ContactItem
-            name={item.username}
-            bio={item.bio}
-            profilePhoto={item.profilePhoto}
-            onPress={() => navigateToProfile(item._id)}
-          />
-        )}
-      />
+      {contacts.length > 0 ? (
+        <FlatList
+          data={contacts}
+          keyExtractor={(item) => item._id.toString()}
+          renderItem={({ item }) => (
+            <ContactItem
+              name={item.username}
+              bio={item.bio}
+              profilePhoto={item.profilePhoto}
+              onPress={() => navigateToProfile(item._id)}
+            />
+          )}
+          contentContainerStyle={styles.listContainer}
+        />
+      ) : (
+        <View style={styles.noContactsContainer}>
+          <Text style={styles.noContactsText}>No Contacts Found</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -78,13 +109,37 @@ function AllContacts() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: "#fff",
+    padding: 15,
+    backgroundColor: "#f5f7fa",
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 10,
+    color: "#333",
+    marginBottom: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f7fa",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  noContactsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noContactsText: {
+    fontSize: 16,
+    color: "#777",
   },
 });
 

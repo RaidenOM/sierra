@@ -1,36 +1,54 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
   StyleSheet,
   Image,
-  TouchableOpacity,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { users } from "../backend";
 import axios from "axios";
-import { useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { ActivityIndicator } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function ProfileScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { id } = route.params;
+  const [loading, setLoading] = useState(true);
+  const { id, handleContactDelete } = route.params;
 
   const [user, setUser] = useState(null);
 
-  //fetch user details from server
+  // Fetch user details from server
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await axios.get(`http://192.168.31.6:3000/users/${id}`);
-      const user = response.data;
-      setUser(user);
+      try {
+        const response = await axios.get(
+          `https://sierra-backend.onrender.com/users/${id}`
+        );
+        setUser(response.data);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-
     fetchUser();
   }, [id]);
 
-  if (!user) {
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+        <Text style={styles.loadingText}>Loading Details...</Text>
+      </View>
+    );
+  }
+
+  if (!loading && !user) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>User not found</Text>
@@ -38,14 +56,12 @@ function ProfileScreen() {
     );
   }
 
-  // Function to handle chatting with the user
   const handleChat = () => {
     navigation.navigate("ChatScreen", {
       receiverId: user._id,
     });
   };
 
-  // Function to handle deleting the user
   const handleDelete = () => {
     Alert.alert(
       "Delete User",
@@ -55,7 +71,8 @@ function ProfileScreen() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => {
+          onPress: async () => {
+            await handleContactDelete(user._id);
             Alert.alert("User Deleted", `${user.username} has been deleted.`);
             navigation.goBack();
           },
@@ -65,82 +82,112 @@ function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: user.profilePhoto }} style={styles.profileImage} />
-      <Text style={styles.name}>{user.username}</Text>
-      <Text style={styles.bio}>{user.bio || "No bio available"}</Text>
+    <LinearGradient
+      colors={["#6a11cb", "#2575fc"]}
+      style={styles.gradientBackground}
+    >
+      <View style={styles.card}>
+        <Image
+          source={{ uri: user.profilePhoto }}
+          style={styles.profileImage}
+        />
+        <Text style={styles.name}>{user.username}</Text>
+        <Text style={styles.bio}>{user.bio || "No bio available"}</Text>
+      </View>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.chatButton} onPress={handleChat}>
-          <Text style={styles.buttonText}>Chat with {user.username}</Text>
+      <View style={styles.iconContainer}>
+        <TouchableOpacity style={styles.iconButton} onPress={handleChat}>
+          <Ionicons
+            name="chatbubble-ellipses-outline"
+            size={28}
+            color="#4caf50"
+          />
+          <Text style={styles.iconLabel}>Chat</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-          <Text style={styles.buttonText}>Delete User</Text>
+
+        <TouchableOpacity style={styles.iconButton} onPress={handleDelete}>
+          <Ionicons name="trash-outline" size={28} color="#e74c3c" />
+          <Text style={styles.iconLabel}>Delete</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  gradientBackground: {
     flex: 1,
-    alignItems: "center",
     padding: 20,
-    backgroundColor: "#f9f9f9",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  card: {
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 20,
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    width: "90%",
   },
   profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginBottom: 20,
-    borderWidth: 2,
-    borderColor: "#0078d4",
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 15,
+    borderWidth: 3,
+    borderColor: "#2575fc",
   },
   name: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 10,
   },
   bio: {
     fontSize: 16,
-    color: "#666",
+    color: "#555",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 15,
   },
-  buttonContainer: {
-    width: "100%",
+  iconContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "60%",
     marginTop: 20,
   },
-  chatButton: {
-    backgroundColor: "#0078d4",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
+  iconButton: {
     alignItems: "center",
   },
-  deleteButton: {
-    backgroundColor: "#d9534f",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  buttonText: {
+  iconLabel: {
+    marginTop: 5,
+    fontSize: 14,
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   errorContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#f2dede",
   },
   errorText: {
     fontSize: 20,
-    color: "#d9534f",
+    color: "#a94442",
     fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f0f4f8",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
   },
 });
 

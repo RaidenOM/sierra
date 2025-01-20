@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
@@ -19,7 +27,7 @@ const AddContactScreen = ({ navigation }) => {
     try {
       // Send request to check if user exists
       const response = await axios.get(
-        `http://192.168.31.6:3000/search/${username}`
+        `https://sierra-backend.onrender.com/search/${username}`
       );
 
       if (response.data) {
@@ -35,7 +43,6 @@ const AddContactScreen = ({ navigation }) => {
         contacts.push(contact);
 
         await AsyncStorage.setItem("contacts", JSON.stringify(contacts));
-        console.log(contacts);
         Alert.alert("Success", "Contact added successfully.");
         navigation.goBack(); // Go back to previous screen
       }
@@ -49,18 +56,29 @@ const AddContactScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add Contact</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter username"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <Button
-        title={isLoading ? "Searching..." : "Search and Add Contact"}
-        onPress={handleSearchAndSaveContact}
-        disabled={isLoading} // Disable button while loading
-      />
+      <View style={styles.content}>
+        <Text style={styles.label}>Enter Username</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TouchableOpacity
+          style={[
+            styles.button,
+            isLoading && { backgroundColor: "#b0c4de" }, // Lighter color when disabled
+          ]}
+          onPress={handleSearchAndSaveContact}
+          disabled={isLoading} // Disable button while loading
+        >
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Search & Add</Text>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -68,21 +86,49 @@ const AddContactScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    padding: 20,
+    backgroundColor: "#f8f9fb",
   },
-  title: {
-    fontSize: 24,
+  header: {
+    backgroundColor: "#2575fc",
+    paddingVertical: 20,
+    alignItems: "center",
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+  },
+  headerText: {
+    color: "#fff",
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 20,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: "#333",
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 10,
+    padding: 15,
+    borderRadius: 10,
+    fontSize: 16,
+    backgroundColor: "#fff",
     marginBottom: 20,
-    borderRadius: 5,
+  },
+  button: {
+    backgroundColor: "#2575fc",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
