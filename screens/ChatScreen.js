@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
@@ -60,7 +61,7 @@ function ChatScreen() {
     if (receiver) {
       fetchMessages();
     }
-  }, [user.id, receiverId, receiver]);
+  }, [user._id, receiverId, receiver]);
 
   // bind handler to handler emits from server
   useEffect(() => {
@@ -94,6 +95,20 @@ function ChatScreen() {
   // useLayoutEffect to set the title for ChatScreen
   useLayoutEffect(() => {
     if (receiver) navigation.setOptions({ title: receiver.username });
+    navigation.setOptions({
+      headerRight: ({ tintColor }) => (
+        <View style={styles.headerButtonContainer}>
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={async () => {
+              await handleChatDelete(receiverId, user._id);
+            }}
+          >
+            <Ionicons name="trash-outline" size={30} color="red" />
+          </TouchableOpacity>
+        </View>
+      ),
+    });
   }, [receiver]);
 
   // Sort messages based on sentAt field
@@ -112,6 +127,27 @@ function ChatScreen() {
       year: "numeric",
     });
   };
+
+  async function handleChatDelete(user1ID, user2ID) {
+    Alert.alert(
+      "Delete Chats",
+      "Are you sure you want to delete all chats with this user?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            await axios.get(
+              `https://sierra-backend.onrender.com/delete-chats/${user1ID}/${user2ID}`
+            );
+            Alert.alert("Chats Deleted", "All Chats have been erased.");
+            navigation.goBack();
+          },
+        },
+      ]
+    );
+  }
 
   const renderItem = ({ item, index }) => {
     const isCurrentUser = item.senderId === user._id;
@@ -315,6 +351,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: "#555",
+  },
+  headerButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginRight: 10,
+  },
+  headerButton: {
+    marginLeft: 10,
+    padding: 5,
+    borderRadius: 8,
+    backgroundColor: "#f0f4f8",
+    elevation: 3,
   },
 });
 

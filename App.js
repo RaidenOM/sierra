@@ -9,13 +9,17 @@ import ProfileScreen from "./screens/ProfileScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import { AppContextProvider } from "./store/app-context";
-import { Button, StyleSheet, View, TouchableOpacity } from "react-native";
+import { Button, StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import { UserContext, UserProvider } from "./store/user-context";
-import { Text } from "react-native";
 import UserProfileScreen from "./screens/UserProfileScreen";
 import AddContactScreen from "./screens/AddContactScreen";
 import { ActivityIndicator } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AllChats from "./screens/AllChats";
+
+// Import Orbitron font
+import { useFonts } from "expo-font";
+import { Orbitron_400Regular } from "@expo-google-fonts/orbitron";
 
 // Create navigators
 const Tab = createBottomTabNavigator();
@@ -27,7 +31,7 @@ function HomeTab() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#fff",
-        tabBarInactiveTintColor: "#f0f4f8",
+        tabBarInactiveTintColor: "#ccc",
         tabBarStyle: {
           backgroundColor: "#3498db",
           borderTopLeftRadius: 15,
@@ -36,13 +40,23 @@ function HomeTab() {
       }}
     >
       <Tab.Screen
+        component={AllChats}
+        name="AllChats"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="logo-wechat" size={30} color={color} />
+          ),
+          tabBarLabel: "Chats",
+        }}
+      />
+      <Tab.Screen
         component={AllContacts}
         name="AllContacts"
         options={{
           tabBarIcon: ({ color }) => (
             <Ionicons name="people-outline" size={30} color={color} />
           ),
-          tabBarLabel: "All Contacts",
+          tabBarLabel: "Contacts",
         }}
       />
     </Tab.Navigator>
@@ -90,22 +104,35 @@ function AuthStack() {
 }
 
 function MainAppStack() {
+  const [fontsLoaded] = useFonts({
+    Orbitron_400Regular,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+      </View>
+    );
+  }
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#9b59b6",
+          backgroundColor: "#3498db",
           shadowOpacity: 0.3,
         },
+        headerTintColor: "#fff",
         animation: "slide_from_right",
-        headerTintColor: "white",
       }}
     >
       <Stack.Screen
         name="HomeTab"
         component={HomeTab}
         options={({ navigation }) => ({
-          title: "Sierra",
+          // Logo style
+          title: <Text style={styles.headerTitle}>SIΞRRΛ</Text>,
           headerRight: ({ tintColor }) => (
             <View style={styles.headerButtonContainer}>
               <TouchableOpacity
@@ -165,6 +192,17 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  headerTitle: {
+    fontFamily: "Orbitron_400Regular", // Using Orbitron font
+    fontSize: 32,
+    color: "#fff",
+    letterSpacing: 4,
+    textTransform: "uppercase",
+    fontWeight: "bold",
+    textShadowColor: "#333",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 10,
+  },
   headerButtonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",

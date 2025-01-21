@@ -37,11 +37,12 @@ export default function RegisterScreen({ navigation }) {
   const handleRegister = async () => {
     if (!validateInputs()) return;
 
+    const trimmedUsername = username.trim();
     try {
       const response = await axios.post(
         "https://sierra-backend.onrender.com/register",
         {
-          username,
+          username: trimmedUsername,
           password,
         }
       );

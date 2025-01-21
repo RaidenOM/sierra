@@ -42,42 +42,40 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 15,
     marginVertical: 5,
-    borderRadius: 12,
-    backgroundColor: "#fff",
+    borderRadius: 10, // Same as ContactItem
+    backgroundColor: "#f9f9f9", // Similar to ContactItem's background color
     elevation: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
   },
   profilePhoto: {
     width: 50,
     height: 50,
     borderRadius: 25,
     marginRight: 15,
-    borderWidth: 1,
-    borderColor: "#ddd",
   },
   textContainer: {
     flex: 1,
     justifyContent: "center",
   },
   name: {
-    fontSize: 17,
+    fontSize: 18, // Similar to ContactItem's name size
     fontWeight: "bold",
     color: "#333",
   },
   messageContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 6,
+    marginTop: 6, // Space between the name and message
   },
   icon: {
-    marginRight: 8,
+    marginRight: 8, // Space between the icon and the message text
   },
   recentMessage: {
     fontSize: 14,
-    color: "#666",
+    color: "#777",
   },
   unreadMarker: {
     position: "absolute",

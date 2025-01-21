@@ -39,13 +39,15 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     if (!validateInputs()) return;
+
+    const trimmedUsername = username.trim();
     try {
       const response = await fetch(
         "https://sierra-backend.onrender.com/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({ username: trimmedUsername, password }),
         }
       );
 
