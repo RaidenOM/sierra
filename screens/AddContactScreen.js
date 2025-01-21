@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -10,10 +10,12 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { UserContext } from "../store/user-context";
 
 const AddContactScreen = ({ navigation }) => {
   const [username, setUsername] = useState(""); // To hold the input username
   const [isLoading, setIsLoading] = useState(false); // For loading state
+  const { addContact } = useContext(UserContext);
 
   // Function to handle search for user and save contact
   const handleSearchAndSaveContact = async () => {
@@ -36,13 +38,7 @@ const AddContactScreen = ({ navigation }) => {
           id: response.data._id,
         };
 
-        let contacts = await AsyncStorage.getItem("contacts");
-        contacts = contacts ? JSON.parse(contacts) : [];
-
-        // Add new contact to existing contacts
-        contacts.push(contact);
-
-        await AsyncStorage.setItem("contacts", JSON.stringify(contacts));
+        await addContact(contact);
         Alert.alert("Success", "Contact added successfully.");
         navigation.goBack(); // Go back to previous screen
       }

@@ -2,7 +2,14 @@ import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const ChatItem = ({ profilePhoto, name, recentMessage, onPress, isSent }) => {
+const ChatItem = ({
+  profilePhoto,
+  name,
+  recentMessage,
+  onPress,
+  isSent,
+  isRead,
+}) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image source={{ uri: profilePhoto }} style={styles.profilePhoto} />
@@ -21,6 +28,8 @@ const ChatItem = ({ profilePhoto, name, recentMessage, onPress, isSent }) => {
             {recentMessage}
           </Text>
         </View>
+        {/* Add green marker if message is not read */}
+        {!isRead && <View style={styles.unreadMarker} />}
       </View>
     </TouchableOpacity>
   );
@@ -69,6 +78,15 @@ const styles = StyleSheet.create({
   recentMessage: {
     fontSize: 14,
     color: "#666",
+  },
+  unreadMarker: {
+    position: "absolute",
+    top: 10,
+    right: 15,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "green", // Green marker for unread message
   },
 });
 

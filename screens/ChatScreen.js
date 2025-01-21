@@ -71,7 +71,7 @@ function ChatScreen() {
     return () => {
       socket.off("new-message");
     };
-  }, []);
+  }, [socket]);
 
   // bind handler to handler emits from server
   useEffect(() => {
@@ -82,7 +82,7 @@ function ChatScreen() {
     return () => {
       socket.off("message-sent");
     };
-  });
+  }, [socket]);
 
   // Scroll to the bottom on mount and when new messages arrive
   useLayoutEffect(() => {

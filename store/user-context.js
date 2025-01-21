@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { io } from "socket.io-client";
@@ -14,6 +20,8 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [latestMessages, setLatestMessages] = useState([]);
+  const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -43,6 +51,67 @@ export const UserProvider = ({ children }) => {
     fetchUserData();
   }, [isAuthenticating]);
 
+  // fetch latest messages for a user
+  const fetchLatestMessages = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+
+      if (token) {
+        const response = await axios.get(
+          "https://sierra-backend.onrender.com/latest-messages",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log(token);
+        setLatestMessages(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch latest messages", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // fetch contacts for a user
+  const fetchContacts = async () => {
+    try {
+      const storedContacts = await AsyncStorage.getItem("contacts");
+      if (storedContacts) {
+        const contactList = JSON.parse(storedContacts);
+
+        const profilePromises = contactList.map((contact) => {
+          return axios.get(
+            `https://sierra-backend.onrender.com/users/${contact.id}`
+          );
+        });
+
+        const profileResponses = await Promise.all(profilePromises);
+        const profileData = profileResponses.map((response) => response.data);
+        setContacts(profileData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch contacts", error);
+      Alert.alert("Error", "Unable to fetch contacts.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addContact = async (contact) => {
+    let contacts = await AsyncStorage.getItem("contacts");
+    contacts = contacts ? JSON.parse(contacts) : [];
+
+    // Add new contact to existing contacts
+    contacts.push(contact);
+
+    await AsyncStorage.setItem("contacts", JSON.stringify(contacts));
+    await fetchContacts();
+  };
+
   // join room if successsful login
   useEffect(() => {
     if (user) {
@@ -57,7 +126,19 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, logout, loading, setIsAuthenticating, socket }}
+      value={{
+        user,
+        logout,
+        loading,
+        setIsAuthenticating,
+        socket,
+        fetchLatestMessages,
+        latestMessages,
+        contacts,
+        fetchContacts,
+        addContact,
+        setLatestMessages,
+      }}
     >
       {children}
     </UserContext.Provider>

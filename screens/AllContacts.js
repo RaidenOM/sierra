@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -11,31 +11,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import ContactItem from "../components/ContactItem";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { UserContext } from "../store/user-context";
 
 function AllContacts() {
-  const [contacts, setContacts] = useState([]);
+  const { contacts, fetchContacts } = useContext(UserContext);
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchContacts = async () => {
+    const getContacts = async () => {
       try {
-        const storedContacts = await AsyncStorage.getItem("contacts");
-        if (storedContacts) {
-          const contactList = JSON.parse(storedContacts);
-
-          const profilePromises = contactList.map((contact) => {
-            console.log(contact.id);
-            return axios.get(
-              `https://sierra-backend.onrender.com/users/${contact.id}`
-            );
-          });
-
-          const profileResponses = await Promise.all(profilePromises);
-          const profileData = profileResponses.map((response) => response.data);
-          setContacts(profileData);
-        }
+        await fetchContacts();
       } catch (error) {
         console.error("Failed to fetch contacts", error);
         Alert.alert("Error", "Unable to fetch contacts.");
@@ -44,7 +31,7 @@ function AllContacts() {
       }
     };
 
-    fetchContacts();
+    getContacts();
   }, [isFocused]);
 
   const navigateToProfile = (userId) => {

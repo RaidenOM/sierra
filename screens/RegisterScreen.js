@@ -73,7 +73,7 @@ export default function RegisterScreen({ navigation }) {
       <CustomButton title="Register" onPress={handleRegister} />
       <CustomButton
         title="Already have an account? Login"
-        onPress={() => navigation.navigate("LoginScreen")}
+        onPress={() => navigation.goBack()}
         type="secondary"
       />
     </View>
