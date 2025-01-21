@@ -1,13 +1,12 @@
 {
   "expo": {
-    "sdkVersion": "51.0.0",
     "name": "Sierra",
     "slug": "Sierra",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/sierra.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/sierra.png",
       "resizeMode": "center",

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  ImageBackground,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
@@ -230,7 +231,11 @@ function ChatScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      style={styles.container}
+      source={require("../assets/chat-background.png")}
+      resizeMode="contain"
+    >
       <FlatList
         ref={flatListRef}
         data={sortedMessages}
@@ -251,14 +256,13 @@ function ChatScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   dateSeparator: {
     alignItems: "center",
@@ -292,7 +296,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   messageBubble: {
-    backgroundColor: "#f1f1f1",
+    backgroundColor: "#e1e1e3",
     padding: 10,
     borderRadius: 15,
     maxWidth: "75%",

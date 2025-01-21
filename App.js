@@ -9,7 +9,14 @@ import ProfileScreen from "./screens/ProfileScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import { AppContextProvider } from "./store/app-context";
-import { Button, StyleSheet, View, TouchableOpacity, Text } from "react-native";
+import {
+  Button,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  StatusBar,
+} from "react-native";
 import { UserContext, UserProvider } from "./store/user-context";
 import UserProfileScreen from "./screens/UserProfileScreen";
 import AddContactScreen from "./screens/AddContactScreen";
@@ -183,11 +190,14 @@ function MainAppStack() {
 // Main App Component
 export default function App() {
   return (
-    <AppContextProvider>
-      <UserProvider>
-        <Navigation />
-      </UserProvider>
-    </AppContextProvider>
+    <>
+      <AppContextProvider>
+        <UserProvider>
+          <Navigation />
+        </UserProvider>
+      </AppContextProvider>
+      <StatusBar backgroundColor={"black"} barStyle={"light-content"} />
+    </>
   );
 }
 
