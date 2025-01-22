@@ -21,12 +21,10 @@ import { ActivityIndicator } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AllChats from "./screens/AllChats";
 
-// Import Orbitron font
 import { useFonts } from "expo-font";
 import { Orbitron_400Regular } from "@expo-google-fonts/orbitron";
 import { createStackNavigator } from "@react-navigation/stack";
 
-// Create navigators
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -184,7 +182,6 @@ function MainAppStack() {
   );
 }
 
-// Main App Component
 export default function App() {
   return (
     <>
@@ -198,7 +195,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   headerTitle: {
-    fontFamily: "Orbitron_400Regular", // Using Orbitron font
+    fontFamily: "Orbitron_400Regular",
     fontSize: 32,
     color: "#fff",
     letterSpacing: 4,
@@ -224,6 +221,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
   loadingText: {
     marginTop: 10,

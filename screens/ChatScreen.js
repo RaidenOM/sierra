@@ -207,6 +207,9 @@ function ChatScreen() {
             ]}
           >
             <Text style={styles.messageText}>{item.message}</Text>
+            {item.senderId !== user._id && !item.isRead && (
+              <View style={styles.unreadMarker} />
+            )}
             <Text style={styles.timestamp}>{formattedTime}</Text>
           </View>
           {isCurrentUser && (
@@ -385,6 +388,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#f0f4f8",
     elevation: 3,
+  },
+  unreadMarker: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "green", // Green marker for unread message
   },
 });
 

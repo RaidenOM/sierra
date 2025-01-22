@@ -8,7 +8,7 @@ const ChatItem = ({
   recentMessage,
   onPress,
   isSent,
-  isRead,
+  unreadCount,
 }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
@@ -28,8 +28,12 @@ const ChatItem = ({
             {recentMessage}
           </Text>
         </View>
-        {/* Add green marker if message is not read */}
-        {!isRead && <View style={styles.unreadMarker} />}
+
+        {unreadCount > 0 && (
+          <View style={styles.unreadMarker}>
+            <Text style={styles.unreadCount}>{unreadCount}</Text>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -80,12 +84,18 @@ const styles = StyleSheet.create({
   },
   unreadMarker: {
     position: "absolute",
-    top: 10,
+    top: 2,
     right: 15,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "green", // Green marker for unread message
+    width: 25,
+    height: 25,
+    borderRadius: 12.5,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "green",
+  },
+  unreadCount: {
+    color: "#fff",
+    fontWeight: 800,
   },
 });
 

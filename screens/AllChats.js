@@ -81,6 +81,12 @@ export default function AllChats() {
   }
 
   async function handlePress(otherPersonId) {
+    setChats((prevChats) => {
+      let updatedChats = prevChats.map((chat) => {
+        return { ...chat, unreadCount: 0, isRead: true };
+      });
+      return updatedChats;
+    });
     navigation.navigate("ChatScreen", { receiverId: otherPersonId });
     await axios.get(
       `https://sierra-backend.onrender.com/mark-read/${otherPersonId}/${user._id}`
@@ -105,15 +111,13 @@ export default function AllChats() {
           keyExtractor={(item) => item._id.toString()}
           renderItem={({ item }) => {
             const recentMessage = getLatestMessage(item._id);
-            const isRead =
-              recentMessage.senderId._id !== user._id && !recentMessage.isRead;
             return (
               <ChatItem
                 name={item.username}
                 recentMessage={recentMessage.message}
                 profilePhoto={item.profilePhoto}
                 isSent={recentMessage.senderId._id === user._id}
-                isRead={!isRead}
+                unreadCount={recentMessage.unreadCount}
                 onPress={() => handlePress(item._id)}
               />
             );
