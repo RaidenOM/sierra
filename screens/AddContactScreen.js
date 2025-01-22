@@ -8,12 +8,17 @@ import CustomInput from "../components/CustomInput";
 const AddContactScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { addContact } = useContext(UserContext);
+  const { addContact, user } = useContext(UserContext);
 
   const handleSearchAndSaveContact = async () => {
     const trimmedUsername = username.trim();
     if (!trimmedUsername) {
       Alert.alert("Error", "Please enter a username.");
+      return;
+    }
+
+    if (user.username === trimmedUsername) {
+      Alert.alert("Error", "Cannot add current user to contact list.");
       return;
     }
 
