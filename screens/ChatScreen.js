@@ -279,6 +279,7 @@ function ChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#dfe5f7",
   },
   dateSeparator: {
     alignItems: "center",
@@ -309,6 +310,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
+    overflow: "hidden",
     marginHorizontal: 8,
   },
   messageBubble: {
@@ -365,7 +367,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f0f4f8",
+    backgroundColor: "#dfe5f7",
   },
   loadingText: {
     marginTop: 10,

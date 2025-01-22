@@ -74,15 +74,6 @@ export default function AllChats() {
     chat.senderId._id === user._id ? chat.receiverId : chat.senderId
   );
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007bff" />
-        <Text style={styles.loadingText}>Fetching Chats...</Text>
-      </View>
-    );
-  }
-
   function getLatestMessage(id) {
     return chats.find(
       (chat) => chat.senderId._id === id || chat.receiverId._id === id
@@ -93,6 +84,15 @@ export default function AllChats() {
     navigation.navigate("ChatScreen", { receiverId: otherPersonId });
     await axios.get(
       `https://sierra-backend.onrender.com/mark-read/${otherPersonId}/${user._id}`
+    );
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007bff" />
+        <Text style={styles.loadingText}>Fetching Chats...</Text>
+      </View>
     );
   }
 
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f7fa",
+    backgroundColor: "#dfe5f7",
   },
   loadingText: {
     marginTop: 10,

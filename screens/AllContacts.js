@@ -8,7 +8,6 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import ContactItem from "../components/ContactItem";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { UserContext } from "../store/user-context";
@@ -109,7 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f7fa",
+    backgroundColor: "#dfe5f7",
   },
   loadingText: {
     marginTop: 10,

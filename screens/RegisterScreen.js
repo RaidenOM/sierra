@@ -64,19 +64,25 @@ export default function RegisterScreen({ navigation }) {
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
+        style={styles.input}
       />
       <CustomInput
         placeholder="Password"
         value={password}
         secureTextEntry
         onChangeText={setPassword}
+        style={styles.input}
       />
-      <CustomButton title="Register" onPress={handleRegister} />
+      <CustomButton onPress={handleRegister} style={styles.registerButton}>
+        Register
+      </CustomButton>
       <CustomButton
-        title="Already have an account? Login"
         onPress={() => navigation.goBack()}
         type="secondary"
-      />
+        style={styles.loginButton}
+      >
+        Already have an account? Login
+      </CustomButton>
     </View>
   );
 }
@@ -87,17 +93,37 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f7f9fc",
+    backgroundColor: "#fff",
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: "bold",
-    color: "#333",
+    color: "#2c3e50",
     marginBottom: 10,
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 20,
+    fontSize: 18,
+    color: "#7f8c8d",
+    marginBottom: 25,
+    textAlign: "center",
+  },
+  input: {
+    marginBottom: 15,
+  },
+  registerButton: {
+    backgroundColor: "#6993ff",
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 5,
+    marginBottom: 15,
+  },
+  loginButton: {
+    backgroundColor: "#ecf0f1",
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#95a5a6",
   },
 });

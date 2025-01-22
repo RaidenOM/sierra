@@ -1,20 +1,18 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
-import { useState, useEffect, useContext } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useContext } from "react";
 import AllContacts from "./screens/AllContacts";
 import ChatScreen from "./screens/ChatScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
-import { AppContextProvider } from "./store/app-context";
 import {
-  Button,
   StyleSheet,
   View,
   TouchableOpacity,
   Text,
   StatusBar,
+  Image,
 } from "react-native";
 import { UserContext, UserProvider } from "./store/user-context";
 import UserProfileScreen from "./screens/UserProfileScreen";
@@ -76,8 +74,8 @@ function Navigation() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
+        <Image source={require("./assets/sierra.png")} resizeMode="center" />
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
@@ -190,11 +188,9 @@ function MainAppStack() {
 export default function App() {
   return (
     <>
-      <AppContextProvider>
-        <UserProvider>
-          <Navigation />
-        </UserProvider>
-      </AppContextProvider>
+      <UserProvider>
+        <Navigation />
+      </UserProvider>
       <StatusBar backgroundColor={"black"} barStyle={"light-content"} />
     </>
   );
@@ -228,7 +224,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#ecf0f1",
   },
   loadingText: {
     marginTop: 10,

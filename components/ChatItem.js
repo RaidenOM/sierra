@@ -71,11 +71,12 @@ const styles = StyleSheet.create({
     marginTop: 6, // Space between the name and message
   },
   icon: {
-    marginRight: 8, // Space between the icon and the message text
+    marginRight: 4,
   },
   recentMessage: {
     fontSize: 14,
     color: "#777",
+    paddingRight: 10,
   },
   unreadMarker: {
     position: "absolute",

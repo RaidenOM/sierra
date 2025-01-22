@@ -9,10 +9,8 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
-import { LinearGradient } from "expo-linear-gradient";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ActivityIndicator } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function ProfileScreen() {
   const navigation = useNavigation();
@@ -49,11 +47,16 @@ function ProfileScreen() {
   }
 
   if (!loading && !user) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>User not found</Text>
-      </View>
-    );
+    Alert.alert("User not found", "The specified user cannot be found.", [
+      {
+        text: "OK",
+        style: "default",
+        onPress: () => {
+          navigation.goBack();
+        },
+      },
+    ]);
+    return;
   }
 
   const handleChat = () => {
@@ -82,10 +85,7 @@ function ProfileScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={["#6a11cb", "#2575fc"]}
-      style={styles.gradientBackground}
-    >
+    <View style={styles.container}>
       <View style={styles.card}>
         <Image
           source={{ uri: user.profilePhoto }}
@@ -93,33 +93,33 @@ function ProfileScreen() {
         />
         <Text style={styles.name}>{user.username}</Text>
         <Text style={styles.bio}>{user.bio || "No bio available"}</Text>
-      </View>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity style={styles.iconButton} onPress={handleChat}>
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={28}
+              color="#4caf50"
+            />
+            <Text style={styles.iconLabel}>Chat</Text>
+          </TouchableOpacity>
 
-      <View style={styles.iconContainer}>
-        <TouchableOpacity style={styles.iconButton} onPress={handleChat}>
-          <Ionicons
-            name="chatbubble-ellipses-outline"
-            size={28}
-            color="#4caf50"
-          />
-          <Text style={styles.iconLabel}>Chat</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.iconButton} onPress={handleDelete}>
-          <Ionicons name="trash-outline" size={28} color="#e74c3c" />
-          <Text style={styles.iconLabel}>Delete</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={handleDelete}>
+            <Ionicons name="trash-outline" size={28} color="#e74c3c" />
+            <Text style={styles.iconLabel}>Delete</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gradientBackground: {
+  container: {
     flex: 1,
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#dfe5f7",
   },
   card: {
     backgroundColor: "white",
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   iconLabel: {
     marginTop: 5,
     fontSize: 14,
-    color: "#fff",
+    textAlign: "center",
   },
   errorContainer: {
     flex: 1,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f0f4f8",
+    backgroundColor: "#dfe5f7",
   },
   loadingText: {
     marginTop: 10,

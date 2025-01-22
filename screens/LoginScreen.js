@@ -1,10 +1,9 @@
 import React, { useContext, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserContext } from "../store/user-context";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
-import { Alert } from "react-native";
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
@@ -56,34 +55,42 @@ export default function LoginScreen({ navigation }) {
         await AsyncStorage.setItem("token", data.token);
         setIsAuthenticating(true);
       } else {
-        alert(data.message);
+        Alert.alert("Login Failed", data.message);
       }
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      Alert.alert("Error", "An error occurred. Please try again.");
     }
   };
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require("../assets/sierra.png")}
+        resizeMode="contain"
+        style={styles.logo}
+      />
       <Text style={styles.title}>Welcome Back</Text>
       <Text style={styles.subtitle}>Log in to your account</Text>
       <CustomInput
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
+        style={styles.input}
       />
       <CustomInput
         placeholder="Password"
         value={password}
         secureTextEntry
         onChangeText={setPassword}
+        style={styles.input}
       />
-      <CustomButton title="Login" onPress={handleLogin} />
+      <CustomButton onPress={handleLogin}>Login</CustomButton>
       <CustomButton
-        title="New User? Register"
         onPress={() => navigation.navigate("RegisterScreen")}
         type="secondary"
-      />
+      >
+        New User? Register
+      </CustomButton>
     </View>
   );
 }
@@ -94,17 +101,24 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f7f9fc",
+    backgroundColor: "#fff",
+  },
+  logo: {
+    height: 120,
+    width: 120,
+    marginBottom: 30,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: "bold",
-    color: "#333",
+    color: "#2c3e50",
     marginBottom: 10,
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 20,
+    fontSize: 18,
+    color: "#7f8c8d",
+    marginBottom: 25,
+    textAlign: "center",
   },
 });

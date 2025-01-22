@@ -2,7 +2,7 @@ import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
 export default function CustomButton({
-  title,
+  children,
   onPress,
   type = "primary",
   style,
@@ -22,7 +22,7 @@ export default function CustomButton({
           type === "secondary" && styles.secondaryButtonText,
         ]}
       >
-        {title}
+        {children}
       </Text>
     </TouchableOpacity>
   );
@@ -31,27 +31,30 @@ export default function CustomButton({
 const styles = StyleSheet.create({
   button: {
     width: "100%",
-    paddingVertical: 15,
-    paddingHorizontal: 25,
-    backgroundColor: "#0078d4",
-    borderRadius: 10,
     alignItems: "center",
-    marginBottom: 12,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
+    backgroundColor: "#6993ff",
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 5,
+    marginBottom: 15,
   },
   secondaryButton: {
-    backgroundColor: "#f0f0f0",
-    elevation: 0,
+    backgroundColor: "#ecf0f1",
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#95a5a6",
   },
   buttonText: {
     color: "#fff",
-    fontSize: 18,
     fontWeight: "600",
-    textTransform: "uppercase",
+    textAlign: "center",
   },
   secondaryButtonText: {
     color: "#333",

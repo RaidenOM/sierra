@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { UserContext } from "../store/user-context";
 
@@ -18,10 +17,7 @@ export default function UserProfileScreen({ navigation }) {
   }
 
   return (
-    <LinearGradient
-      colors={["#6a11cb", "#2575fc"]}
-      style={styles.gradientBackground}
-    >
+    <View style={styles.container}>
       <View style={styles.card}>
         <Image
           source={{ uri: user.profilePhoto }}
@@ -29,32 +25,32 @@ export default function UserProfileScreen({ navigation }) {
         />
         <Text style={styles.name}>{user.username}</Text>
         <Text style={styles.bio}>{user.bio || "No bio available"}</Text>
-      </View>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => navigation.navigate("EditProfileScreen")}
+          >
+            <Ionicons name="create-outline" size={28} color="#ff9800" />
+            <Text style={styles.iconLabel}>Edit</Text>
+          </TouchableOpacity>
 
-      <View style={styles.iconContainer}>
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={() => navigation.navigate("EditProfileScreen")}
-        >
-          <Ionicons name="create-outline" size={28} color="#ff9800" />
-          <Text style={styles.iconLabel}>Edit</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.iconButton} onPress={logout}>
-          <Ionicons name="log-out-outline" size={28} color="#e74c3c" />
-          <Text style={styles.iconLabel}>Logout</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={logout}>
+            <Ionicons name="log-out-outline" size={28} color="#e74c3c" />
+            <Text style={styles.iconLabel}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gradientBackground: {
+  container: {
     flex: 1,
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#dfe5f7",
   },
   card: {
     backgroundColor: "white",
@@ -100,13 +96,13 @@ const styles = StyleSheet.create({
   iconLabel: {
     marginTop: 5,
     fontSize: 14,
-    color: "#fff",
+    textAlign: "center",
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f0f4f8",
+    backgroundColor: "#dfe5f7",
   },
   loadingText: {
     marginTop: 10,
