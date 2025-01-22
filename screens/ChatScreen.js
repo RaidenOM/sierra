@@ -11,7 +11,11 @@ import {
   Alert,
   ImageBackground,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import axios from "axios";
 import { UserContext } from "../store/user-context";
 import { useRef } from "react";
@@ -27,6 +31,7 @@ function ChatScreen() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const isFocused = useIsFocused();
 
   const flatListRef = useRef(null);
 
@@ -85,6 +90,17 @@ function ChatScreen() {
       socket.off("message-sent");
     };
   }, [socket]);
+
+  // useEffect to mark messages as read between current user and other user on screen exit
+  useEffect(() => {
+    const markAsRead = async () => {
+      await axios.get(
+        `https://sierra-backend.onrender.com/mark-read/${receiverId}/${user._id}`
+      );
+    };
+
+    if (!isFocused) markAsRead();
+  }, [isFocused]);
 
   // Scroll to the bottom on mount and when new messages arrive
   useLayoutEffect(() => {

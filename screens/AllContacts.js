@@ -31,7 +31,7 @@ function AllContacts() {
       }
     };
 
-    getContacts();
+    if (isFocused) getContacts();
   }, [isFocused]);
 
   const navigateToProfile = (userId) => {

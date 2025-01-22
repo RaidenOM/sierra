@@ -8,7 +8,6 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { UserContext } from "../store/user-context";
 
@@ -19,7 +18,8 @@ const AddContactScreen = ({ navigation }) => {
 
   // Function to handle search for user and save contact
   const handleSearchAndSaveContact = async () => {
-    if (!username.trim()) {
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername) {
       Alert.alert("Error", "Please enter a username.");
       return;
     }
@@ -29,7 +29,7 @@ const AddContactScreen = ({ navigation }) => {
     try {
       // Send request to check if user exists
       const response = await axios.get(
-        `https://sierra-backend.onrender.com/search/${username}`
+        `https://sierra-backend.onrender.com/search/${trimmedUsername}`
       );
 
       if (response.data) {

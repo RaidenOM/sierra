@@ -1,6 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
 import { useState, useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AllContacts from "./screens/AllContacts";
@@ -27,6 +26,7 @@ import AllChats from "./screens/AllChats";
 // Import Orbitron font
 import { useFonts } from "expo-font";
 import { Orbitron_400Regular } from "@expo-google-fonts/orbitron";
+import { createStackNavigator } from "@react-navigation/stack";
 
 // Create navigators
 const Tab = createBottomTabNavigator();
@@ -138,7 +138,6 @@ function MainAppStack() {
         name="HomeTab"
         component={HomeTab}
         options={({ navigation }) => ({
-          // Logo style
           title: <Text style={styles.headerTitle}>SIΞRRΛ</Text>,
           headerRight: ({ tintColor }) => (
             <View style={styles.headerButtonContainer}>
