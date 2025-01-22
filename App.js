@@ -72,7 +72,11 @@ function Navigation() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <Image source={require("./assets/sierra.png")} resizeMode="center" />
+        <Image
+          source={require("./assets/sierra.png")}
+          resizeMode="center"
+          style={{ height: 400 }}
+        />
         <ActivityIndicator size="large" color="#4CAF50" />
       </View>
     );
