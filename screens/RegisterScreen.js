@@ -13,6 +13,9 @@ export default function RegisterScreen({ navigation }) {
       Alert.alert("Validation Error", "Username is required.");
       return false;
     }
+    if (username.includes(" ")) {
+      Alert.alert("Validation Error", "Username cannot have spaces");
+    }
     if (username.length < 3) {
       Alert.alert(
         "Validation Error",

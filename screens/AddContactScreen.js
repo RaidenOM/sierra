@@ -22,6 +22,10 @@ const AddContactScreen = ({ navigation }) => {
       return;
     }
 
+    if (username.includes(" ")) {
+      Alert.alert("Error", "Username cannot have spaces");
+    }
+
     setIsLoading(true);
 
     try {
