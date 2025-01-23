@@ -24,7 +24,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 function ChatScreen() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { user, socket } = useContext(UserContext);
+  const { user, socket, token } = useContext(UserContext);
   const { receiverId } = route.params;
 
   const [receiver, setReceiver] = useState(null);
@@ -55,7 +55,12 @@ function ChatScreen() {
     async function fetchMessages() {
       try {
         const response = await axios.get(
-          `https://sierra-backend.onrender.com/messages/${user._id}/${receiverId}`
+          `https://sierra-backend.onrender.com/messages/${receiverId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         setMessages(response.data);
         setLoading(false);
@@ -94,8 +99,16 @@ function ChatScreen() {
   // useEffect to mark messages as read between current user and other user on screen exit
   useEffect(() => {
     const markAsRead = async () => {
-      await axios.get(
-        `https://sierra-backend.onrender.com/mark-read/${receiverId}/${user._id}`
+      console.log(receiverId);
+      console.log(token);
+      await axios.put(
+        `https://sierra-backend.onrender.com/messages/mark-read/${receiverId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
     };
 
@@ -118,7 +131,7 @@ function ChatScreen() {
           <TouchableOpacity
             style={styles.headerButton}
             onPress={async () => {
-              await handleChatDelete(receiverId, user._id);
+              await handleChatDelete(receiverId);
             }}
           >
             <Ionicons name="trash-outline" size={30} color="red" />
@@ -145,7 +158,7 @@ function ChatScreen() {
     });
   };
 
-  async function handleChatDelete(user1ID, user2ID) {
+  async function handleChatDelete(otherUserId) {
     Alert.alert(
       "Delete Chats",
       "Are you sure you want to delete all chats with this user?",
@@ -155,8 +168,13 @@ function ChatScreen() {
           text: "Delete",
           style: "destructive",
           onPress: async () => {
-            await axios.get(
-              `https://sierra-backend.onrender.com/delete-chats/${user1ID}/${user2ID}`
+            await axios.delete(
+              `https://sierra-backend.onrender.com/messages/${otherUserId}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
             );
             Alert.alert("Chats Deleted", "All Chats have been erased.");
             navigation.goBack();

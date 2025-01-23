@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserContext } from "../store/user-context";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
+import axios from "axios";
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
@@ -44,22 +45,17 @@ export default function LoginScreen({ navigation }) {
 
     const trimmedUsername = username.trim();
     try {
-      const response = await fetch(
-        "https://sierra-backend.onrender.com/login",
+      const response = await axios.post(
+        `https://sierra-backend.onrender.com/login`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: trimmedUsername, password }),
+          username: trimmedUsername,
+          password: password,
         }
       );
 
-      const data = await response.json();
-      if (response.ok) {
-        await AsyncStorage.setItem("token", data.token);
-        setIsAuthenticating(true);
-      } else {
-        Alert.alert("Login Failed", data.message);
-      }
+      const { token } = response.data;
+      await AsyncStorage.setItem("token", token);
+      setIsAuthenticating(true);
     } catch (error) {
       Alert.alert("Error", "An error occurred. Please try again.");
     }

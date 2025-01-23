@@ -16,11 +16,13 @@ export const UserProvider = ({ children }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [latestMessages, setLatestMessages] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [token, setToken] = useState();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
+        setToken(token);
 
         if (token) {
           const response = await axios.get(
@@ -48,8 +50,6 @@ export const UserProvider = ({ children }) => {
   // fetch latest messages for a user
   const fetchLatestMessages = async () => {
     try {
-      const token = await AsyncStorage.getItem("token");
-
       if (token) {
         const response = await axios.get(
           "https://sierra-backend.onrender.com/latest-messages",
@@ -116,6 +116,7 @@ export const UserProvider = ({ children }) => {
   const logout = async () => {
     await AsyncStorage.removeItem("token");
     setUser(null);
+    setToken(null);
   };
 
   return (
@@ -132,6 +133,7 @@ export const UserProvider = ({ children }) => {
         fetchContacts,
         addContact,
         setLatestMessages,
+        token,
       }}
     >
       {children}
