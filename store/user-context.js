@@ -22,7 +22,6 @@ export const UserProvider = ({ children }) => {
     const fetchUserData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        setToken(token);
 
         if (token) {
           const response = await axios.get(
@@ -34,6 +33,7 @@ export const UserProvider = ({ children }) => {
             }
           );
 
+          setToken(token);
           setUser(response.data);
           setIsAuthenticating(false);
         }
