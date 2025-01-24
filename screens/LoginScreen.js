@@ -18,6 +18,7 @@ export default function LoginScreen({ navigation }) {
     }
     if (username.includes(" ")) {
       Alert.alert("Validation Error", "Username cannot have spaces");
+      return false;
     }
     if (username.length < 3) {
       Alert.alert(
