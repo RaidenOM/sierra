@@ -24,7 +24,8 @@ export default function UserProfileScreen({ navigation }) {
           style={styles.profileImage}
         />
         <Text style={styles.name}>{user.username}</Text>
-        <Text style={styles.bio}>{user.bio || "No bio available"}</Text>
+        <Text style={styles.bio}>{user.bio}</Text>
+        <Text style={styles.phoneNumber}>{user.phone}</Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity
             style={styles.iconButton}
@@ -108,5 +109,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: "#555",
+  },
+  phoneNumber: {
+    fontSize: 16,
+    color: "#919090",
+    marginBottom: 15,
   },
 });

@@ -6,6 +6,7 @@ export default function CustomInput({
   value,
   onChangeText,
   secureTextEntry,
+  keyboardType,
 }) {
   return (
     <TextInput
@@ -15,6 +16,7 @@ export default function CustomInput({
       onChangeText={onChangeText}
       secureTextEntry={secureTextEntry}
       placeholderTextColor="#aaa"
+      keyboardType="number-pad"
     />
   );
 }

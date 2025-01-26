@@ -11,6 +11,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ActivityIndicator } from "react-native";
+import * as Contacts from "expo-contacts";
+import { normalizePhoneNumber } from "../utils/UtilityFunctions";
 
 function ProfileScreen() {
   const navigation = useNavigation();
@@ -19,6 +21,7 @@ function ProfileScreen() {
   const { id, handleContactDelete } = route.params;
 
   const [user, setUser] = useState(null);
+  const [contactName, setContactName] = useState(null);
 
   // Fetch user details from server
   useEffect(() => {
@@ -36,6 +39,16 @@ function ProfileScreen() {
     };
     fetchUser();
   }, [id]);
+
+  // fetch contact name from device
+  useEffect(() => {
+    const fetchContactName = async () => {
+      const contactName = await getContactFromNumber(user.phone);
+      setContactName(contactName);
+    };
+
+    if (user) fetchContactName();
+  }, [user]);
 
   if (loading) {
     return (
@@ -65,24 +78,40 @@ function ProfileScreen() {
     });
   };
 
-  const handleDelete = () => {
-    Alert.alert(
-      "Delete User",
-      `Are you sure you want to delete ${user.username}?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            await handleContactDelete(user._id);
-            Alert.alert("User Deleted", `${user.username} has been deleted.`);
-            navigation.goBack();
-          },
-        },
-      ]
-    );
-  };
+  // function to find contact from phone number
+  async function getContactFromNumber(phoneNumber) {
+    try {
+      const { status } = await Contacts.getPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission denied",
+          "Cannot access contacts without permission."
+        );
+        return;
+      }
+
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Name],
+      });
+
+      const contact = data.find((contact) =>
+        contact.phoneNumbers?.some((phone) => {
+          return normalizePhoneNumber(phone.number) === phoneNumber;
+        })
+      );
+
+      console.log(contact);
+
+      if (contact) {
+        return contact.name;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Error fetching contact details");
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -92,7 +121,9 @@ function ProfileScreen() {
           style={styles.profileImage}
         />
         <Text style={styles.name}>{user.username}</Text>
-        <Text style={styles.bio}>{user.bio || "No bio available"}</Text>
+        <Text style={styles.bio}>{user.bio}</Text>
+        <Text style={styles.phoneNumber}>{user.phone}</Text>
+        <Text style={styles.contactName}>Saved Contact: {contactName}</Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity style={styles.iconButton} onPress={handleChat}>
             <Ionicons
@@ -101,11 +132,6 @@ function ProfileScreen() {
               color="#4caf50"
             />
             <Text style={styles.iconLabel}>Chat</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.iconButton} onPress={handleDelete}>
-            <Ionicons name="trash-outline" size={28} color="#e74c3c" />
-            <Text style={styles.iconLabel}>Delete</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -188,6 +214,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: "#555",
+  },
+  phoneNumber: {
+    fontSize: 16,
+    color: "#919090",
+    marginBottom: 15,
+  },
+  contactName: {
+    fontSize: 16,
+    color: "#007bff",
+    marginBottom: 15,
   },
 });
 

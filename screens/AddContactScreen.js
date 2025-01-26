@@ -1,19 +1,23 @@
 import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, Alert, ActivityIndicator } from "react-native";
-import axios from "axios";
 import { UserContext } from "../store/user-context";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
+import { normalizePhoneNumber } from "../utils/UtilityFunctions";
 
 const AddContactScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState(""); // Added phone number state
   const [isLoading, setIsLoading] = useState(false);
   const { addContact, user } = useContext(UserContext);
 
-  const handleSearchAndSaveContact = async () => {
+  const handleSaveContact = async () => {
     const trimmedUsername = username.trim();
-    if (!trimmedUsername) {
-      Alert.alert("Error", "Please enter a username.");
+    const trimmedPhoneNumber = phoneNumber.trim(); // Trim the phone number input
+
+    // Check for empty inputs
+    if (!trimmedUsername || !trimmedPhoneNumber) {
+      Alert.alert("Error", "Please enter both username and phone number.");
       return;
     }
 
@@ -22,30 +26,22 @@ const AddContactScreen = ({ navigation }) => {
       return;
     }
 
-    if (username.includes(" ")) {
-      Alert.alert("Error", "Username cannot have spaces");
-      return;
-    }
-
     setIsLoading(true);
+    const normalizePhoneNumber = normalizePhoneNumber(trimmedPhoneNumber);
 
     try {
-      const response = await axios.get(
-        `https://sierra-backend.onrender.com/search/${trimmedUsername}`
-      );
+      const contact = {
+        name: trimmedUsername,
+        phoneNumber: normalizePhoneNumber,
+      };
 
-      if (response.data) {
-        const contact = {
-          id: response.data._id,
-        };
+      await addContact(contact.name, contact.phoneNumber);
 
-        await addContact(contact);
-        Alert.alert("Success", "Contact added successfully.");
-        navigation.goBack();
-      }
+      Alert.alert("Success", "Contact added successfully.");
+      navigation.goBack();
     } catch (error) {
-      console.error("Error searching for user:", error);
-      Alert.alert("Error", "User not found.");
+      console.error("Error adding contact:", error);
+      Alert.alert("Error", "Failed to add contact.");
     } finally {
       setIsLoading(false);
     }
@@ -54,11 +50,19 @@ const AddContactScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.label}>Enter Username</Text>
+        <Text style={styles.label}>Enter Username and Phone Number</Text>
+
         <CustomInput
           onChangeText={setUsername}
-          placeholder={"Username"}
+          placeholder="Username"
           value={username}
+        />
+
+        <CustomInput
+          onChangeText={setPhoneNumber}
+          placeholder="Phone Number"
+          value={phoneNumber}
+          keyboardType="phone-pad"
         />
 
         <CustomButton
@@ -67,12 +71,12 @@ const AddContactScreen = ({ navigation }) => {
             { backgroundColor: "#66e84d", marginTop: 10 },
             isLoading && { backgroundColor: "#a7fa96" },
           ]}
-          onPress={handleSearchAndSaveContact}
+          onPress={handleSaveContact}
         >
           {isLoading ? (
             <ActivityIndicator size="small" color="#fff" />
           ) : (
-            <>Search & Add</>
+            <>Add to Contacts</>
           )}
         </CustomButton>
       </View>
@@ -85,25 +89,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#dfe5f7",
   },
-  header: {
-    backgroundColor: "#2575fc",
-    paddingVertical: 20,
-    alignItems: "center",
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-  },
-  headerText: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
   content: {
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 20,
   },
   label: {
-    fontSize: 32,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#2c3e50",
     marginBottom: 10,

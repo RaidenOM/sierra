@@ -2,6 +2,9 @@ import React, { createContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { io } from "socket.io-client";
+import * as Contacts from "expo-contacts";
+import { Alert } from "react-native";
+import { normalizePhoneNumber } from "../utils/UtilityFunctions";
 
 // connect socket io to backend
 const socket = io("https://sierra-backend.onrender.com", {
@@ -70,23 +73,46 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // fetch contacts for a user
+  // fetch contacts for a user and match with backend
   const fetchContacts = async () => {
     try {
-      const storedContacts = await AsyncStorage.getItem("contacts");
-      if (storedContacts) {
-        const contactList = JSON.parse(storedContacts);
+      // request permission
+      const { status } = await Contacts.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission denied",
+          "Cannot access contacts without permission."
+        );
+        return;
+      }
 
-        const profilePromises = contactList.map((contact) => {
-          return axios.get(
-            `https://sierra-backend.onrender.com/users/${contact.id}`
-          );
+      // fetch phone numbers on device
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.PhoneNumbers],
+      });
+
+      // extract phone numbers and normalize them
+      const numbers = data
+        .flatMap((contact) => contact.phoneNumbers || [])
+        .map((phone) => {
+          let normalizedNumber = normalizePhoneNumber(phone.number);
+
+          return normalizedNumber;
         });
 
-        const profileResponses = await Promise.all(profilePromises);
-        const profileData = profileResponses.map((response) => response.data);
-        setContacts(profileData);
-      }
+      const response = await axios.post(
+        "https://sierra-backend.onrender.com/match-phone",
+        {
+          phoneNumbers: numbers,
+        }
+      );
+
+      console.log(numbers);
+      const filteredContacts = response.data.filter(
+        (contact) => contact.phone !== user.phone
+      );
+
+      setContacts(filteredContacts);
     } catch (error) {
       console.error("Failed to fetch contacts", error);
       Alert.alert("Error", "Unable to fetch contacts.");
@@ -95,15 +121,22 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const addContact = async (contact) => {
-    let contacts = await AsyncStorage.getItem("contacts");
-    contacts = contacts ? JSON.parse(contacts) : [];
+  const addContact = async (name, phone) => {
+    const { status } = await Contacts.getPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission denied",
+        "Cannot access contacts without permission"
+      );
+      return;
+    }
 
-    // Add new contact to existing contacts
-    contacts.push(contact);
+    const contact = {
+      [Contacts.Fields.Name]: name,
+      [Contacts.Fields.PhoneNumbers]: [{ phone }],
+    };
 
-    await AsyncStorage.setItem("contacts", JSON.stringify(contacts));
-    await fetchContacts();
+    await Contacts.addContactAsync(contact);
   };
 
   // join room if successsful login

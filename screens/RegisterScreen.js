@@ -6,6 +6,7 @@ import CustomButton from "../components/CustomButton";
 
 export default function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
   const validateInputs = () => {
@@ -21,6 +22,17 @@ export default function RegisterScreen({ navigation }) {
       Alert.alert(
         "Validation Error",
         "Username must be at least 3 characters long."
+      );
+      return false;
+    }
+    if (!phone.trim()) {
+      Alert.alert("Validation Error", "Phone number is required.");
+      return false;
+    }
+    if (!/^\+\d{1,15}$/.test(phone)) {
+      Alert.alert(
+        "Validation Error",
+        "Phone number must be in international format (e.g., +123456789012) and contain only digits."
       );
       return false;
     }
@@ -42,11 +54,13 @@ export default function RegisterScreen({ navigation }) {
     if (!validateInputs()) return;
 
     const trimmedUsername = username.trim();
+    const trimmedPhone = phone.trim();
     try {
       const response = await axios.post(
         "https://sierra-backend.onrender.com/register",
         {
           username: trimmedUsername,
+          phone: trimmedPhone,
           password,
         }
       );
@@ -69,6 +83,13 @@ export default function RegisterScreen({ navigation }) {
         value={username}
         onChangeText={setUsername}
         style={styles.input}
+      />
+      <CustomInput
+        placeholder="Phone"
+        value={phone}
+        onChangeText={setPhone}
+        style={styles.input}
+        keyboardType={"number-pad"}
       />
       <CustomInput
         placeholder="Password"

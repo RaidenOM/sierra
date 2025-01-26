@@ -20,7 +20,11 @@
         "foregroundImage": "./assets/sierra.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sierra.app"
+      "package": "com.sierra.app",
+      "permissions": [
+        "READ_CONTACTS",
+        "WRITE_CONTACTS"
+      ]
     },
     "web": {
       "favicon": "./assets/sierra.png"
@@ -29,6 +33,9 @@
       "eas": {
         "projectId": "cd6bc18b-62a8-4cc0-96e3-52fdbf3e6b4d"
       }
-    }
+    },
+    "plugins": [
+      "expo-localization"
+    ]
   }
 }
