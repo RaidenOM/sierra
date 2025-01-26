@@ -27,7 +27,6 @@ export const normalizePhoneNumber = (phone) => {
       normalizedNumber,
       countryCode
     );
-
     return phoneUtil
       .format(number, PhoneNumberFormat.INTERNATIONAL)
       .replace(/[^+\d]/g, "");
