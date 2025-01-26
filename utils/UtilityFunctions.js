@@ -9,8 +9,10 @@ export const normalizePhoneNumber = (phone) => {
 
   // Keep only the last 10 digits
   if (normalizedNumber.length > 10) {
-    normalizedNumber = normalizedNumber.slice(-10);
+    normalizedNumber = phone.slice(-10);
   }
+
+  console.log(normalizedNumber);
 
   // Get the current country code from the device's locale (e.g., "IN", "US")
   const countryCode = "IN"; // e.g., "IN", "US"
@@ -26,14 +28,9 @@ export const normalizePhoneNumber = (phone) => {
       countryCode
     );
 
-    // Validate if the number is valid
-    if (phoneUtil.isValidNumber(number)) {
-      return phoneUtil
-        .format(number, PhoneNumberFormat.INTERNATIONAL)
-        .replaceAll(" ", "");
-    } else {
-      return null; // Invalid phone number
-    }
+    return phoneUtil
+      .format(number, PhoneNumberFormat.INTERNATIONAL)
+      .replace(/[^+\d]/g, "");
   } catch (error) {
     console.error("Error normalizing phone number:", error);
     return null; // Return null if parsing fails
