@@ -64,11 +64,6 @@ function ProfileScreen() {
         <Text style={styles.phoneNumber}>
           {contact ? contact.phone : user.phone}
         </Text>
-        {contact && (
-          <Text style={styles.contactName}>
-            Saved Contact: {contact.savedName}
-          </Text>
-        )}
         <View style={styles.iconContainer}>
           <TouchableOpacity style={styles.iconButton} onPress={handleChat}>
             <Ionicons
@@ -163,11 +158,6 @@ const styles = StyleSheet.create({
   phoneNumber: {
     fontSize: 16,
     color: "#919090",
-    marginBottom: 15,
-  },
-  contactName: {
-    fontSize: 16,
-    color: "#007bff",
     marginBottom: 15,
   },
 });
