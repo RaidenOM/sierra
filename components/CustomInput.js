@@ -14,9 +14,9 @@ export default function CustomInput({
       placeholder={placeholder}
       value={value}
       onChangeText={onChangeText}
+      keyboardType={keyboardType || ""}
       secureTextEntry={secureTextEntry}
       placeholderTextColor="#aaa"
-      keyboardType={keyboardType || "default"}
     />
   );
 }

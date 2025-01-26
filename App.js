@@ -16,7 +16,6 @@ import {
 } from "react-native";
 import { UserContext, UserProvider } from "./store/user-context";
 import UserProfileScreen from "./screens/UserProfileScreen";
-import AddContactScreen from "./screens/AddContactScreen";
 import { ActivityIndicator } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AllChats from "./screens/AllChats";
@@ -153,15 +152,6 @@ function MainAppStack() {
                   color="#ffcc00"
                 />
               </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.headerButton}
-                onPress={() => {
-                  navigation.navigate("AddContactScreen");
-                }}
-              >
-                <Ionicons name="person-add-outline" size={30} color="#2ecc71" />
-              </TouchableOpacity>
             </View>
           ),
         })}
@@ -176,11 +166,6 @@ function MainAppStack() {
         name="UserProfileScreen"
         component={UserProfileScreen}
         options={{ headerTitle: "User Details" }}
-      />
-      <Stack.Screen
-        name="AddContactScreen"
-        component={AddContactScreen}
-        options={{ headerTitle: "Add Contacts" }}
       />
     </Stack.Navigator>
   );

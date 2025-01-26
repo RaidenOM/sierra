@@ -121,24 +121,6 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const addContact = async (name, phone) => {
-    const { status } = await Contacts.getPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission denied",
-        "Cannot access contacts without permission"
-      );
-      return;
-    }
-
-    const contact = {
-      [Contacts.Fields.Name]: name,
-      [Contacts.Fields.PhoneNumbers]: [{ phone }],
-    };
-
-    await Contacts.addContactAsync(contact);
-  };
-
   // join room if successsful login
   useEffect(() => {
     if (user) {
@@ -164,7 +146,6 @@ export const UserProvider = ({ children }) => {
         latestMessages,
         contacts,
         fetchContacts,
-        addContact,
         setLatestMessages,
         token,
       }}

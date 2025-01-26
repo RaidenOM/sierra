@@ -3,19 +3,22 @@ import { View, Text, StyleSheet, Alert } from "react-native";
 import axios from "axios";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
+import { validatePhoneNumber } from "../utils/UtilityFunctions";
 
 export default function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
 
+  // Function to validate phone number and other inputs
   const validateInputs = () => {
+    // Username validation
     if (!username.trim()) {
       Alert.alert("Validation Error", "Username is required.");
       return false;
     }
     if (username.includes(" ")) {
-      Alert.alert("Validation Error", "Username cannot have spaces");
+      Alert.alert("Validation Error", "Username cannot have spaces.");
       return false;
     }
     if (username.length < 3) {
@@ -25,17 +28,23 @@ export default function RegisterScreen({ navigation }) {
       );
       return false;
     }
+
+    // Phone number validation (e.g., +91 followed by 10 digits)
     if (!phone.trim()) {
       Alert.alert("Validation Error", "Phone number is required.");
       return false;
     }
-    if (!/^\+\d{1,15}$/.test(phone)) {
+
+    // Validate phone number with regex for proper format (+<country_code> followed by 10 digits)
+    if (!validatePhoneNumber(phone)) {
       Alert.alert(
         "Validation Error",
-        "Phone number must be in international format (e.g., +123456789012) and contain only digits."
+        "Phone number must be in the format +<country_code><10_digits>."
       );
       return false;
     }
+
+    // Password validation
     if (!password) {
       Alert.alert("Validation Error", "Password is required.");
       return false;
@@ -47,15 +56,18 @@ export default function RegisterScreen({ navigation }) {
       );
       return false;
     }
-    return true;
+
+    return true; // All validations passed
   };
 
   const handleRegister = async () => {
+    // First validate inputs
     if (!validateInputs()) return;
 
     const trimmedUsername = username.trim();
     const trimmedPhone = phone.trim();
     try {
+      // Sending data to backend for registration
       const response = await axios.post(
         "https://sierra-backend.onrender.com/register",
         {
@@ -78,6 +90,7 @@ export default function RegisterScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Create an Account</Text>
       <Text style={styles.subtitle}>Sign up to get started</Text>
+
       <CustomInput
         placeholder="Username"
         value={username}
@@ -89,7 +102,7 @@ export default function RegisterScreen({ navigation }) {
         value={phone}
         onChangeText={setPhone}
         style={styles.input}
-        keyboardType={"number-pad"}
+        keyboardType="number-pad"
       />
       <CustomInput
         placeholder="Password"
