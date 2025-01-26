@@ -113,11 +113,15 @@ export const UserProvider = ({ children }) => {
       );
 
       const contactsWithNameAndUsername = filteredContacts.map((contact) => {
-        const phoneContact = data.find((c) =>
-          c.phoneNumbers.some((p) => {
-            return normalizePhoneNumber(p.number) === contact.phone;
-          })
-        );
+        const phoneContact = data.find((c) => {
+          // Ensure phoneNumbers exists and is an array
+          return (
+            Array.isArray(c.phoneNumbers) &&
+            c.phoneNumbers.some((p) => {
+              return normalizePhoneNumber(p.number) === contact.phone;
+            })
+          );
+        });
 
         return {
           ...contact,
