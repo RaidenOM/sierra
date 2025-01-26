@@ -145,7 +145,6 @@ function ChatScreen() {
       headerRight: ({ tintColor }) => (
         <View style={styles.headerButtonContainer}>
           <TouchableOpacity
-            style={styles.headerButton}
             onPress={async () => {
               await handleChatDelete(receiverId);
             }}
@@ -415,13 +414,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginRight: 10,
-  },
-  headerButton: {
-    marginLeft: 10,
-    padding: 5,
-    borderRadius: 8,
-    backgroundColor: "#f0f4f8",
-    elevation: 3,
   },
   unreadMarker: {
     position: "absolute",
