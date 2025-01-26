@@ -10,13 +10,13 @@ import { Alert } from "react-native";
 function ProfileScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { contact, id } = route.params;
+  const { id } = route.params;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const handleChat = () => {
     navigation.navigate("ChatScreen", {
-      receiverId: id || contact._id,
+      receiverId: id,
     });
   };
 
@@ -34,11 +34,7 @@ function ProfileScreen() {
       }
     };
 
-    if (id) {
-      fetchUserData();
-    } else {
-      setLoading(false);
-    }
+    fetchUserData();
   }, [id]);
 
   if (loading) {
@@ -54,16 +50,12 @@ function ProfileScreen() {
     <View style={styles.container}>
       <View style={styles.card}>
         <Image
-          source={{ uri: contact ? contact.profilePhoto : user.profilePhoto }}
+          source={{ uri: user.profilePhoto }}
           style={styles.profileImage}
         />
-        <Text style={styles.name}>
-          {contact ? contact.username : user.username}
-        </Text>
-        <Text style={styles.bio}>{contact ? contact.bio : user.bio}</Text>
-        <Text style={styles.phoneNumber}>
-          {contact ? contact.phone : user.phone}
-        </Text>
+        <Text style={styles.name}>{user.username}</Text>
+        <Text style={styles.bio}>{user.bio}</Text>
+        <Text style={styles.phoneNumber}>{user.phone}</Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity style={styles.iconButton} onPress={handleChat}>
             <Ionicons

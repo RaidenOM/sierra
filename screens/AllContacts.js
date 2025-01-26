@@ -35,7 +35,7 @@ function AllContacts() {
 
   const navigateToProfile = (contact) => {
     navigation.navigate("ProfileScreen", {
-      contact: contact,
+      id: contact._id,
     });
   };
 
