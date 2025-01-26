@@ -107,7 +107,6 @@ export const UserProvider = ({ children }) => {
         }
       );
 
-      console.log(numbers);
       const filteredContacts = response.data.filter(
         (contact) => contact.phone !== user.phone
       );

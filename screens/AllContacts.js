@@ -7,14 +7,14 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import ContactItem from "../components/ContactItem";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "../store/user-context";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 function AllContacts() {
   const { contacts, fetchContacts } = useContext(UserContext);
-  const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
@@ -30,8 +30,8 @@ function AllContacts() {
       }
     };
 
-    if (isFocused) getContacts();
-  }, [isFocused]);
+    getContacts();
+  }, []);
 
   const navigateToProfile = (contact) => {
     navigation.navigate("ProfileScreen", {
@@ -39,18 +39,25 @@ function AllContacts() {
     });
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007bff" />
-        <Text style={styles.loadingText}>Fetching Contacts...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Contacts</Text>
+      <View style={styles.refreshButtonContainer}>
+        <Text style={styles.title}>Contacts</Text>
+        {!loading ? (
+          <TouchableOpacity
+            onPress={async () => {
+              setLoading(true);
+              await fetchContacts();
+              setLoading(false);
+            }}
+            disabled={loading}
+          >
+            <Ionicons name="refresh" size={24} color={"#999896"} />
+          </TouchableOpacity>
+        ) : (
+          <ActivityIndicator />
+        )}
+      </View>
       {contacts.length > 0 ? (
         <FlatList
           data={contacts}
@@ -67,7 +74,9 @@ function AllContacts() {
         />
       ) : (
         <View style={styles.noContactsContainer}>
-          <Text style={styles.noContactsText}>No Contacts Found</Text>
+          <Text style={styles.noContactsText}>
+            {loading ? "Fetching Contacts..." : "No Contacts Found"}
+          </Text>
         </View>
       )}
     </View>
@@ -84,7 +93,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 20,
   },
   loadingContainer: {
     flex: 1,
@@ -108,6 +116,12 @@ const styles = StyleSheet.create({
   noContactsText: {
     fontSize: 16,
     color: "#777",
+  },
+  refreshButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
   },
 });
 
