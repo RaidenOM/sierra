@@ -88,9 +88,6 @@ export default function AllChats() {
       return updatedChats;
     });
     navigation.navigate("ChatScreen", { receiverId: otherPersonId });
-    await axios.get(
-      `https://sierra-backend.onrender.com/mark-read/${otherPersonId}/${user._id}`
-    );
   }
 
   if (loading) {
