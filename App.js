@@ -141,7 +141,6 @@ function MainAppStack() {
           headerRight: ({ tintColor }) => (
             <View style={styles.headerButtonContainer}>
               <TouchableOpacity
-                style={styles.headerButton}
                 onPress={() => {
                   navigation.navigate("UserProfileScreen");
                 }}
@@ -199,23 +198,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     marginRight: 10,
   },
-  headerButton: {
-    marginLeft: 10,
-    padding: 5,
-    borderRadius: 8,
-    backgroundColor: "#f0f4f8",
-    elevation: 3,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 18,
-    color: "#555",
-    fontWeight: "500",
   },
 });
