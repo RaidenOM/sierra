@@ -2,31 +2,73 @@ import React from "react";
 import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { ActivityIndicator } from "react-native";
+import { Alert } from "react-native";
 
 function ProfileScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { contact } = route.params;
+  const { contact, id } = route.params;
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const handleChat = () => {
     navigation.navigate("ChatScreen", {
-      receiverId: contact._id,
+      receiverId: id || contact._id,
     });
   };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          `https://sierra-backend.onrender.com/users/${id}`
+        );
+        setUser(response.data);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchUserData();
+    } else {
+      setLoading(false);
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+        <Text style={styles.loadingText}>Loading Details...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <Image
-          source={{ uri: contact.profilePhoto }}
+          source={{ uri: contact ? contact.profilePhoto : user.profilePhoto }}
           style={styles.profileImage}
         />
-        <Text style={styles.name}>{contact.username}</Text>
-        <Text style={styles.bio}>{contact.bio}</Text>
-        <Text style={styles.phoneNumber}>{contact.phone}</Text>
-        <Text style={styles.contactName}>
-          Saved Contact: {contact.savedName}
+        <Text style={styles.name}>
+          {contact ? contact.username : user.username}
         </Text>
+        <Text style={styles.bio}>{contact ? contact.bio : user.bio}</Text>
+        <Text style={styles.phoneNumber}>
+          {contact ? contact.phone : user.phone}
+        </Text>
+        {contact && (
+          <Text style={styles.contactName}>
+            Saved Contact: {contact.savedName}
+          </Text>
+        )}
         <View style={styles.iconContainer}>
           <TouchableOpacity style={styles.iconButton} onPress={handleChat}>
             <Ionicons

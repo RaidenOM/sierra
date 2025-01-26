@@ -124,7 +124,23 @@ function ChatScreen() {
 
   // useLayoutEffect to set the title for ChatScreen
   useLayoutEffect(() => {
-    if (receiver) navigation.setOptions({ title: receiver.username });
+    if (receiver)
+      navigation.setOptions({
+        headerTitle: () => (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("ProfileScreen", { id: receiverId });
+            }}
+            style={styles.headerTitle}
+          >
+            <Image
+              source={{ uri: receiver.profilePhoto }}
+              style={styles.headerProfileImage}
+            />
+            <Text style={styles.headerTitleUsername}>{receiver.username}</Text>
+          </TouchableOpacity>
+        ),
+      });
     navigation.setOptions({
       headerRight: ({ tintColor }) => (
         <View style={styles.headerButtonContainer}>
@@ -415,6 +431,23 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 5,
     backgroundColor: "green", // Green marker for unread message
+  },
+  headerTitle: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerTitleUsername: {
+    fontSize: 20,
+    color: "#fff",
+    fontWeight: "bold",
+    marginLeft: 10,
+  },
+  headerProfileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: "hidden",
   },
 });
 
