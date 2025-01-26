@@ -16,7 +16,7 @@ export default function CustomInput({
       onChangeText={onChangeText}
       secureTextEntry={secureTextEntry}
       placeholderTextColor="#aaa"
-      keyboardType="number-pad"
+      keyboardType={keyboardType}
     />
   );
 }
