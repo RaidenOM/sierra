@@ -115,7 +115,7 @@ export const UserProvider = ({ children }) => {
       const contactsWithNameAndUsername = filteredContacts.map((contact) => {
         const phoneContact = data.find((c) =>
           c.phoneNumbers.some(
-            (p) => normalizePhoneNumber(contact.phone) === contact.phone
+            (p) => normalizePhoneNumber(p.phone) === contact.phone
           )
         );
 
