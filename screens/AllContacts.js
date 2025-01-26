@@ -33,10 +33,9 @@ function AllContacts() {
     if (isFocused) getContacts();
   }, [isFocused]);
 
-  const navigateToProfile = (userId) => {
+  const navigateToProfile = (contact) => {
     navigation.navigate("ProfileScreen", {
-      id: userId,
-      handleContactDelete: handleContactDelete,
+      contact: contact,
     });
   };
 
@@ -49,23 +48,6 @@ function AllContacts() {
     );
   }
 
-  async function handleContactDelete(id) {
-    try {
-      const storedContacts = await AsyncStorage.getItem("contacts");
-      if (storedContacts) {
-        const contactsList = JSON.parse(storedContacts);
-        const newContactsList = contactsList.filter(
-          (contact) => contact.id !== id
-        );
-        const jsonValue = JSON.stringify(newContactsList);
-        await AsyncStorage.setItem("contacts", jsonValue);
-      }
-    } catch (error) {
-      console.error("Failed to delete contact", error);
-      Alert.alert("Error", "Unable to delete contact.");
-    }
-  }
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Contacts</Text>
@@ -75,10 +57,10 @@ function AllContacts() {
           keyExtractor={(item) => item._id.toString()}
           renderItem={({ item }) => (
             <ContactItem
-              name={item.username}
+              name={item.username + " (" + item.savedName + ")"}
               bio={item.bio}
               profilePhoto={item.profilePhoto}
-              onPress={() => navigateToProfile(item._id)}
+              onPress={() => navigateToProfile(item)}
             />
           )}
           contentContainerStyle={styles.listContainer}

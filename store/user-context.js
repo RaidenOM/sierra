@@ -112,7 +112,20 @@ export const UserProvider = ({ children }) => {
         (contact) => contact.phone !== user.phone
       );
 
-      setContacts(filteredContacts);
+      const contactsWithNameAndUsername = filteredContacts.map((contact) => {
+        const phoneContact = data.find((c) =>
+          c.phoneNumbers.some(
+            (p) => normalizePhoneNumber(contact.phone) === contact.phone
+          )
+        );
+
+        return {
+          ...contact,
+          savedName: phoneContact?.name || "No Name", // Saved name or fallback
+        };
+      });
+
+      setContacts(contactsWithNameAndUsername);
     } catch (error) {
       console.error("Failed to fetch contacts", error);
       Alert.alert("Error", "Unable to fetch contacts.");
