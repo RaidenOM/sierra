@@ -140,6 +140,7 @@ export const UserProvider = ({ children }) => {
   // join room if successsful login
   useEffect(() => {
     if (user) {
+      console.log("Joining room " + user._id);
       socket.emit("join-room", user._id);
     }
   }, [user]);

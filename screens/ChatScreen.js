@@ -20,6 +20,7 @@ import axios from "axios";
 import { UserContext } from "../store/user-context";
 import { useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { format } from "date-fns";
 
 function ChatScreen() {
   const route = useRoute();
@@ -77,7 +78,8 @@ function ChatScreen() {
   // bind handler to handler emits from server
   useEffect(() => {
     socket.on("new-message", (newMessage) => {
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      if (newMessage.senderId === receiverId)
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
@@ -88,7 +90,8 @@ function ChatScreen() {
   // bind handler to handler emits from server
   useEffect(() => {
     socket.on("message-sent", (newMessage) => {
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      if (newMessage.senderId === user._id)
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
@@ -165,12 +168,12 @@ function ChatScreen() {
 
   // Helper function to format dates
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
+    return format(new Date(date), "eee, MMMM dd, yyyy"); // Format as "Sun, January 26, 2025"
+  };
+
+  // Helper function to format time (e.g., "10:03 AM")
+  const formatTime = (date) => {
+    return format(new Date(date), "hh:mm a"); // Format as "10:03 AM"
   };
 
   async function handleChatDelete(otherUserId) {
@@ -243,7 +246,7 @@ function ChatScreen() {
             {item.senderId !== user._id && !item.isRead && (
               <View style={styles.unreadMarker} />
             )}
-            <Text style={styles.timestamp}>{formattedTime}</Text>
+            <Text style={styles.timestamp}>{formatTime(item.sentAt)}</Text>
           </View>
           {isCurrentUser && (
             <Image
