@@ -147,6 +147,7 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     await AsyncStorage.removeItem("token");
+    socket.emit('leave-room', user._id);
     setUser(null);
     setToken(null);
   };
