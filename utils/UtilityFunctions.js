@@ -9,7 +9,7 @@ export const normalizePhoneNumber = (phone) => {
 
   // Keep only the last 10 digits
   if (normalizedNumber.length > 10) {
-    normalizedNumber = phone.slice(-10);
+    normalizedNumber = normalizedNumber.slice(-10);
   }
 
   // Get the current country code from the device's locale (e.g., "IN", "US")
