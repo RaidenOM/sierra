@@ -17,10 +17,10 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [latestMessages, setLatestMessages] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [token, setToken] = useState();
 
+  // function to retrieve token from device and fetch user data from server based on token and store it in 'user' state and store the token in 'token' state
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -41,7 +41,7 @@ export const UserProvider = ({ children }) => {
           setIsAuthenticating(false);
         }
       } catch (error) {
-        console.error("Failed to fetch user data", error);
+        Alert.alert("Error", "Failed to fetch user data.");
       } finally {
         setLoading(false);
       }
@@ -49,29 +49,6 @@ export const UserProvider = ({ children }) => {
 
     fetchUserData();
   }, [isAuthenticating]);
-
-  // fetch latest messages for a user
-  const fetchLatestMessages = async () => {
-    try {
-      if (token) {
-        const response = await axios.get(
-          "https://sierra-backend.onrender.com/latest-messages",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        console.log(token);
-        setLatestMessages(response.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch latest messages", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // fetch contacts for a user and match with backend
   const fetchContacts = async () => {
@@ -113,7 +90,6 @@ export const UserProvider = ({ children }) => {
 
       const contactsWithNameAndUsername = filteredContacts.map((contact) => {
         const phoneContact = data.find((c) => {
-          // Ensure phoneNumbers exists and is an array
           return (
             Array.isArray(c.phoneNumbers) &&
             c.phoneNumbers.some((p) => {
@@ -147,7 +123,7 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     await AsyncStorage.removeItem("token");
-    socket.emit('leave-room', user._id);
+    socket.emit("leave-room", user._id);
     setUser(null);
     setToken(null);
   };
@@ -160,11 +136,8 @@ export const UserProvider = ({ children }) => {
         loading,
         setIsAuthenticating,
         socket,
-        fetchLatestMessages,
-        latestMessages,
         contacts,
         fetchContacts,
-        setLatestMessages,
         token,
       }}
     >

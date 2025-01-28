@@ -73,7 +73,7 @@ function ChatScreen() {
     if (receiver) {
       fetchMessages();
     }
-  }, [user._id, receiverId, receiver]);
+  }, [token, receiverId, receiver]);
 
   // bind handler to handler emits from server
   useEffect(() => {
@@ -116,7 +116,7 @@ function ChatScreen() {
     };
 
     if (!isFocused) markAsRead();
-  }, [isFocused]);
+  }, [isFocused, receiverId, token]);
 
   // Scroll to the bottom on mount and when new messages arrive
   useLayoutEffect(() => {
@@ -204,12 +204,6 @@ function ChatScreen() {
 
   const renderItem = ({ item, index }) => {
     const isCurrentUser = item.senderId === user._id;
-
-    // Format the timestamp
-    const formattedTime = new Date(item.sentAt).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
 
     // Check if the current message is the first of a new day
     const showDateSeparator =

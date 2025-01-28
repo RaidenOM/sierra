@@ -78,7 +78,7 @@ export default function RegisterScreen({ navigation }) {
       );
 
       Alert.alert("Success", "Registration successful!");
-      navigation.navigate("LoginScreen");
+      navigation.goBack();
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "An error occurred.";
