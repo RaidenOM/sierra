@@ -17,7 +17,7 @@ export const normalizePhoneNumber = (phone) => {
   }
 
   // if not, add the default country code based on device settings
-  const deviceRegion = Localization.region || "IN";
+  const deviceRegion = "IN";
   try {
     const parsedNumber = phoneUtil.parse(cleanedNumber, deviceRegion);
 
