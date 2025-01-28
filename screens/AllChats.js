@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../store/user-context";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StyleSheet } from "react-native";
 import { View, Text, FlatList } from "react-native";
 import ChatItem from "../components/ChatItem";
@@ -18,7 +17,6 @@ export default function AllChats() {
   // Get latest chats for current user
   useEffect(() => {
     const fetchChats = async () => {
-      const token = await AsyncStorage.getItem("token");
       const response = await axios.get(
         "https://sierra-backend.onrender.com/latest-messages",
         {

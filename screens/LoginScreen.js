@@ -58,7 +58,9 @@ export default function LoginScreen({ navigation }) {
       await AsyncStorage.setItem("token", token);
       setIsAuthenticating(true);
     } catch (error) {
-      Alert.alert("Error", "An error occurred. Please try again.");
+      const errorMessage =
+        error.response?.data?.message || "An error occurred.";
+      Alert.alert("Login Error", errorMessage);
     }
   };
 

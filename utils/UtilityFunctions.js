@@ -3,35 +3,33 @@ import * as Localization from "expo-localization";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
+const cleanNumber = (phone) => {
+  return phone.replace(/[^\d+]/g, ""); // Keep only digits and +
+};
+
 export const normalizePhoneNumber = (phone) => {
-  // Remove all non-numeric characters except "+"
-  let normalizedNumber = phone.replace(/\D/g, "");
+  const cleanedNumber = cleanNumber(phone);
 
-  // Keep only the last 10 digits
-  if (normalizedNumber.length > 10) {
-    normalizedNumber = normalizedNumber.slice(-10);
+  // if the cleanedNumber is already in international format return it
+  const internationalFormatRegex = /^\+\d{1,3}\d{10}$/;
+  if (internationalFormatRegex.test(cleanedNumber)) {
+    return cleanedNumber; // Return as is
   }
 
-  // Get the current country code from the device's locale (e.g., "IN", "US")
-  const countryCode = "IN"; // e.g., "IN", "US"
-
-  if (!countryCode) {
-    return null; // Country code not found
-  }
-
+  // if not, add the default country code based on device settings
+  const deviceRegion = Localization.region || "IN";
   try {
-    // Parse the phone number using the current country code
-    const number = phoneUtil.parseAndKeepRawInput(
-      normalizedNumber,
-      countryCode
-    );
+    const parsedNumber = phoneUtil.parse(cleanedNumber, deviceRegion);
 
-    return phoneUtil
-      .format(number, PhoneNumberFormat.INTERNATIONAL)
-      .replace(/[^+\d]/g, "");
+    // format the parsed number
+    const formattedNumber = phoneUtil.format(
+      parsedNumber,
+      PhoneNumberFormat.E164
+    );
+    return formattedNumber;
   } catch (error) {
-    console.error("Error normalizing phone number:", error);
-    return null; // Return null if parsing fails
+    console.log(error);
+    return "-1";
   }
 };
 

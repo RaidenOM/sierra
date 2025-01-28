@@ -5,7 +5,6 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { ActivityIndicator } from "react-native";
-import { Alert } from "react-native";
 
 function ProfileScreen() {
   const navigation = useNavigation();
