@@ -9,21 +9,14 @@ import { ActivityIndicator } from "react-native";
 function ProfileScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const state = navigation.getState();
-  const routes = state.routes;
-  const previousRoute = routes[routes.length - 2];
   const { id } = route.params;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const handleChat = () => {
-    if (previousRoute?.name === "ChatScreen") {
-      navigation.goBack();
-    } else {
-      navigation.navigate("ChatScreen", {
-        receiverId: id,
-      });
-    }
+    navigation.navigate("ChatScreen", {
+      receiverId: id,
+    });
   };
 
   useEffect(() => {

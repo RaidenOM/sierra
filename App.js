@@ -1,32 +1,40 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { useContext } from "react";
-import AllContacts from "./screens/AllContacts";
-import ChatScreen from "./screens/ChatScreen";
-import ProfileScreen from "./screens/ProfileScreen";
-import LoginScreen from "./screens/LoginScreen";
-import RegisterScreen from "./screens/RegisterScreen";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
 import {
+  Animated,
   StyleSheet,
   View,
   TouchableOpacity,
   Text,
   StatusBar,
   Image,
+  ActivityIndicator,
 } from "react-native";
-import { UserContext, UserProvider } from "./store/user-context";
-import UserProfileScreen from "./screens/UserProfileScreen";
-import { ActivityIndicator } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import AllChats from "./screens/AllChats";
-
 import { useFonts } from "expo-font";
 import { Orbitron_400Regular } from "@expo-google-fonts/orbitron";
-import { createStackNavigator } from "@react-navigation/stack";
+import { CardStyleInterpolators } from "@react-navigation/stack";
+import { TransitionSpecs } from "@react-navigation/stack";
 
+// Screens
+import AllContacts from "./screens/AllContacts";
+import ChatScreen from "./screens/ChatScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
+import UserProfileScreen from "./screens/UserProfileScreen";
+import AllChats from "./screens/AllChats";
+
+// Context
+import { UserContext, UserProvider } from "./store/user-context";
+
+// Navigation Instances
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// Home Tab Navigator
 function HomeTab() {
   return (
     <Tab.Navigator
@@ -65,50 +73,26 @@ function HomeTab() {
   );
 }
 
-function Navigation() {
-  const { user, loading } = useContext(UserContext);
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Image
-          source={require("./assets/sierra.png")}
-          resizeMode="center"
-          style={{ height: 400 }}
-        />
-        <ActivityIndicator size="large" color="#4CAF50" />
-      </View>
-    );
-  }
-
-  return (
-    <NavigationContainer>
-      {!user ? <AuthStack /> : <MainAppStack />}
-    </NavigationContainer>
-  );
-}
-
+// Auth Stack Navigator
 function AuthStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        animation: "slide_from_right",
+        headerShown: false,
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        transitionSpec: {
+          open: TransitionSpecs.TransitionIOSSpec,
+          close: TransitionSpecs.TransitionIOSSpec,
+        },
       }}
     >
-      <Stack.Screen
-        component={LoginScreen}
-        name="LoginScreen"
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={RegisterScreen}
-        name="RegisterScreen"
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="LoginScreen" component={LoginScreen} />
+      <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
     </Stack.Navigator>
   );
 }
 
+// Main App Stack Navigator
 function MainAppStack() {
   const [fontsLoaded] = useFonts({
     Orbitron_400Regular,
@@ -130,7 +114,11 @@ function MainAppStack() {
           shadowOpacity: 0.3,
         },
         headerTintColor: "#fff",
-        animation: "slide_from_right",
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        transitionSpec: {
+          open: TransitionSpecs.TransitionIOSSpec,
+          close: TransitionSpecs.TransitionIOSSpec,
+        },
       }}
     >
       <Stack.Screen
@@ -170,6 +158,31 @@ function MainAppStack() {
   );
 }
 
+// Main Navigation Component
+function Navigation() {
+  const { user, loading } = useContext(UserContext);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Image
+          source={require("./assets/sierra.png")}
+          resizeMode="center"
+          style={{ height: 400 }}
+        />
+        <ActivityIndicator size="large" color="#4CAF50" />
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      {!user ? <AuthStack /> : <MainAppStack />}
+    </NavigationContainer>
+  );
+}
+
+// App Component
 export default function App() {
   return (
     <>
@@ -181,7 +194,19 @@ export default function App() {
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
+  tabBarContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#3498db",
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    paddingVertical: 10,
+  },
+  tabBarButton: {
+    alignItems: "center",
+  },
   headerTitle: {
     fontFamily: "Orbitron_400Regular",
     fontSize: 32,
