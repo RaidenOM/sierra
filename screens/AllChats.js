@@ -6,6 +6,7 @@ import { View, Text, FlatList } from "react-native";
 import ChatItem from "../components/ChatItem";
 import { ActivityIndicator } from "react-native";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function AllChats() {
   const { socket, user, token } = useContext(UserContext);
@@ -109,7 +110,9 @@ export default function AllChats() {
             return (
               <ChatItem
                 name={item.username}
-                recentMessage={recentMessage.message}
+                recentMessage={
+                  recentMessage.message || <Ionicons name="image-outline" />
+                }
                 profilePhoto={item.profilePhoto}
                 isSent={recentMessage.senderId._id === user._id}
                 unreadCount={recentMessage.unreadCount || 0}

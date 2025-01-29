@@ -29,6 +29,7 @@ import AllChats from "./screens/AllChats";
 
 // Context
 import { UserContext, UserProvider } from "./store/user-context";
+import ViewImageScreen from "./screens/ViewImageScreen";
 
 // Navigation Instances
 const Tab = createBottomTabNavigator();
@@ -153,6 +154,11 @@ function MainAppStack() {
         name="UserProfileScreen"
         component={UserProfileScreen}
         options={{ headerTitle: "User Details" }}
+      />
+      <Stack.Screen
+        name="ViewImageScreen"
+        component={ViewImageScreen}
+        options={{ headerTitle: "Viewing Image" }}
       />
     </Stack.Navigator>
   );

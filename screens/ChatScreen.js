@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Alert,
   ImageBackground,
+  Pressable,
 } from "react-native";
 import {
   useIsFocused,
@@ -21,6 +22,8 @@ import { UserContext } from "../store/user-context";
 import { useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { format } from "date-fns";
+import * as DocumentPicker from "expo-document-picker";
+import * as ImagePicker from "expo-image-picker";
 
 function ChatScreen() {
   const route = useRoute();
@@ -32,6 +35,9 @@ function ChatScreen() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [selectedImageUri, setSelectedImageUri] = useState("");
+  const [cameraPermissionInfo, requestPermission] =
+    ImagePicker.useCameraPermissions();
   const isFocused = useIsFocused();
 
   const flatListRef = useRef(null);
@@ -202,6 +208,7 @@ function ChatScreen() {
 
   const renderItem = ({ item, index }) => {
     const isCurrentUser = item.senderId === user._id;
+    console.log(item.mediaURL);
 
     // Check if the current message is the first of a new day
     const showDateSeparator =
@@ -234,7 +241,23 @@ function ChatScreen() {
               isCurrentUser && styles.currentUserBubble,
             ]}
           >
-            <Text style={styles.messageText}>{item.message}</Text>
+            {item.mediaURL && (
+              <Pressable
+                onPress={() => {
+                  navigation.navigate("ViewImageScreen", {
+                    mediaURL: item.mediaURL,
+                  });
+                }}
+              >
+                <Image
+                  source={{ uri: item.mediaURL }}
+                  style={styles.messageImage}
+                />
+              </Pressable>
+            )}
+            {item.message && (
+              <Text style={styles.messageText}>{item.message}</Text>
+            )}
             {item.senderId !== user._id && !item.isRead && (
               <View style={styles.unreadMarker} />
             )}
@@ -251,28 +274,80 @@ function ChatScreen() {
     );
   };
 
+  const getPermissions = async () => {
+    if (
+      cameraPermissionInfo.status ===
+        ImagePicker.PermissionStatus.UNDETERMINED ||
+      cameraPermissionInfo.status === ImagePicker.PermissionStatus.DENIED
+    ) {
+      const permissionResponse = await requestPermission();
+      return permissionResponse.granted;
+    }
+
+    return true;
+  };
+
+  const handleImagePick = async () => {
+    const permissionsResult = await getPermissions();
+    if (!permissionsResult) {
+      Alert.alert(
+        "Permissions denied",
+        "Permission to access image is required to proceed."
+      );
+      return;
+    }
+
+    const image = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!image.canceled) {
+      setSelectedImageUri(image.assets[0].uri.toString());
+      console.log(image.assets[0].uri.toString());
+    }
+  };
+
   const handleSendMessage = async () => {
-    if (newMessage.trim()) {
-      const message = {
-        senderId: user._id,
-        receiverId: receiverId,
-        message: newMessage.trim(),
-      };
+    if (newMessage.trim() || selectedImageUri) {
+      const formData = new FormData();
+      formData.append("senderId", user._id);
+      formData.append("receiverId", receiverId);
+      formData.append("message", newMessage.trim());
+
+      if (selectedImageUri) {
+        const imageUri = selectedImageUri;
+        const uriParts = imageUri.split(".");
+        const fileType = uriParts[uriParts.length - 1];
+
+        console.log(fileType);
+
+        const imageData = {
+          uri: imageUri,
+          type: `image/${fileType}`,
+          name: `photo.${fileType}`,
+        };
+
+        formData.append("mediaURL", {
+          uri: imageUri,
+          name: `photo.${fileType}`,
+          type: `image/${fileType}`,
+        }); // 'mediaURL' is the field name for the file
+      }
 
       try {
-        const response = await axios.post(
-          "https://sierra-backend.onrender.com/messages",
-          {
-            ...message,
+        const response = await axios({
+          method: "post",
+          url: "https://sierra-backend.onrender.com/messages",
+          data: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        });
         console.log(response.data);
         setNewMessage(""); // Clear input after sending
+        setSelectedImageUri("");
       } catch (error) {
         console.error("Error sending message", error);
       }
@@ -302,17 +377,33 @@ function ChatScreen() {
         contentContainerStyle={{ paddingBottom: 10 }}
       />
       <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Type your message..."
-          value={newMessage}
-          onChangeText={setNewMessage}
-        />
-        <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
-          <Text style={styles.sendButtonText}>
-            <Ionicons name="arrow-forward" />
-          </Text>
-        </TouchableOpacity>
+        {selectedImageUri && (
+          <Image
+            source={{ uri: selectedImageUri }}
+            style={styles.previewImage} // Add styles for preview image
+          />
+        )}
+        <View style={styles.inputTextButton}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Type your message..."
+            value={newMessage}
+            onChangeText={setNewMessage}
+          />
+          <TouchableOpacity style={styles.sendButton} onPress={handleImagePick}>
+            <Text style={styles.sendButtonText}>
+              <Ionicons name="image-outline" />
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.sendButton}
+            onPress={handleSendMessage}
+          >
+            <Text style={styles.sendButtonText}>
+              <Ionicons name="arrow-forward" />
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ImageBackground>
   );
@@ -375,7 +466,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   inputContainer: {
-    flexDirection: "row",
     alignItems: "center",
     padding: 10,
     borderTopWidth: 1,
@@ -446,6 +536,23 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     overflow: "hidden",
+  },
+  messageImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 5,
+  },
+  previewImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  inputTextButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
   },
 });
 
