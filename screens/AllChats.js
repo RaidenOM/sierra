@@ -112,7 +112,7 @@ export default function AllChats() {
                 recentMessage={recentMessage.message}
                 profilePhoto={item.profilePhoto}
                 isSent={recentMessage.senderId._id === user._id}
-                unreadCount={recentMessage.unreadCount}
+                unreadCount={recentMessage.unreadCount || 0}
                 onPress={() => handlePress(item._id)}
               />
             );

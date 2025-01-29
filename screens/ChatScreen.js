@@ -78,8 +78,7 @@ function ChatScreen() {
   // bind handler to handler emits from server
   useEffect(() => {
     socket.on("new-message", (newMessage) => {
-      if (newMessage.senderId === receiverId)
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
@@ -90,8 +89,7 @@ function ChatScreen() {
   // bind handler to handler emits from server
   useEffect(() => {
     socket.on("message-sent", (newMessage) => {
-      if (newMessage.senderId === user._id)
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
@@ -262,7 +260,18 @@ function ChatScreen() {
       };
 
       try {
-        socket.emit("send-message", message);
+        const response = await axios.post(
+          "https://sierra-backend.onrender.com/messages",
+          {
+            ...message,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response.data);
         setNewMessage(""); // Clear input after sending
       } catch (error) {
         console.error("Error sending message", error);
