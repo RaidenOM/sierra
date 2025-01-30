@@ -378,10 +378,20 @@ function ChatScreen() {
       />
       <View style={styles.inputContainer}>
         {selectedImageUri && (
-          <Image
-            source={{ uri: selectedImageUri }}
-            style={styles.previewImage} // Add styles for preview image
-          />
+          <View style={styles.previewImageContainer}>
+            <Image
+              source={{ uri: selectedImageUri }}
+              style={styles.previewImage} // Add styles for preview image
+            />
+            <TouchableOpacity
+              style={styles.previewImageCancel}
+              onPress={() => {
+                setSelectedImageUri("");
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "light" }}>✖</Text>
+            </TouchableOpacity>
+          </View>
         )}
         <View style={styles.inputTextButton}>
           <TextInput
@@ -549,10 +559,30 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 10,
   },
+  previewImageContainer: {
+    width: "100%",
+    height: 100,
+    backgroundColor: "#ccc",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+    borderRadius: 8,
+  },
   inputTextButton: {
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
+  },
+  previewImageCancel: {
+    position: "absolute",
+    right: 0,
+    backgroundColor: "#fc8d95",
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    top: 0,
   },
 });
 
