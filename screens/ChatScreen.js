@@ -29,6 +29,7 @@ function ChatScreen() {
   const route = useRoute();
   const navigation = useNavigation();
   const { user, socket, token } = useContext(UserContext);
+  const [sendLoading, setSendLoading] = useState(false);
   const { receiverId } = route.params;
 
   const [receiver, setReceiver] = useState(null);
@@ -310,6 +311,7 @@ function ChatScreen() {
 
   const handleSendMessage = async () => {
     if (newMessage.trim() || selectedImageUri) {
+      setSendLoading(true);
       const formData = new FormData();
       formData.append("senderId", user._id);
       formData.append("receiverId", receiverId);
@@ -350,6 +352,8 @@ function ChatScreen() {
         setSelectedImageUri("");
       } catch (error) {
         console.error("Error sending message", error);
+      } finally {
+        setSendLoading(false);
       }
     }
   };
@@ -409,9 +413,13 @@ function ChatScreen() {
             style={styles.sendButton}
             onPress={handleSendMessage}
           >
-            <Text style={styles.sendButtonText}>
-              <Ionicons name="arrow-forward" />
-            </Text>
+            {sendLoading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text style={styles.sendButtonText}>
+                <Ionicons name="arrow-forward" />
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
