@@ -32,10 +32,9 @@
     "plugins": [
       "expo-localization"
     ],
-    "owner": "omkumar1234",
     "extra": {
       "eas": {
-        "projectId": "be253fc9-b75d-46a5-9b73-4a44fe510f1f"
+        "projectId": "3a3fad23-5f40-4eff-9cf0-584dfc7459b2"
       }
     }
   }

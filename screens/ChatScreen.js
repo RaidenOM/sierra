@@ -22,7 +22,6 @@ import { UserContext } from "../store/user-context";
 import { useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { format } from "date-fns";
-import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 
 function ChatScreen() {
@@ -380,7 +379,7 @@ function ChatScreen() {
         keyExtractor={(item) => item._id.toString()}
         contentContainerStyle={{ paddingBottom: 10 }}
       />
-      <View style={styles.inputContainer}>
+      <View style={styles.bottomContainer}>
         {selectedImageUri && (
           <View style={styles.previewImageContainer}>
             <Image
@@ -398,17 +397,22 @@ function ChatScreen() {
           </View>
         )}
         <View style={styles.inputTextButton}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Type your message..."
-            value={newMessage}
-            onChangeText={setNewMessage}
-          />
-          <TouchableOpacity style={styles.sendButton} onPress={handleImagePick}>
-            <Text style={styles.sendButtonText}>
-              <Ionicons name="image-outline" />
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Type your message..."
+              value={newMessage}
+              onChangeText={setNewMessage}
+            />
+            <TouchableOpacity
+              onPress={handleImagePick}
+              style={{ justifyContent: "center", alignItems: "center" }}
+            >
+              <Text style={{ color: "black" }}>
+                <Ionicons name="image-outline" size={20} />
+              </Text>
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity
             style={styles.sendButton}
             onPress={handleSendMessage}
@@ -417,7 +421,7 @@ function ChatScreen() {
               <ActivityIndicator />
             ) : (
               <Text style={styles.sendButtonText}>
-                <Ionicons name="arrow-forward" />
+                <Ionicons name="arrow-forward" size={20} />
               </Text>
             )}
           </TouchableOpacity>
@@ -483,7 +487,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     alignSelf: "flex-end",
   },
-  inputContainer: {
+  bottomContainer: {
     alignItems: "center",
     padding: 10,
     borderTopWidth: 1,
@@ -493,10 +497,6 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     height: 40,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 20,
-    paddingHorizontal: 15,
     fontSize: 16,
   },
   sendButton: {
@@ -591,6 +591,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     top: 0,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 20,
+    paddingHorizontal: 15,
   },
 });
 

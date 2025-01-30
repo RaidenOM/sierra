@@ -158,7 +158,12 @@ function MainAppStack() {
       <Stack.Screen
         name="ViewImageScreen"
         component={ViewImageScreen}
-        options={{ headerTitle: "Viewing Image" }}
+        options={{
+          headerTitle: "Viewing Image",
+          headerStyle: {
+            backgroundColor: "black",
+          },
+        }}
       />
     </Stack.Navigator>
   );
