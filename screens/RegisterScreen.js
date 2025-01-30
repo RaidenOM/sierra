@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import axios from "axios";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
@@ -9,6 +9,7 @@ export default function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [registerLoading, setRegisterLoading] = useState(false);
 
   // Function to validate phone number and other inputs
   const validateInputs = () => {
@@ -64,6 +65,7 @@ export default function RegisterScreen({ navigation }) {
     // First validate inputs
     if (!validateInputs()) return;
 
+    setRegisterLoading(true);
     const trimmedUsername = username.trim();
     const trimmedPhone = phone.trim();
     try {
@@ -83,6 +85,8 @@ export default function RegisterScreen({ navigation }) {
       const errorMessage =
         error.response?.data?.message || "An error occurred.";
       Alert.alert("Registration Error", errorMessage);
+    } finally {
+      setRegisterLoading(false);
     }
   };
 
@@ -112,7 +116,7 @@ export default function RegisterScreen({ navigation }) {
         style={styles.input}
       />
       <CustomButton onPress={handleRegister} style={styles.registerButton}>
-        Register
+        {registerLoading ? <ActivityIndicator /> : "Register"}
       </CustomButton>
       <CustomButton
         onPress={() => navigation.goBack()}

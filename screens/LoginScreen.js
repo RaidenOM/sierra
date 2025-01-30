@@ -1,5 +1,12 @@
 import React, { useContext, useState } from "react";
-import { View, Text, StyleSheet, Image, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserContext } from "../store/user-context";
 import CustomInput from "../components/CustomInput";
@@ -10,6 +17,7 @@ export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { setIsAuthenticating } = useContext(UserContext);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   const validateInputs = () => {
     if (!username.trim()) {
@@ -44,6 +52,8 @@ export default function LoginScreen({ navigation }) {
   const handleLogin = async () => {
     if (!validateInputs()) return;
 
+    setLoginLoading(true);
+
     const trimmedUsername = username.trim();
     try {
       const response = await axios.post(
@@ -61,6 +71,8 @@ export default function LoginScreen({ navigation }) {
       const errorMessage =
         error.response?.data?.message || "An error occurred.";
       Alert.alert("Login Error", errorMessage);
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -86,7 +98,9 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setPassword}
         style={styles.input}
       />
-      <CustomButton onPress={handleLogin}>Login</CustomButton>
+      <CustomButton onPress={handleLogin}>
+        {loginLoading ? <ActivityIndicator /> : "Login"}
+      </CustomButton>
       <CustomButton
         onPress={() => navigation.navigate("RegisterScreen")}
         type="secondary"

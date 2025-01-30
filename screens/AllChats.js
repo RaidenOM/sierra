@@ -92,7 +92,7 @@ export default function AllChats() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007bff" />
+        <ActivityIndicator size="large" color="#4CAF50" />
         <Text style={styles.loadingText}>Fetching Chats...</Text>
       </View>
     );

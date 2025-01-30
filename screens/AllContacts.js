@@ -55,7 +55,7 @@ function AllContacts() {
             <Ionicons name="refresh" size={24} color={"#999896"} />
           </TouchableOpacity>
         ) : (
-          <ActivityIndicator />
+          <ActivityIndicator color="#4CAF50" />
         )}
       </View>
       {contacts.length > 0 ? (
