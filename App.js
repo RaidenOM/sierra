@@ -94,18 +94,6 @@ function AuthStack() {
 
 // Main App Stack Navigator
 function MainAppStack() {
-  const [fontsLoaded] = useFonts({
-    Orbitron_400Regular,
-  });
-
-  if (!fontsLoaded) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-      </View>
-    );
-  }
-
   return (
     <Stack.Navigator
       screenOptions={{
@@ -170,9 +158,9 @@ function MainAppStack() {
 
 // Main Navigation Component
 function Navigation() {
-  const { user, loading } = useContext(UserContext);
+  const { user, loading, fontsLoaded } = useContext(UserContext);
 
-  if (loading) {
+  if (loading || !fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
         <Image

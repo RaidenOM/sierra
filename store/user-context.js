@@ -5,6 +5,7 @@ import { io } from "socket.io-client";
 import * as Contacts from "expo-contacts";
 import { Alert } from "react-native";
 import { normalizePhoneNumber } from "../utils/UtilityFunctions";
+import { Orbitron_400Regular, useFonts } from "@expo-google-fonts/orbitron";
 
 // connect socket io to backend
 const socket = io("https://sierra-backend.onrender.com", {
@@ -19,6 +20,9 @@ export const UserProvider = ({ children }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [contacts, setContacts] = useState([]);
   const [token, setToken] = useState();
+  const [fontsLoaded] = useFonts({
+    Orbitron_400Regular,
+  });
 
   // function to retrieve token from device and fetch user data from server based on token and store it in 'user' state and store the token in 'token' state
   useEffect(() => {
@@ -140,6 +144,7 @@ export const UserProvider = ({ children }) => {
         contacts,
         fetchContacts,
         token,
+        fontsLoaded,
       }}
     >
       {children}

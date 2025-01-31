@@ -122,13 +122,6 @@ function ChatScreen() {
     if (!isFocused) markAsRead();
   }, [isFocused, receiverId, token]);
 
-  // Scroll to the bottom on mount and when new messages arrive
-  useLayoutEffect(() => {
-    if (!loading && messages.length > 0) {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }
-  }, [messages, loading]);
-
   // useLayoutEffect to set the title for ChatScreen
   useLayoutEffect(() => {
     if (receiver)
@@ -378,6 +371,13 @@ function ChatScreen() {
         renderItem={renderItem}
         keyExtractor={(item) => item._id.toString()}
         contentContainerStyle={{ paddingBottom: 10 }}
+        onContentSizeChange={() => {
+          setTimeout(() => {
+            flatListRef.current?.scrollToEnd({
+              animated: true,
+            });
+          });
+        }}
       />
       <View style={styles.bottomContainer}>
         {selectedImageUri && (
@@ -556,7 +556,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   messageImage: {
-    width: "100%",
+    maxWidth: "100%",
+    minWidth: 200,
     height: 200,
     borderRadius: 10,
     marginBottom: 5,
