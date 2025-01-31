@@ -99,7 +99,7 @@ export default function LoginScreen({ navigation }) {
         style={styles.input}
       />
       <CustomButton onPress={handleLogin}>
-        {loginLoading ? <ActivityIndicator /> : "Login"}
+        {loginLoading ? <ActivityIndicator color="#fff" /> : "Login"}
       </CustomButton>
       <CustomButton
         onPress={() => navigation.navigate("RegisterScreen")}

@@ -418,7 +418,7 @@ function ChatScreen() {
             onPress={handleSendMessage}
           >
             {sendLoading ? (
-              <ActivityIndicator />
+              <ActivityIndicator color="#fff" />
             ) : (
               <Text style={styles.sendButtonText}>
                 <Ionicons name="arrow-forward" size={20} />
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   messageImage: {
-    width: 200,
+    width: "100%",
     height: 200,
     borderRadius: 10,
     marginBottom: 5,
