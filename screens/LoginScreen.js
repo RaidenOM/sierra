@@ -98,7 +98,7 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setPassword}
         style={styles.input}
       />
-      <CustomButton onPress={handleLogin}>
+      <CustomButton onPress={handleLogin} disabled={loginLoading}>
         {loginLoading ? <ActivityIndicator color="#fff" /> : "Login"}
       </CustomButton>
       <CustomButton

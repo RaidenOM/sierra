@@ -115,7 +115,11 @@ export default function RegisterScreen({ navigation }) {
         onChangeText={setPassword}
         style={styles.input}
       />
-      <CustomButton onPress={handleRegister} style={styles.registerButton}>
+      <CustomButton
+        onPress={handleRegister}
+        style={styles.registerButton}
+        disabled={registerLoading}
+      >
         {registerLoading ? <ActivityIndicator color="#fff" /> : "Register"}
       </CustomButton>
       <CustomButton

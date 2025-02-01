@@ -9,11 +9,12 @@
     "newArchEnabled": false,
     "splash": {
       "image": "./assets/sierra.png",
-      "resizeMode": "center",
+      "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sierra.legacy.app"
     },
     "android": {
       "adaptiveIcon": {

@@ -416,6 +416,7 @@ function ChatScreen() {
           <TouchableOpacity
             style={styles.sendButton}
             onPress={handleSendMessage}
+            disabled={sendLoading}
           >
             {sendLoading ? (
               <ActivityIndicator color="#fff" />

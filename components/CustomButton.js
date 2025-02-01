@@ -6,6 +6,7 @@ export default function CustomButton({
   onPress,
   type = "primary",
   style,
+  disabled,
 }) {
   return (
     <TouchableOpacity
@@ -15,6 +16,7 @@ export default function CustomButton({
         style,
       ]}
       onPress={onPress}
+      disabled={disabled}
     >
       <Text
         style={[
