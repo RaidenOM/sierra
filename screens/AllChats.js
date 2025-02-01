@@ -111,7 +111,13 @@ export default function AllChats() {
               <ChatItem
                 name={item.username}
                 recentMessage={
-                  recentMessage.message || <Ionicons name="image-outline" />
+                  recentMessage.message ||
+                  (recentMessage.mediaType === "image" && (
+                    <Ionicons name="image" />
+                  )) ||
+                  (recentMessage.mediaType === "video" && (
+                    <Ionicons name="videocam" />
+                  ))
                 }
                 profilePhoto={item.profilePhoto}
                 isSent={recentMessage.senderId._id === user._id}

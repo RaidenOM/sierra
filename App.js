@@ -29,6 +29,7 @@ import AllChats from "./screens/AllChats";
 // Context
 import { UserContext, UserProvider } from "./store/user-context";
 import ViewImageScreen from "./screens/ViewImageScreen";
+import ViewVideoScreen from "./screens/ViewVideoScreen";
 
 // Navigation Instances
 const Tab = createBottomTabNavigator();
@@ -150,6 +151,14 @@ function MainAppStack() {
           headerStyle: {
             backgroundColor: "black",
           },
+        }}
+      />
+      <Stack.Screen
+        name="ViewVideoScreen"
+        component={ViewVideoScreen}
+        options={{
+          headerTitle: "Viewing Video",
+          headerStyle: { backgroundColor: "black" },
         }}
       />
     </Stack.Navigator>

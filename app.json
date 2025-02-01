@@ -31,7 +31,8 @@
       "favicon": "./assets/sierra.png"
     },
     "plugins": [
-      "expo-localization"
+      "expo-localization",
+      "expo-video"
     ],
     "extra": {
       "eas": {

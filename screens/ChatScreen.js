@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
   Alert,
   ImageBackground,
-  Pressable,
 } from "react-native";
 import {
   useIsFocused,
@@ -23,6 +22,9 @@ import { useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { format } from "date-fns";
 import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
+import { getThumbnailAsync } from "expo-video-thumbnails";
+import { Linking } from "react-native";
 
 function ChatScreen() {
   const route = useRoute();
@@ -30,12 +32,16 @@ function ChatScreen() {
   const { user, socket, token } = useContext(UserContext);
   const [sendLoading, setSendLoading] = useState(false);
   const { receiverId } = route.params;
+  const [thumbnails, setThumbnails] = useState({});
 
   const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedImageUri, setSelectedImageUri] = useState("");
+  const [selectedVideoUri, setSelectedVideoUri] = useState("");
+  const [selectedVideoThumbnail, setSelectedVideoThumbnail] = useState("");
+  const [selectedDocumentUri, setSelectedDocumentUri] = useState("");
   const [cameraPermissionInfo, requestPermission] =
     ImagePicker.useCameraPermissions();
   const isFocused = useIsFocused();
@@ -156,6 +162,59 @@ function ChatScreen() {
     });
   }, [receiver]);
 
+  useEffect(() => {
+    const generateThumbnailEffect = async () => {
+      const uri = await generateThumbnail(selectedVideoUri);
+      setSelectedVideoThumbnail(uri);
+    };
+
+    if (selectedVideoUri) generateThumbnailEffect();
+  }, [selectedVideoUri]);
+
+  useEffect(() => {
+    const generateThumbs = async () => {
+      const newThumbnails = { ...thumbnails };
+
+      const videoMessages = messages.filter(
+        (message) =>
+          message.mediaType === "video" && !newThumbnails[message._id]
+      );
+
+      for (const message of videoMessages) {
+        try {
+          const uri = await generateThumbnail(message.mediaURL);
+          newThumbnails[message._id] = uri;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      setThumbnails(newThumbnails);
+    };
+
+    generateThumbs();
+  }, [messages]);
+
+  const generateThumbnail = async (url) => {
+    try {
+      const { uri } = await getThumbnailAsync(url, { time: 1500 });
+      return uri;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
+
+  const handleOpenVideoPlayer = (videoUrl) => {
+    // Check if the URL is valid
+    const validURL = Linking.canOpenURL(videoUrl);
+    if (validURL) {
+      Linking.openURL(videoUrl);
+    } else {
+      Alert.alert("Error", "Unable to open video.");
+    }
+  };
+
   // Sort messages based on sentAt field
   const sortedMessages = messages.sort((a, b) => {
     const dateA = new Date(a.sentAt);
@@ -201,7 +260,6 @@ function ChatScreen() {
 
   const renderItem = ({ item, index }) => {
     const isCurrentUser = item.senderId === user._id;
-    console.log(item.mediaURL);
 
     // Check if the current message is the first of a new day
     const showDateSeparator =
@@ -234,20 +292,42 @@ function ChatScreen() {
               isCurrentUser && styles.currentUserBubble,
             ]}
           >
-            {item.mediaURL && (
-              <Pressable
-                onPress={() => {
-                  navigation.navigate("ViewImageScreen", {
-                    mediaURL: item.mediaURL,
-                  });
-                }}
-              >
-                <Image
-                  source={{ uri: item.mediaURL }}
-                  style={styles.messageImage}
-                />
-              </Pressable>
-            )}
+            {item.mediaURL &&
+              ((item.mediaType === "image" && (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("ViewImageScreen", {
+                      mediaURL: item.mediaURL,
+                    });
+                  }}
+                >
+                  <Image
+                    source={{ uri: item.mediaURL }}
+                    style={styles.messageImage}
+                  />
+                </TouchableOpacity>
+              )) ||
+                (item.mediaType === "video" && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleOpenVideoPlayer(item.mediaURL);
+                    }}
+                    style={{ alignItems: "center", justifyContent: "center" }}
+                  >
+                    <Image
+                      source={{
+                        uri: thumbnails[item._id],
+                      }}
+                      style={styles.messageImage}
+                    />
+                    <Ionicons
+                      name="play"
+                      size={20}
+                      color="#fff"
+                      style={styles.thumbnailPlay}
+                    />
+                  </TouchableOpacity>
+                )))}
             {item.message && (
               <Text style={styles.messageText}>{item.message}</Text>
             )}
@@ -280,7 +360,7 @@ function ChatScreen() {
     return true;
   };
 
-  const handleImagePick = async () => {
+  const handleGalleryPick = async () => {
     const permissionsResult = await getPermissions();
     if (!permissionsResult) {
       Alert.alert(
@@ -290,19 +370,28 @@ function ChatScreen() {
       return;
     }
 
-    const image = await ImagePicker.launchImageLibraryAsync({
+    const galleryPick = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
     });
 
-    if (!image.canceled) {
-      setSelectedImageUri(image.assets[0].uri.toString());
-      console.log(image.assets[0].uri.toString());
+    if (!galleryPick.canceled) {
+      if (galleryPick.assets[0].type === "image") {
+        setSelectedImageUri(galleryPick.assets[0].uri);
+        setSelectedVideoUri("");
+        setSelectedDocumentUri("");
+      } else if (galleryPick.assets[0].type === "video") {
+        setSelectedVideoUri(galleryPick.assets[0].uri);
+        setSelectedDocumentUri("");
+        setSelectedImageUri("");
+        console.log(selectedVideoUri);
+      }
     }
   };
 
   const handleSendMessage = async () => {
-    if (newMessage.trim() || selectedImageUri) {
+    if (newMessage.trim() || selectedImageUri || selectedVideoUri) {
       setSendLoading(true);
       const formData = new FormData();
       formData.append("senderId", user._id);
@@ -314,19 +403,24 @@ function ChatScreen() {
         const uriParts = imageUri.split(".");
         const fileType = uriParts[uriParts.length - 1];
 
-        console.log(fileType);
-
-        const imageData = {
-          uri: imageUri,
-          type: `image/${fileType}`,
-          name: `photo.${fileType}`,
-        };
-
         formData.append("mediaURL", {
           uri: imageUri,
           name: `photo.${fileType}`,
           type: `image/${fileType}`,
-        }); // 'mediaURL' is the field name for the file
+        });
+        formData.append("mediaType", "image");
+      } else if (selectedVideoUri) {
+        const videoUri = selectedVideoUri;
+        const uriParts = videoUri.split(".");
+        const fileType = uriParts[uriParts.length - 1];
+
+        formData.append("mediaURL", {
+          uri: videoUri,
+          type: `video/${fileType}`,
+          name: `video.${fileType}`,
+        });
+        formData.append("mediaType", "video");
+        console.log(formData);
       }
 
       try {
@@ -342,6 +436,8 @@ function ChatScreen() {
         console.log(response.data);
         setNewMessage(""); // Clear input after sending
         setSelectedImageUri("");
+        setSelectedVideoUri("");
+        setSelectedDocumentUri("");
       } catch (error) {
         console.error("Error sending message", error);
       } finally {
@@ -396,6 +492,37 @@ function ChatScreen() {
             </TouchableOpacity>
           </View>
         )}
+        {selectedVideoUri && (
+          <View style={styles.previewImageContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("ViewVideoScreen", {
+                  mediaURL: selectedVideoUri,
+                });
+              }}
+              style={{ alignItems: "center", justifyContent: "center" }}
+            >
+              <Image
+                source={{ uri: selectedVideoThumbnail }}
+                style={styles.previewImage} // Add styles for preview image
+              />
+              <Ionicons
+                name="play"
+                color="#fff"
+                size={20}
+                style={styles.previewPlayOutline}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.previewImageCancel}
+              onPress={() => {
+                setSelectedVideoUri("");
+              }}
+            >
+              <Text style={{ color: "#fff", fontWeight: "light" }}>✖</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         <View style={styles.inputTextButton}>
           <View style={styles.inputContainer}>
             <TextInput
@@ -405,11 +532,11 @@ function ChatScreen() {
               onChangeText={setNewMessage}
             />
             <TouchableOpacity
-              onPress={handleImagePick}
+              onPress={handleGalleryPick}
               style={{ justifyContent: "center", alignItems: "center" }}
             >
               <Text style={{ color: "black" }}>
-                <Ionicons name="image-outline" size={20} />
+                <Ionicons name="image" size={20} />
               </Text>
             </TouchableOpacity>
           </View>
@@ -601,6 +728,14 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 20,
     paddingHorizontal: 15,
+  },
+  previewPlayOutline: {
+    position: "absolute",
+  },
+  thumbnailPlay: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
   },
 });
 
