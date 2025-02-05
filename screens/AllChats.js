@@ -117,6 +117,9 @@ export default function AllChats() {
                   )) ||
                   (recentMessage.mediaType === "video" && (
                     <Ionicons name="videocam" />
+                  )) ||
+                  (recentMessage.mediaType === "audio" && (
+                    <Ionicons name="musical-notes" />
                   ))
                 }
                 profilePhoto={item.profilePhoto}

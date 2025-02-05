@@ -30,6 +30,7 @@ import AllChats from "./screens/AllChats";
 import { UserContext, UserProvider } from "./store/user-context";
 import ViewImageScreen from "./screens/ViewImageScreen";
 import ViewVideoScreen from "./screens/ViewVideoScreen";
+import EditProfileScreen from "./screens/EditProfileScreen";
 
 // Navigation Instances
 const Tab = createBottomTabNavigator();
@@ -108,6 +109,7 @@ function MainAppStack() {
           open: TransitionSpecs.TransitionIOSSpec,
           close: TransitionSpecs.TransitionIOSSpec,
         },
+        headerBackTitleVisible: false,
       }}
     >
       <Stack.Screen
@@ -160,6 +162,11 @@ function MainAppStack() {
           headerTitle: "Viewing Video",
           headerStyle: { backgroundColor: "black" },
         }}
+      />
+      <Stack.Screen
+        name="EditProfileScreen"
+        component={EditProfileScreen}
+        options={{ headerTitle: "Edit Profile" }}
       />
     </Stack.Navigator>
   );

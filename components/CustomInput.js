@@ -7,6 +7,8 @@ export default function CustomInput({
   onChangeText,
   secureTextEntry,
   keyboardType,
+  autoCapitalize,
+  multiline,
 }) {
   return (
     <TextInput
@@ -17,6 +19,8 @@ export default function CustomInput({
       keyboardType={keyboardType || ""}
       secureTextEntry={secureTextEntry}
       placeholderTextColor="#aaa"
+      autoCapitalize={autoCapitalize}
+      multiline={multiline}
     />
   );
 }

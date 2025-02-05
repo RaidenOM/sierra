@@ -100,13 +100,14 @@ export default function RegisterScreen({ navigation }) {
         value={username}
         onChangeText={setUsername}
         style={styles.input}
+        autoCapitalize={false}
       />
       <CustomInput
         placeholder="Phone"
         value={phone}
         onChangeText={setPhone}
         style={styles.input}
-        keyboardType="number-pad"
+        keyboardType="phone-pad"
       />
       <CustomInput
         placeholder="Password"
@@ -114,6 +115,7 @@ export default function RegisterScreen({ navigation }) {
         secureTextEntry
         onChangeText={setPassword}
         style={styles.input}
+        autoCapitalize={false}
       />
       <CustomButton
         onPress={handleRegister}

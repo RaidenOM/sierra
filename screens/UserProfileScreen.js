@@ -16,6 +16,8 @@ export default function UserProfileScreen({ navigation }) {
     );
   }
 
+  console.log(user);
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>

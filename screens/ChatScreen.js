@@ -24,7 +24,22 @@ import { format } from "date-fns";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { getThumbnailAsync } from "expo-video-thumbnails";
-import { Linking } from "react-native";
+import AudioPlayer from "../components/AudioPlayer";
+
+const getAudioMimeType = (extension) => {
+  switch (extension.toLowerCase()) {
+    case "mp3":
+      return "audio/mpeg";
+    case "wav":
+      return "audio/wav";
+    case "ogg":
+      return "audio/ogg";
+    case "m4a":
+      return "audio/mp4";
+    default:
+      return "audio/*";
+  }
+};
 
 function ChatScreen() {
   const route = useRoute();
@@ -33,6 +48,9 @@ function ChatScreen() {
   const [sendLoading, setSendLoading] = useState(false);
   const { receiverId } = route.params;
   const [thumbnails, setThumbnails] = useState({});
+  const [showPicker, setShowPicker] = useState(false);
+  const [audioName, setAudioName] = useState("");
+  const [inputHeight, setInputHeight] = useState(40);
 
   const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -42,6 +60,7 @@ function ChatScreen() {
   const [selectedVideoUri, setSelectedVideoUri] = useState("");
   const [selectedVideoThumbnail, setSelectedVideoThumbnail] = useState("");
   const [selectedDocumentUri, setSelectedDocumentUri] = useState("");
+  const [selectedAudioUri, setSelectedAudioUri] = useState("");
   const [cameraPermissionInfo, requestPermission] =
     ImagePicker.useCameraPermissions();
   const isFocused = useIsFocused();
@@ -205,16 +224,6 @@ function ChatScreen() {
     }
   };
 
-  const handleOpenVideoPlayer = (videoUrl) => {
-    // Check if the URL is valid
-    const validURL = Linking.canOpenURL(videoUrl);
-    if (validURL) {
-      Linking.openURL(videoUrl);
-    } else {
-      Alert.alert("Error", "Unable to open video.");
-    }
-  };
-
   // Sort messages based on sentAt field
   const sortedMessages = messages.sort((a, b) => {
     const dateA = new Date(a.sentAt);
@@ -260,6 +269,7 @@ function ChatScreen() {
 
   const renderItem = ({ item, index }) => {
     const isCurrentUser = item.senderId === user._id;
+    console.log(item.mediaURL);
 
     // Check if the current message is the first of a new day
     const showDateSeparator =
@@ -310,7 +320,9 @@ function ChatScreen() {
                 (item.mediaType === "video" && (
                   <TouchableOpacity
                     onPress={() => {
-                      handleOpenVideoPlayer(item.mediaURL);
+                      navigation.navigate("ViewVideoScreen", {
+                        mediaURL: item.mediaURL,
+                      });
                     }}
                     style={{ alignItems: "center", justifyContent: "center" }}
                   >
@@ -321,12 +333,15 @@ function ChatScreen() {
                       style={styles.messageImage}
                     />
                     <Ionicons
-                      name="play"
-                      size={20}
+                      name="play-circle"
+                      size={40}
                       color="#fff"
-                      style={styles.thumbnailPlay}
+                      style={{ position: "absolute" }}
                     />
                   </TouchableOpacity>
+                )) ||
+                (item.mediaType === "audio" && (
+                  <AudioPlayer uri={item.mediaURL} />
                 )))}
             {item.message && (
               <Text style={styles.messageText}>{item.message}</Text>
@@ -367,6 +382,7 @@ function ChatScreen() {
         "Permissions denied",
         "Permission to access image is required to proceed."
       );
+      setShowPicker(false);
       return;
     }
 
@@ -378,20 +394,55 @@ function ChatScreen() {
 
     if (!galleryPick.canceled) {
       if (galleryPick.assets[0].type === "image") {
+        // select image file
         setSelectedImageUri(galleryPick.assets[0].uri);
+
+        // deselect all others
         setSelectedVideoUri("");
-        setSelectedDocumentUri("");
+        setSelectedAudioUri("");
       } else if (galleryPick.assets[0].type === "video") {
+        // select video file
         setSelectedVideoUri(galleryPick.assets[0].uri);
-        setSelectedDocumentUri("");
+
+        // deselect all other
+        setSelectedAudioUri("");
         setSelectedImageUri("");
+
+        setShowPicker(false);
         console.log(selectedVideoUri);
       }
     }
   };
 
+  const handleAudioPick = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "audio/*",
+      });
+      if (result.canceled) return;
+      console.log(result);
+
+      // select audio file
+      setSelectedAudioUri(result.assets[0].uri);
+      setAudioName(result.assets[0].name);
+
+      // deselect all other
+      setSelectedImageUri("");
+      setSelectedVideoUri("");
+
+      setShowPicker(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleSendMessage = async () => {
-    if (newMessage.trim() || selectedImageUri || selectedVideoUri) {
+    if (
+      newMessage.trim() ||
+      selectedImageUri ||
+      selectedVideoUri ||
+      selectedAudioUri
+    ) {
       setSendLoading(true);
       const formData = new FormData();
       formData.append("senderId", user._id);
@@ -421,6 +472,19 @@ function ChatScreen() {
         });
         formData.append("mediaType", "video");
         console.log(formData);
+      } else if (selectedAudioUri) {
+        const audioUri = selectedAudioUri;
+        const uriParts = audioUri.split(".");
+        const fileType = uriParts[uriParts.length - 1];
+        const mimeType = getAudioMimeType(fileType);
+        console.log(mimeType);
+
+        formData.append("mediaURL", {
+          uri: audioUri,
+          type: mimeType,
+          name: `audio.${fileType}`,
+        });
+        formData.append("mediaType", "audio");
       }
 
       try {
@@ -438,6 +502,7 @@ function ChatScreen() {
         setSelectedImageUri("");
         setSelectedVideoUri("");
         setSelectedDocumentUri("");
+        setSelectedAudioUri("");
       } catch (error) {
         console.error("Error sending message", error);
       } finally {
@@ -476,68 +541,115 @@ function ChatScreen() {
         }}
       />
       <View style={styles.bottomContainer}>
-        {selectedImageUri && (
-          <View style={styles.previewImageContainer}>
-            <Image
-              source={{ uri: selectedImageUri }}
-              style={styles.previewImage} // Add styles for preview image
-            />
-            <TouchableOpacity
-              style={styles.previewImageCancel}
-              onPress={() => {
-                setSelectedImageUri("");
-              }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "light" }}>✖</Text>
-            </TouchableOpacity>
+        {showPicker && (
+          <View style={styles.picker}>
+            <View style={styles.pickerOptionsContainer}>
+              <TouchableOpacity
+                style={styles.pickerOptions}
+                onPress={handleAudioPick}
+              >
+                <Ionicons name="musical-notes" size={30} />
+                <Text>Audio</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.pickerOptions}
+                onPress={handleGalleryPick}
+              >
+                <Ionicons name="image" size={30} />
+                <Text>Gallery</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
-        {selectedVideoUri && (
+        {selectedImageUri && (
+          <View style={styles.previewImageContainer}>
+            <View style={styles.previewImage}>
+              <Image
+                source={{ uri: selectedImageUri }}
+                style={{ width: "100%", height: "100%", borderRadius: 8 }} // Add styles for preview image
+              />
+              <TouchableOpacity
+                style={styles.previewImageCancel}
+                onPress={() => {
+                  setSelectedImageUri("");
+                }}
+              >
+                <Text style={{ color: "#fff", fontWeight: "light" }}>✖</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+        {selectedVideoUri && selectedVideoThumbnail && (
           <View style={styles.previewImageContainer}>
             <TouchableOpacity
-              onPress={() => {
+              onPress={() =>
                 navigation.navigate("ViewVideoScreen", {
                   mediaURL: selectedVideoUri,
-                });
-              }}
-              style={{ alignItems: "center", justifyContent: "center" }}
+                })
+              }
+              style={styles.previewImage}
             >
               <Image
                 source={{ uri: selectedVideoThumbnail }}
-                style={styles.previewImage} // Add styles for preview image
+                style={{ width: "100%", height: "100%", borderRadius: 8 }}
               />
               <Ionicons
-                name="play"
+                name="play-circle"
                 color="#fff"
-                size={20}
+                size={40}
                 style={styles.previewPlayOutline}
               />
+              <TouchableOpacity
+                style={styles.previewImageCancel}
+                onPress={() => setSelectedVideoUri("")}
+              >
+                <Text style={{ color: "#fff" }}>✖</Text>
+              </TouchableOpacity>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.previewImageCancel}
-              onPress={() => {
-                setSelectedVideoUri("");
-              }}
-            >
-              <Text style={{ color: "#fff", fontWeight: "light" }}>✖</Text>
-            </TouchableOpacity>
+          </View>
+        )}
+        {selectedAudioUri && (
+          <View style={styles.previewAudioContainer}>
+            <View style={styles.previewAudio}>
+              <Ionicons name="musical-notes" size={30} />
+              <Text style={{ marginTop: 10, color: "#575757" }}>
+                {audioName}
+              </Text>
+              <TouchableOpacity
+                style={styles.previewImageCancel}
+                onPress={() => {
+                  setSelectedAudioUri("");
+                }}
+              >
+                <Text style={{ color: "#fff", fontWeight: "light" }}>✖</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
         <View style={styles.inputTextButton}>
           <View style={styles.inputContainer}>
             <TextInput
-              style={styles.textInput}
+              style={[styles.textInput, { height: Math.max(inputHeight, 40) }]}
               placeholder="Type your message..."
               value={newMessage}
               onChangeText={setNewMessage}
+              onContentSizeChange={(event) => {
+                const newHeight = event.nativeEvent.contentSize.height;
+                setInputHeight(Math.min(newHeight, 150));
+              }}
+              multiline
             />
             <TouchableOpacity
-              onPress={handleGalleryPick}
-              style={{ justifyContent: "center", alignItems: "center" }}
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginHorizontal: 5,
+              }}
+              onPress={() => {
+                setShowPicker((prevState) => !prevState);
+              }}
             >
-              <Text style={{ color: "black" }}>
-                <Ionicons name="image" size={20} />
-              </Text>
+              <Ionicons name="ellipsis-vertical" size={20} />
             </TouchableOpacity>
           </View>
           <TouchableOpacity
@@ -624,8 +736,9 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    height: 40,
+    maxHeight: 100,
     fontSize: 16,
+    paddingRight: 15,
   },
   sendButton: {
     marginLeft: 10,
@@ -691,18 +804,18 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   previewImage: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     borderRadius: 8,
-    marginRight: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   previewImageContainer: {
     width: "100%",
-    height: 100,
-    backgroundColor: "#ccc",
+    height: 200,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 10,
+    padding: 20,
     borderRadius: 8,
   },
   inputTextButton: {
@@ -736,6 +849,42 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "50%",
     left: "50%",
+  },
+  picker: {
+    height: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  pickerOptions: {
+    backgroundColor: "#ccc",
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pickerOptionsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingHorizontal: 50,
+  },
+  previewAudioContainer: {
+    height: 200,
+    width: "100%",
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewAudio: {
+    height: 150,
+    width: 150,
+    borderRadius: 10,
+    backgroundColor: "#ccc",
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
