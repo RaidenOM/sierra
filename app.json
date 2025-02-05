@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/sierra.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
     "splash": {
       "image": "./assets/sierra.png",
       "resizeMode": "contain",
@@ -31,8 +30,7 @@
       "favicon": "./assets/sierra.png"
     },
     "plugins": [
-      "expo-localization",
-      "expo-video"
+      "expo-localization"
     ],
     "extra": {
       "eas": {
