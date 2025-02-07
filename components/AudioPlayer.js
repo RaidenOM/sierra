@@ -5,10 +5,16 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Slider from "@react-native-community/slider";
 import { useEffect } from "react";
+import { useIsFocused } from "@react-navigation/native";
 
-export default function AudioPlayer({ uri }) {
+export default function AudioPlayer({
+  uri,
+  currentPlayingSound,
+  setCurrentPlayingSound,
+}) {
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const isFocused = useIsFocused();
 
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -29,12 +35,21 @@ export default function AudioPlayer({ uri }) {
 
   useEffect(() => {
     loadSound();
+
     return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
+      if (sound) sound.unloadAsync();
+      if (currentPlayingSound === sound) setCurrentPlayingSound(null);
     };
   }, [uri]);
+
+  useEffect(() => {
+    if (sound && !isFocused) {
+      sound.stopAsync();
+      if (currentPlayingSound === sound) {
+        setCurrentPlayingSound(null);
+      }
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     let interval;
@@ -54,22 +69,30 @@ export default function AudioPlayer({ uri }) {
   const playPauseSound = async () => {
     if (!sound) return;
 
-    if (isPlaying) {
-      await sound.pauseAsync();
-    } else {
+    if (currentPlayingSound === null || currentPlayingSound !== sound) {
+      if (currentPlayingSound) {
+        await currentPlayingSound.pauseAsync();
+        setCurrentPlayingSound(null);
+      }
       if (position === duration) {
         setPosition(0);
         await sound.setPositionAsync(0);
       }
-      sound.playAsync();
+      await sound.playAsync();
+      setCurrentPlayingSound(sound);
+      setIsPlaying(true);
+    } else {
+      await currentPlayingSound.pauseAsync();
+      setCurrentPlayingSound(null);
+      setIsPlaying(false);
     }
-    setIsPlaying(!isPlaying);
   };
 
   useEffect(() => {
     const autoPause = async () => {
       await sound.stopAsync();
       setIsPlaying(false);
+      setCurrentPlayingSound(null);
     };
 
     if (sound && position === duration) autoPause();
@@ -85,7 +108,11 @@ export default function AudioPlayer({ uri }) {
   return (
     <View style={styles.audioPlayerContainer}>
       <TouchableOpacity onPress={playPauseSound}>
-        <Ionicons name={isPlaying ? "pause" : "play"} size={24} color="#fff" />
+        <Ionicons
+          name={isPlaying && currentPlayingSound === sound ? "pause" : "play"}
+          size={24}
+          color="#fff"
+        />
       </TouchableOpacity>
 
       <Slider

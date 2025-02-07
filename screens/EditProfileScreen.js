@@ -76,10 +76,10 @@ export default function EditProfileScreen() {
         name: `photo.${fileType}`,
         type: `image/${fileType}`,
       });
-    }
-
-    if (!viewProfilePhoto) {
-      formData.append("profilePhoto", null);
+    } else if (!viewProfilePhoto) {
+      formData.append("unsetProfilePhoto", true);
+    } else {
+      formData.append("unsetProfilePhoto", false);
     }
 
     try {

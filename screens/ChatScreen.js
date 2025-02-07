@@ -64,6 +64,7 @@ function ChatScreen() {
   const [cameraPermissionInfo, requestPermission] =
     ImagePicker.useCameraPermissions();
   const isFocused = useIsFocused();
+  const [currentPlayingSound, setCurrentPlayingSound] = useState(null);
 
   const flatListRef = useRef(null);
 
@@ -341,7 +342,11 @@ function ChatScreen() {
                   </TouchableOpacity>
                 )) ||
                 (item.mediaType === "audio" && (
-                  <AudioPlayer uri={item.mediaURL} />
+                  <AudioPlayer
+                    uri={item.mediaURL}
+                    setCurrentPlayingSound={setCurrentPlayingSound}
+                    currentPlayingSound={currentPlayingSound}
+                  />
                 )))}
             {item.message && (
               <Text style={styles.messageText}>{item.message}</Text>
