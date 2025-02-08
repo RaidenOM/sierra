@@ -12,8 +12,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useFonts } from "expo-font";
-import { Orbitron_400Regular } from "@expo-google-fonts/orbitron";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 import { TransitionSpecs } from "@react-navigation/stack";
 
