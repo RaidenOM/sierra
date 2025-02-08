@@ -148,6 +148,6 @@ const styles = StyleSheet.create({
   },
   audioTime: {
     fontSize: 12,
-    color: "#ccc",
+    color: "black",
   },
 });
