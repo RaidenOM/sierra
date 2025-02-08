@@ -413,9 +413,9 @@ function ChatScreen() {
         setSelectedAudioUri("");
         setSelectedImageUri("");
 
-        setShowPicker(false);
         console.log(selectedVideoUri);
       }
+      setShowPicker(false);
     }
   };
 
@@ -434,10 +434,10 @@ function ChatScreen() {
       // deselect all other
       setSelectedImageUri("");
       setSelectedVideoUri("");
-
-      setShowPicker(false);
     } catch (error) {
       console.log(error);
+    } finally {
+      setShowPicker(false);
     }
   };
 
@@ -652,6 +652,9 @@ function ChatScreen() {
               }}
               onPress={() => {
                 setShowPicker((prevState) => !prevState);
+                setSelectedImageUri("");
+                setSelectedVideoUri("");
+                setSelectedAudioUri("");
               }}
             >
               <Ionicons name="ellipsis-vertical" size={20} />
