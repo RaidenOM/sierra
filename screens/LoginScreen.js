@@ -90,7 +90,7 @@ export default function LoginScreen({ navigation }) {
         value={username}
         onChangeText={setUsername}
         style={styles.input}
-        autoCapitalize={false}
+        autoCapitalize="none"
       />
       <CustomInput
         placeholder="Password"
@@ -98,7 +98,7 @@ export default function LoginScreen({ navigation }) {
         secureTextEntry
         onChangeText={setPassword}
         style={styles.input}
-        autoCapitalize={false}
+        autoCapitalize="none"
       />
       <CustomButton onPress={handleLogin} disabled={loginLoading}>
         {loginLoading ? <ActivityIndicator color="#fff" /> : "Login"}

@@ -183,6 +183,9 @@ function Navigation() {
           style={{ height: 400 }}
         />
         <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={{ marginTop: 20, color: "#969696" }}>
+          Designed by Om Kumar
+        </Text>
       </View>
     );
   }

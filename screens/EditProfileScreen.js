@@ -11,7 +11,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
 
 export default function EditProfileScreen() {
-  const { user, token, setIsAuthenticating } = useContext(UserContext);
+  const { user, token, setIsAuthenticating, logout } = useContext(UserContext);
   const [bio, setBio] = useState(user.bio);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
@@ -101,6 +101,28 @@ export default function EditProfileScreen() {
     }
   };
 
+  const profileDeleteHandler = async () => {
+    Alert.alert(
+      "Delete Profile",
+      "Are you sure you want to delete your profile and all data related to it?",
+      [
+        { style: "cancel", text: "Cancel" },
+        {
+          style: "destructive",
+          text: "Yes",
+          onPress: async () => {
+            await axios.delete("https://sierra-backend.onrender.com/profile", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            await logout();
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -142,6 +164,12 @@ export default function EditProfileScreen() {
         </View>
         <CustomButton onPress={handleConfirm} disabled={loading}>
           {loading ? <ActivityIndicator color="#fff" /> : "Update Profile"}
+        </CustomButton>
+        <CustomButton
+          style={{ backgroundColor: "red" }}
+          onPress={profileDeleteHandler}
+        >
+          Delete Profile
         </CustomButton>
       </View>
     </View>

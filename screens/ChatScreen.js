@@ -508,6 +508,7 @@ function ChatScreen() {
         setSelectedVideoUri("");
         setSelectedDocumentUri("");
         setSelectedAudioUri("");
+        setInputHeight(40);
       } catch (error) {
         console.error("Error sending message", error);
       } finally {
