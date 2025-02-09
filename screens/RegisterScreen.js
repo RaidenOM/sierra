@@ -9,6 +9,7 @@ export default function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [registerLoading, setRegisterLoading] = useState(false);
 
   // Function to validate phone number and other inputs
@@ -55,6 +56,10 @@ export default function RegisterScreen({ navigation }) {
         "Validation Error",
         "Password must be at least 6 characters long."
       );
+      return false;
+    }
+    if (password && confirmPassword && password !== confirmPassword) {
+      Alert.alert("Validation Error", "Password must be same.");
       return false;
     }
 
@@ -114,6 +119,14 @@ export default function RegisterScreen({ navigation }) {
         value={password}
         secureTextEntry
         onChangeText={setPassword}
+        style={styles.input}
+        autoCapitalize="none"
+      />
+      <CustomInput
+        placeholder="Confirm password"
+        value={confirmPassword}
+        secureTextEntry
+        onChangeText={setConfirmPassword}
         style={styles.input}
         autoCapitalize="none"
       />

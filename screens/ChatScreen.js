@@ -175,7 +175,7 @@ function ChatScreen() {
               await handleChatDelete(receiverId);
             }}
           >
-            <Ionicons name="trash-outline" size={30} color="red" />
+            <Ionicons name="trash" size={25} color="#fff" />
           </TouchableOpacity>
         </View>
       ),

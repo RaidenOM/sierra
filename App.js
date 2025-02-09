@@ -122,17 +122,17 @@ function MainAppStack() {
                   navigation.navigate("UserProfileScreen");
                 }}
               >
-                <Ionicons
-                  name="person-circle-outline"
-                  size={30}
-                  color="#ffcc00"
-                />
+                <Ionicons name="person-circle" size={30} color="#fff" />
               </TouchableOpacity>
             </View>
           ),
         })}
       />
-      <Stack.Screen name="ChatScreen" component={ChatScreen} />
+      <Stack.Screen
+        name="ChatScreen"
+        component={ChatScreen}
+        options={{ headerTitle: "" }}
+      />
       <Stack.Screen
         name="ProfileScreen"
         component={ProfileScreen}
@@ -183,7 +183,7 @@ function Navigation() {
           style={{ height: 400 }}
         />
         <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={{ marginTop: 20, color: "#969696" }}>
+        <Text style={{ marginTop: 20, color: "#7f8c8d" }}>
           Designed by Om Kumar
         </Text>
       </View>
