@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Sierra Legacy",
-    "slug": "sierra-legacy",
+    "name": "Sierra",
+    "slug": "Sierra",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/sierra.png",
@@ -13,14 +13,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sierra.legacy.app"
+      "bundleIdentifier": "com.sierra.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/sierra.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sierra.legacy.app",
+      "package": "com.sierra.app",
       "permissions": [
         "READ_CONTACTS",
         "WRITE_CONTACTS"
@@ -34,7 +34,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "3a3fad23-5f40-4eff-9cf0-584dfc7459b2"
+        "projectId": "99f6fedf-f095-441b-b0ea-c24f537eaf7e"
       }
     }
   }

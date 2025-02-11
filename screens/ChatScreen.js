@@ -20,7 +20,7 @@ import axios from "axios";
 import { UserContext } from "../store/user-context";
 import { useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { getThumbnailAsync } from "expo-video-thumbnails";
@@ -44,7 +44,7 @@ const getAudioMimeType = (extension) => {
 function ChatScreen() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { user, socket, token } = useContext(UserContext);
+  const { user, socket, token, typingUsers } = useContext(UserContext);
   const [sendLoading, setSendLoading] = useState(false);
   const { receiverId } = route.params;
   const [thumbnails, setThumbnails] = useState({});
@@ -59,12 +59,12 @@ function ChatScreen() {
   const [selectedImageUri, setSelectedImageUri] = useState("");
   const [selectedVideoUri, setSelectedVideoUri] = useState("");
   const [selectedVideoThumbnail, setSelectedVideoThumbnail] = useState("");
-  const [selectedDocumentUri, setSelectedDocumentUri] = useState("");
   const [selectedAudioUri, setSelectedAudioUri] = useState("");
   const [cameraPermissionInfo, requestPermission] =
     ImagePicker.useCameraPermissions();
   const isFocused = useIsFocused();
   const [currentPlayingSound, setCurrentPlayingSound] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
 
   const flatListRef = useRef(null);
 
@@ -163,7 +163,14 @@ function ChatScreen() {
               source={{ uri: receiver.profilePhoto }}
               style={styles.headerProfileImage}
             />
-            <Text style={styles.headerTitleUsername}>{receiver.username}</Text>
+            <View style={styles.headerTitleContainer}>
+              <Text style={styles.headerTitleUsername}>
+                {receiver.username}
+              </Text>
+              <Text style={{ color: "#00fa57", marginLeft: 10 }}>
+                {!!typingUsers[receiverId] && "typing..."}
+              </Text>
+            </View>
           </TouchableOpacity>
         ),
       });
@@ -180,7 +187,7 @@ function ChatScreen() {
         </View>
       ),
     });
-  }, [receiver]);
+  }, [receiver, typingUsers]);
 
   useEffect(() => {
     const generateThumbnailEffect = async () => {
@@ -214,6 +221,26 @@ function ChatScreen() {
 
     generateThumbs();
   }, [messages]);
+
+  // typing indicator logic
+  useEffect(() => {
+    if (isTyping) {
+      socket.emit("typing", {
+        senderId: user._id,
+        receiverId: receiverId,
+      });
+
+      const timeout = setTimeout(() => {
+        socket.emit("stop-typing", {
+          senderId: user._id,
+          receiverId: receiverId,
+        });
+        setIsTyping(false);
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [isTyping, socket, user._id, receiverId]);
 
   const generateThumbnail = async (url) => {
     try {
@@ -506,7 +533,6 @@ function ChatScreen() {
         setNewMessage(""); // Clear input after sending
         setSelectedImageUri("");
         setSelectedVideoUri("");
-        setSelectedDocumentUri("");
         setSelectedAudioUri("");
         setInputHeight(40);
       } catch (error) {
@@ -638,7 +664,12 @@ function ChatScreen() {
               style={[styles.textInput, { height: Math.max(inputHeight, 40) }]}
               placeholder="Type your message..."
               value={newMessage}
-              onChangeText={setNewMessage}
+              onChangeText={(newText) => {
+                setNewMessage(newText);
+                if (!isTyping) {
+                  setIsTyping(true);
+                }
+              }}
               onContentSizeChange={(event) => {
                 const newHeight = event.nativeEvent.contentSize.height;
                 setInputHeight(Math.min(newHeight, 150));
@@ -797,7 +828,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#fff",
     fontWeight: "bold",
-    marginLeft: 10,
   },
   headerProfileImage: {
     width: 40,
@@ -894,6 +924,12 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: "center",
     alignItems: "center",
+  },
+  headerTitleContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
+    flexDirection: "row",
   },
 });
 
