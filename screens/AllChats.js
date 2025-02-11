@@ -9,7 +9,7 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function AllChats() {
-  const { socket, user, token } = useContext(UserContext);
+  const { socket, user, token, typingUsers } = useContext(UserContext);
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
@@ -126,6 +126,7 @@ export default function AllChats() {
                 isSent={recentMessage.senderId._id === user._id}
                 unreadCount={recentMessage.unreadCount || 0}
                 onPress={() => handlePress(item._id)}
+                typing={!!typingUsers[item._id]}
               />
             );
           }}

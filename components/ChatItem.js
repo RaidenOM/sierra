@@ -9,6 +9,7 @@ const ChatItem = ({
   onPress,
   isSent,
   unreadCount,
+  typing,
 }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
@@ -18,15 +19,21 @@ const ChatItem = ({
           {name}
         </Text>
         <View style={styles.messageContainer}>
-          <Ionicons
-            name={isSent ? "arrow-back" : "arrow-forward"}
-            size={16}
-            color="#888"
-            style={styles.icon}
-          />
-          <Text style={styles.recentMessage} numberOfLines={1}>
-            {recentMessage}
-          </Text>
+          {typing ? (
+            <Text style={{ color: "#00fa57" }}>typing...</Text>
+          ) : (
+            <>
+              <Ionicons
+                name={isSent ? "arrow-back" : "arrow-forward"}
+                size={16}
+                color="#888"
+                style={styles.icon}
+              />
+              <Text style={styles.recentMessage} numberOfLines={1}>
+                {recentMessage}
+              </Text>
+            </>
+          )}
         </View>
 
         {unreadCount > 0 && (
@@ -95,7 +102,6 @@ const styles = StyleSheet.create({
   },
   unreadCount: {
     color: "#fff",
-    fontWeight: 800,
   },
 });
 

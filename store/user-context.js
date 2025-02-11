@@ -23,6 +23,23 @@ export const UserProvider = ({ children }) => {
   const [fontsLoaded] = useFonts({
     Orbitron_400Regular,
   });
+  const [typingUsers, setTypingUsers] = useState({});
+
+  // event handler to set typing users
+  useEffect(() => {
+    socket.on("typing", (data) => {
+      setTypingUsers((prev) => ({ ...prev, [data.senderId]: true }));
+    });
+
+    socket.on("stop-typing", (data) => {
+      setTypingUsers((prev) => ({ ...prev, [data.senderId]: false }));
+    });
+
+    return () => {
+      socket.off("typing");
+      socket.off("stop-typing");
+    };
+  }, []);
 
   // function to retrieve token from device and fetch user data from server based on token and store it in 'user' state and store the token in 'token' state
   useEffect(() => {
@@ -145,6 +162,7 @@ export const UserProvider = ({ children }) => {
         fetchContacts,
         token,
         fontsLoaded,
+        typingUsers,
       }}
     >
       {children}

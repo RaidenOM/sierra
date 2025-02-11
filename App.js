@@ -114,7 +114,7 @@ function MainAppStack() {
         name="HomeTab"
         component={HomeTab}
         options={({ navigation }) => ({
-          title: <Text style={styles.headerTitle}>SIΞRRΛ</Text>,
+          headerTitle: () => <Text style={styles.headerTitle}>Sierra</Text>,
           headerRight: ({ tintColor }) => (
             <View style={styles.headerButtonContainer}>
               <TouchableOpacity
@@ -226,9 +226,6 @@ const styles = StyleSheet.create({
     fontFamily: "Orbitron_400Regular",
     fontSize: 32,
     color: "#fff",
-    letterSpacing: 4,
-    textTransform: "uppercase",
-    fontWeight: "bold",
     textShadowColor: "#333",
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 10,
