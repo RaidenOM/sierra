@@ -1,5 +1,6 @@
 import { useRoute } from "@react-navigation/native";
 import { Image, StyleSheet, View } from "react-native";
+import { StatusBar } from "react-native";
 
 export default function ViewImageScreen() {
   const route = useRoute();
@@ -12,6 +13,7 @@ export default function ViewImageScreen() {
         style={styles.imageStyle}
         resizeMode="contain"
       />
+      <StatusBar backgroundColor={"black"} barStyle={"light-content"} />
     </View>
   );
 }
