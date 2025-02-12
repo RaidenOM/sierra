@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { UserContext } from "../store/user-context";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function UserProfileScreen({ navigation }) {
   const { user, logout, loading } = useContext(UserContext);
@@ -9,17 +10,31 @@ export default function UserProfileScreen({ navigation }) {
   // Check if user data is available
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <LinearGradient
+        style={styles.loadingContainer}
+        colors={[
+          "rgb(215, 236, 250)",
+          "rgb(239, 239, 255)",
+          "rgb(255, 235, 253)",
+        ]}
+      >
         <ActivityIndicator size="large" color="#4CAF50" />
         <Text style={styles.loadingText}>Loading Details...</Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   console.log(user);
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      style={styles.container}
+      colors={[
+        "rgb(215, 236, 250)",
+        "rgb(239, 239, 255)",
+        "rgb(255, 235, 253)",
+      ]}
+    >
       <View style={styles.card}>
         <Image
           source={{ uri: user.profilePhoto }}
@@ -43,7 +58,7 @@ export default function UserProfileScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -53,7 +68,6 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#dfe5f7",
   },
   card: {
     backgroundColor: "white",
@@ -73,7 +87,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     marginBottom: 15,
     borderWidth: 3,
-    borderColor: "#2575fc",
+    borderColor: "#6993ff",
   },
   name: {
     fontSize: 26,
@@ -105,7 +119,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#dfe5f7",
   },
   loadingText: {
     marginTop: 10,

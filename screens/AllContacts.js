@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "../store/user-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { LinearGradient } from "expo-linear-gradient";
 
 function AllContacts() {
   const { contacts, fetchContacts } = useContext(UserContext);
@@ -40,7 +41,14 @@ function AllContacts() {
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      style={styles.container}
+      colors={[
+        "rgb(215, 236, 250)",
+        "rgb(239, 239, 255)",
+        "rgb(255, 235, 253)",
+      ]}
+    >
       <View style={styles.refreshButtonContainer}>
         <Text style={styles.title}>Contacts</Text>
         {!loading ? (
@@ -52,7 +60,7 @@ function AllContacts() {
             }}
             disabled={loading}
           >
-            <Ionicons name="refresh" size={24} color={"#999896"} />
+            <Ionicons name="refresh" size={24} color={"#7f8c8d"} />
           </TouchableOpacity>
         ) : (
           <ActivityIndicator color="#4CAF50" />
@@ -79,14 +87,13 @@ function AllContacts() {
           </Text>
         </View>
       )}
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#dfe5f7",
   },
   title: {
     fontSize: 28,
@@ -97,12 +104,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#dfe5f7",
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#555",
   },
   listContainer: {
     paddingBottom: 20,

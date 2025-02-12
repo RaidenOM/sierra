@@ -5,6 +5,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { ActivityIndicator } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 function ProfileScreen() {
   const navigation = useNavigation();
@@ -38,15 +39,29 @@ function ProfileScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <LinearGradient
+        style={styles.loadingContainer}
+        colors={[
+          "rgb(215, 236, 250)",
+          "rgb(239, 239, 255)",
+          "rgb(255, 235, 253)",
+        ]}
+      >
         <ActivityIndicator size="large" color="#4CAF50" />
         <Text style={styles.loadingText}>Loading Details...</Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      style={styles.container}
+      colors={[
+        "rgb(215, 236, 250)",
+        "rgb(239, 239, 255)",
+        "rgb(255, 235, 253)",
+      ]}
+    >
       <View style={styles.card}>
         <Image
           source={{ uri: user.profilePhoto }}
@@ -66,7 +81,7 @@ function ProfileScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -76,7 +91,6 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#dfe5f7",
   },
   card: {
     backgroundColor: "white",
@@ -96,7 +110,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     marginBottom: 15,
     borderWidth: 3,
-    borderColor: "#2575fc",
+    borderColor: "#6993ff",
   },
   name: {
     fontSize: 26,
@@ -139,7 +153,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#dfe5f7",
   },
   loadingText: {
     marginTop: 10,

@@ -9,6 +9,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function EditProfileScreen() {
   const { user, token, setIsAuthenticating, logout } = useContext(UserContext);
@@ -124,7 +125,14 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      style={styles.container}
+      colors={[
+        "rgb(215, 236, 250)",
+        "rgb(239, 239, 255)",
+        "rgb(255, 235, 253)",
+      ]}
+    >
       <View style={styles.card}>
         <View style={styles.profileImage}>
           <Image
@@ -172,7 +180,7 @@ export default function EditProfileScreen() {
           Delete Profile
         </CustomButton>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 

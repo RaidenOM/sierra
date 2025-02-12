@@ -41,9 +41,8 @@ function HomeTab() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#6993ff",
-        tabBarInactiveTintColor: "#ccc",
+        tabBarInactiveTintColor: "#7f8c8d",
         tabBarStyle: {
-          backgroundColor: "#fff",
           shadowColor: "#000",
           shadowOffset: { width: 0, height: -5 },
           shadowOpacity: 0.25,
@@ -102,7 +101,6 @@ function MainAppStack() {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#fff",
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 5 },
           shadowOpacity: 0.25,
@@ -116,6 +114,8 @@ function MainAppStack() {
           close: TransitionSpecs.TransitionIOSSpec,
         },
         headerBackTitleVisible: false,
+
+        headerTitleStyle: { fontSize: 20, fontWeight: "regular" },
       }}
     >
       <Stack.Screen
@@ -149,18 +149,58 @@ function MainAppStack() {
       <Stack.Screen
         name="ProfileScreen"
         component={ProfileScreen}
-        options={{ headerTitle: "Profile" }}
+        options={{
+          headerTitle: () => (
+            <View>
+              <Text
+                style={{
+                  fontFamily: "Orbitron_400Regular",
+                  fontSize: 20,
+                  color: "#6993ff",
+                }}
+              >
+                Profile
+              </Text>
+            </View>
+          ),
+        }}
       />
       <Stack.Screen
         name="UserProfileScreen"
         component={UserProfileScreen}
-        options={{ headerTitle: "User Details" }}
+        options={{
+          headerTitle: () => (
+            <View>
+              <Text
+                style={{
+                  fontFamily: "Orbitron_400Regular",
+                  fontSize: 20,
+                  color: "#6993ff",
+                }}
+              >
+                User Details
+              </Text>
+            </View>
+          ),
+        }}
       />
       <Stack.Screen
         name="ViewImageScreen"
         component={ViewImageScreen}
         options={{
-          headerTitle: "Viewing Image",
+          headerTitle: () => (
+            <View>
+              <Text
+                style={{
+                  fontFamily: "Orbitron_400Regular",
+                  fontSize: 20,
+                  color: "#fff",
+                }}
+              >
+                Viewing Image
+              </Text>
+            </View>
+          ),
           headerStyle: {
             backgroundColor: "black",
           },
@@ -170,14 +210,40 @@ function MainAppStack() {
         name="ViewVideoScreen"
         component={ViewVideoScreen}
         options={{
-          headerTitle: "Viewing Video",
+          headerTitle: () => (
+            <View>
+              <Text
+                style={{
+                  fontFamily: "Orbitron_400Regular",
+                  fontSize: 20,
+                  color: "#fff",
+                }}
+              >
+                Playing Video
+              </Text>
+            </View>
+          ),
           headerStyle: { backgroundColor: "black" },
         }}
       />
       <Stack.Screen
         name="EditProfileScreen"
         component={EditProfileScreen}
-        options={{ headerTitle: "Edit Profile" }}
+        options={{
+          headerTitle: () => (
+            <View>
+              <Text
+                style={{
+                  fontFamily: "Orbitron_400Regular",
+                  fontSize: 20,
+                  color: "#6993ff",
+                }}
+              >
+                Edit Profile
+              </Text>
+            </View>
+          ),
+        }}
       />
     </Stack.Navigator>
   );
