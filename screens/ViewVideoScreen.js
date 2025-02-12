@@ -4,6 +4,7 @@ import { ResizeMode, Video } from "expo-av";
 import { Dimensions, Text } from "react-native";
 import { useRef, useState } from "react";
 import Slider from "@react-native-community/slider";
+import { StatusBar } from "react-native";
 
 export default function ViewVideoScreen() {
   const routes = useRoute();
@@ -60,6 +61,7 @@ export default function ViewVideoScreen() {
           {formatTime(progress)} / {formatTime(duration)}
         </Text>
       </View>
+      <StatusBar backgroundColor={"black"} barStyle={"light-content"} />
     </View>
   );
 }

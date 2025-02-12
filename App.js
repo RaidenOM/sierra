@@ -283,7 +283,7 @@ export default function App() {
       <UserProvider>
         <Navigation />
       </UserProvider>
-      <StatusBar backgroundColor={"black"} barStyle={"light-content"} />
+      <StatusBar backgroundColor={"white"} barStyle={"dark-content"} />
     </>
   );
 }
