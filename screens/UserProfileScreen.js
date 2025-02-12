@@ -60,11 +60,11 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 20,
     alignItems: "center",
-    elevation: 5,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 5,
     width: "90%",
   },
   profileImage: {
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: "#555",
+    color: "#7f8c8d",
   },
   phoneNumber: {
     fontSize: 16,

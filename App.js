@@ -40,13 +40,17 @@ function HomeTab() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#fff",
+        tabBarActiveTintColor: "#6993ff",
         tabBarInactiveTintColor: "#ccc",
         tabBarStyle: {
-          backgroundColor: "#3498db",
-          borderTopLeftRadius: 15,
-          borderTopRightRadius: 15,
+          backgroundColor: "#fff",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -5 },
+          shadowOpacity: 0.25,
+          shadowRadius: 5,
+          elevation: 5,
         },
+        paddingVertical: 10,
       }}
     >
       <Tab.Screen
@@ -64,7 +68,7 @@ function HomeTab() {
         name="AllContacts"
         options={{
           tabBarIcon: ({ color }) => (
-            <Ionicons name="people-outline" size={30} color={color} />
+            <Ionicons name="people" size={30} color={color} />
           ),
           tabBarLabel: "Contacts",
         }}
@@ -98,10 +102,14 @@ function MainAppStack() {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#3498db",
-          shadowOpacity: 0.3,
+          backgroundColor: "#fff",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 5 },
+          shadowOpacity: 0.25,
+          shadowRadius: 5,
+          elevation: 5, // Android shadow
         },
-        headerTintColor: "#fff",
+        headerTintColor: "#6993ff",
         cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         transitionSpec: {
           open: TransitionSpecs.TransitionIOSSpec,
@@ -114,7 +122,11 @@ function MainAppStack() {
         name="HomeTab"
         component={HomeTab}
         options={({ navigation }) => ({
-          headerTitle: () => <Text style={styles.headerTitle}>Sierra</Text>,
+          headerTitle: ({ tintColor }) => (
+            <Text style={[styles.headerTitle, { color: tintColor }]}>
+              Sierra
+            </Text>
+          ),
           headerRight: ({ tintColor }) => (
             <View style={styles.headerButtonContainer}>
               <TouchableOpacity
@@ -122,10 +134,11 @@ function MainAppStack() {
                   navigation.navigate("UserProfileScreen");
                 }}
               >
-                <Ionicons name="person-circle" size={30} color="#fff" />
+                <Ionicons name="person-circle" size={30} color={tintColor} />
               </TouchableOpacity>
             </View>
           ),
+          headerTitleContainerStyle: { width: "100%" },
         })}
       />
       <Stack.Screen
@@ -225,10 +238,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: "Orbitron_400Regular",
     fontSize: 32,
-    color: "#fff",
-    textShadowColor: "#333",
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 10,
   },
   headerButtonContainer: {
     flexDirection: "row",

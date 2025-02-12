@@ -144,7 +144,6 @@ export default function AllChats() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
     backgroundColor: "#dfe5f7",
   },
   title: {
@@ -152,6 +151,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
     marginBottom: 20,
+    marginTop: 15,
+    marginLeft: 15,
   },
   loadingContainer: {
     flex: 1,
@@ -174,6 +175,6 @@ const styles = StyleSheet.create({
   },
   noChatsText: {
     fontSize: 16,
-    color: "#777",
+    color: "#7f8c8d",
   },
 });

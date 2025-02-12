@@ -52,14 +52,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 15,
+    marginHorizontal: 15,
     marginVertical: 5,
     borderRadius: 10, // Same as ContactItem
-    backgroundColor: "#f9f9f9", // Similar to ContactItem's background color
-    elevation: 1,
+    backgroundColor: "#fff", // Similar to ContactItem's background color
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 5,
   },
   profilePhoto: {
     width: 50,
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
   },
   recentMessage: {
     fontSize: 14,
-    color: "#777",
+    color: "#7f8c8d",
     paddingRight: 10,
   },
   unreadMarker: {
