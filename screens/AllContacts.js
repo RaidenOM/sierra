@@ -86,7 +86,6 @@ function AllContacts() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
     backgroundColor: "#dfe5f7",
   },
   title: {
@@ -115,13 +114,15 @@ const styles = StyleSheet.create({
   },
   noContactsText: {
     fontSize: 16,
-    color: "#777",
+    color: "#7f8c8d",
   },
   refreshButtonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
+    marginTop: 15,
+    paddingHorizontal: 15,
   },
 });
 

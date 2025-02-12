@@ -24,13 +24,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 15,
     marginVertical: 5,
+    marginHorizontal: 15,
     borderRadius: 10,
-    backgroundColor: "#f9f9f9",
-    elevation: 1,
+    backgroundColor: "#fff",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 5,
   },
   profilePhoto: {
     width: 50,
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
   },
   bio: {
     fontSize: 14,
-    color: "#777",
+    color: "#7f8c8d",
     marginTop: 3,
   },
 });

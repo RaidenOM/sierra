@@ -182,7 +182,7 @@ function ChatScreen() {
               await handleChatDelete(receiverId);
             }}
           >
-            <Ionicons name="trash" size={25} color="#fff" />
+            <Ionicons name="trash" size={25} color={tintColor} />
           </TouchableOpacity>
         </View>
       ),
@@ -803,7 +803,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: "#555",
+    color: "#7f8c8d",
   },
   headerButtonContainer: {
     flexDirection: "row",
@@ -826,8 +826,8 @@ const styles = StyleSheet.create({
   },
   headerTitleUsername: {
     fontSize: 20,
-    color: "#fff",
-    fontWeight: "bold",
+    color: "#6993ff",
+    fontWeight: "500",
   },
   headerProfileImage: {
     width: 40,
