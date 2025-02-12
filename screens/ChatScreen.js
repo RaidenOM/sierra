@@ -25,6 +25,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { getThumbnailAsync } from "expo-video-thumbnails";
 import AudioPlayer from "../components/AudioPlayer";
+import { LinearGradient } from "expo-linear-gradient";
 
 const getAudioMimeType = (extension) => {
   switch (extension.toLowerCase()) {
@@ -545,176 +546,194 @@ function ChatScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <LinearGradient
+        style={styles.loadingContainer}
+        colors={[
+          "rgb(215, 236, 250)",
+          "rgb(239, 239, 255)",
+          "rgb(255, 235, 253)",
+        ]}
+      >
         <ActivityIndicator size="large" color="#4CAF50" />
         <Text style={styles.loadingText}>Loading Chats...</Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   return (
-    <ImageBackground
+    <LinearGradient
       style={styles.container}
-      source={require("../assets/chat-background.png")}
-      resizeMode="contain"
+      colors={[
+        "rgb(215, 236, 250)",
+        "rgb(239, 239, 255)",
+        "rgb(255, 235, 253)",
+      ]}
     >
-      <FlatList
-        ref={flatListRef}
-        data={sortedMessages}
-        renderItem={renderItem}
-        keyExtractor={(item) => item._id.toString()}
-        contentContainerStyle={{ paddingBottom: 10 }}
-        onContentSizeChange={() => {
-          setTimeout(() => {
-            flatListRef.current?.scrollToEnd({
-              animated: true,
+      <ImageBackground
+        style={{ flex: 1 }}
+        source={require("../assets/chat-background.png")}
+        resizeMode="contain"
+      >
+        <FlatList
+          ref={flatListRef}
+          data={sortedMessages}
+          renderItem={renderItem}
+          keyExtractor={(item) => item._id.toString()}
+          contentContainerStyle={{ paddingBottom: 10 }}
+          onContentSizeChange={() => {
+            setTimeout(() => {
+              flatListRef.current?.scrollToEnd({
+                animated: true,
+              });
             });
-          });
-        }}
-      />
-      <View style={styles.bottomContainer}>
-        {showPicker && (
-          <View style={styles.picker}>
-            <View style={styles.pickerOptionsContainer}>
+          }}
+        />
+        <View style={styles.bottomContainer}>
+          {showPicker && (
+            <View style={styles.picker}>
+              <View style={styles.pickerOptionsContainer}>
+                <TouchableOpacity
+                  style={styles.pickerOptions}
+                  onPress={handleAudioPick}
+                >
+                  <Ionicons name="musical-notes" size={30} />
+                  <Text>Audio</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.pickerOptions}
+                  onPress={handleGalleryPick}
+                >
+                  <Ionicons name="image" size={30} />
+                  <Text>Gallery</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+          {selectedImageUri && (
+            <View style={styles.previewImageContainer}>
+              <View style={styles.previewImage}>
+                <Image
+                  source={{ uri: selectedImageUri }}
+                  style={{ width: "100%", height: "100%", borderRadius: 8 }} // Add styles for preview image
+                />
+                <TouchableOpacity
+                  style={styles.previewImageCancel}
+                  onPress={() => {
+                    setSelectedImageUri("");
+                  }}
+                >
+                  <Text style={{ color: "#fff", fontWeight: "light" }}>✖</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+          {selectedVideoUri && selectedVideoThumbnail && (
+            <View style={styles.previewImageContainer}>
               <TouchableOpacity
-                style={styles.pickerOptions}
-                onPress={handleAudioPick}
+                onPress={() =>
+                  navigation.navigate("ViewVideoScreen", {
+                    mediaURL: selectedVideoUri,
+                  })
+                }
+                style={styles.previewImage}
               >
+                <Image
+                  source={{ uri: selectedVideoThumbnail }}
+                  style={{ width: "100%", height: "100%", borderRadius: 8 }}
+                />
+                <Ionicons
+                  name="play-circle"
+                  color="#fff"
+                  size={40}
+                  style={styles.previewPlayOutline}
+                />
+                <TouchableOpacity
+                  style={styles.previewImageCancel}
+                  onPress={() => setSelectedVideoUri("")}
+                >
+                  <Text style={{ color: "#fff" }}>✖</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            </View>
+          )}
+          {selectedAudioUri && (
+            <View style={styles.previewAudioContainer}>
+              <View style={styles.previewAudio}>
                 <Ionicons name="musical-notes" size={30} />
-                <Text>Audio</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.pickerOptions}
-                onPress={handleGalleryPick}
-              >
-                <Ionicons name="image" size={30} />
-                <Text>Gallery</Text>
-              </TouchableOpacity>
+                <Text style={{ marginTop: 10, color: "#575757" }}>
+                  {audioName}
+                </Text>
+                <TouchableOpacity
+                  style={styles.previewImageCancel}
+                  onPress={() => {
+                    setSelectedAudioUri("");
+                  }}
+                >
+                  <Text style={{ color: "#fff", fontWeight: "light" }}>✖</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        )}
-        {selectedImageUri && (
-          <View style={styles.previewImageContainer}>
-            <View style={styles.previewImage}>
-              <Image
-                source={{ uri: selectedImageUri }}
-                style={{ width: "100%", height: "100%", borderRadius: 8 }} // Add styles for preview image
-              />
-              <TouchableOpacity
-                style={styles.previewImageCancel}
-                onPress={() => {
-                  setSelectedImageUri("");
+          )}
+          <View style={styles.inputTextButton}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[
+                  styles.textInput,
+                  { height: Math.max(inputHeight, 40) },
+                ]}
+                placeholder="Type your message..."
+                value={newMessage}
+                onChangeText={(newText) => {
+                  setNewMessage(newText);
+                  if (!isTyping) {
+                    setIsTyping(true);
+                  }
                 }}
-              >
-                <Text style={{ color: "#fff", fontWeight: "light" }}>✖</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-        {selectedVideoUri && selectedVideoThumbnail && (
-          <View style={styles.previewImageContainer}>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("ViewVideoScreen", {
-                  mediaURL: selectedVideoUri,
-                })
-              }
-              style={styles.previewImage}
-            >
-              <Image
-                source={{ uri: selectedVideoThumbnail }}
-                style={{ width: "100%", height: "100%", borderRadius: 8 }}
-              />
-              <Ionicons
-                name="play-circle"
-                color="#fff"
-                size={40}
-                style={styles.previewPlayOutline}
+                onContentSizeChange={(event) => {
+                  const newHeight = event.nativeEvent.contentSize.height;
+                  setInputHeight(Math.min(newHeight, 150));
+                }}
+                multiline
               />
               <TouchableOpacity
-                style={styles.previewImageCancel}
-                onPress={() => setSelectedVideoUri("")}
-              >
-                <Text style={{ color: "#fff" }}>✖</Text>
-              </TouchableOpacity>
-            </TouchableOpacity>
-          </View>
-        )}
-        {selectedAudioUri && (
-          <View style={styles.previewAudioContainer}>
-            <View style={styles.previewAudio}>
-              <Ionicons name="musical-notes" size={30} />
-              <Text style={{ marginTop: 10, color: "#575757" }}>
-                {audioName}
-              </Text>
-              <TouchableOpacity
-                style={styles.previewImageCancel}
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginHorizontal: 5,
+                }}
                 onPress={() => {
+                  setShowPicker((prevState) => !prevState);
+                  setSelectedImageUri("");
+                  setSelectedVideoUri("");
                   setSelectedAudioUri("");
                 }}
               >
-                <Text style={{ color: "#fff", fontWeight: "light" }}>✖</Text>
+                <Ionicons name="ellipsis-vertical" size={20} />
               </TouchableOpacity>
             </View>
-          </View>
-        )}
-        <View style={styles.inputTextButton}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.textInput, { height: Math.max(inputHeight, 40) }]}
-              placeholder="Type your message..."
-              value={newMessage}
-              onChangeText={(newText) => {
-                setNewMessage(newText);
-                if (!isTyping) {
-                  setIsTyping(true);
-                }
-              }}
-              onContentSizeChange={(event) => {
-                const newHeight = event.nativeEvent.contentSize.height;
-                setInputHeight(Math.min(newHeight, 150));
-              }}
-              multiline
-            />
             <TouchableOpacity
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                marginHorizontal: 5,
-              }}
-              onPress={() => {
-                setShowPicker((prevState) => !prevState);
-                setSelectedImageUri("");
-                setSelectedVideoUri("");
-                setSelectedAudioUri("");
-              }}
+              style={styles.sendButton}
+              onPress={handleSendMessage}
+              disabled={sendLoading}
             >
-              <Ionicons name="ellipsis-vertical" size={20} />
+              {sendLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.sendButtonText}>
+                  <Ionicons name="arrow-forward" size={20} />
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.sendButton}
-            onPress={handleSendMessage}
-            disabled={sendLoading}
-          >
-            {sendLoading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.sendButtonText}>
-                <Ionicons name="arrow-forward" size={20} />
-              </Text>
-            )}
-          </TouchableOpacity>
         </View>
-      </View>
-    </ImageBackground>
+      </ImageBackground>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#dfe5f7",
   },
   dateSeparator: {
     alignItems: "center",
@@ -755,7 +774,7 @@ const styles = StyleSheet.create({
     maxWidth: "75%",
   },
   currentUserBubble: {
-    backgroundColor: "#0078d4",
+    backgroundColor: "#6993ff",
   },
   messageText: {
     color: "#000",
@@ -782,7 +801,7 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     marginLeft: 10,
-    backgroundColor: "#0078d4",
+    backgroundColor: "#6993ff",
     borderRadius: 20,
     width: 40,
     height: 40,
@@ -798,7 +817,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#dfe5f7",
   },
   loadingText: {
     marginTop: 10,
@@ -825,9 +843,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerTitleUsername: {
+    fontFamily: "Orbitron_400Regular",
     fontSize: 20,
     color: "#6993ff",
-    fontWeight: "500",
   },
   headerProfileImage: {
     width: 40,

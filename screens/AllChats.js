@@ -7,6 +7,7 @@ import ChatItem from "../components/ChatItem";
 import { ActivityIndicator } from "react-native";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function AllChats() {
   const { socket, user, token, typingUsers } = useContext(UserContext);
@@ -91,15 +92,29 @@ export default function AllChats() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <LinearGradient
+        style={styles.loadingContainer}
+        colors={[
+          "rgb(215, 236, 250)",
+          "rgb(239, 239, 255)",
+          "rgb(255, 235, 253)",
+        ]}
+      >
         <ActivityIndicator size="large" color="#4CAF50" />
         <Text style={styles.loadingText}>Fetching Chats...</Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      style={styles.container}
+      colors={[
+        "rgba(215, 236, 250)",
+        "rgba(239, 239, 255)",
+        "rgba(255, 235, 253)",
+      ]}
+    >
       <Text style={styles.title}>Chats</Text>
       {chats.length > 0 ? (
         <FlatList
@@ -137,14 +152,13 @@ export default function AllChats() {
           <Text style={styles.noChatsText}>No Chats Found</Text>
         </View>
       )}
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#dfe5f7",
   },
   title: {
     fontSize: 28,
@@ -158,12 +172,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#dfe5f7",
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: "#555",
+    color: "#7f8c8d",
   },
   listContainer: {
     paddingBottom: 20,
