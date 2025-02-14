@@ -16,7 +16,10 @@ const countries = [
   { label: "🇰🇷 South Korea", code: "+82" },
   { label: "🇹🇷 Turkey", code: "+90" },
   { label: "🇸🇦 Saudi Arabia", code: "+966" },
-  { label: "🇦🇪 United Arab Emirates", code: "+971" },
+  {
+    label: "🇦🇪 United Arab Emirates",
+    code: "+971",
+  },
   { label: "🇦🇷 Argentina", code: "+54" },
   { label: "🇨🇭 Switzerland", code: "+41" },
   { label: "🇳🇱 Netherlands", code: "+31" },
