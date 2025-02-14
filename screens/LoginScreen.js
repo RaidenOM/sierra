@@ -139,4 +139,8 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     textAlign: "center",
   },
+  input: {
+    marginBottom: 15,
+    width: "100%",
+  },
 });
