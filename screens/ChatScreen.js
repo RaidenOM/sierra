@@ -544,22 +544,6 @@ function ChatScreen() {
     }
   };
 
-  if (loading) {
-    return (
-      <LinearGradient
-        style={styles.loadingContainer}
-        colors={[
-          "rgb(215, 236, 250)",
-          "rgb(239, 239, 255)",
-          "rgb(255, 235, 253)",
-        ]}
-      >
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>Loading Chats...</Text>
-      </LinearGradient>
-    );
-  }
-
   return (
     <LinearGradient
       style={styles.container}
@@ -574,20 +558,28 @@ function ChatScreen() {
         source={require("../assets/chat-background.png")}
         resizeMode="contain"
       >
-        <FlatList
-          ref={flatListRef}
-          data={sortedMessages}
-          renderItem={renderItem}
-          keyExtractor={(item) => item._id.toString()}
-          contentContainerStyle={{ paddingBottom: 10 }}
-          onContentSizeChange={() => {
-            setTimeout(() => {
-              flatListRef.current?.scrollToEnd({
-                animated: true,
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#4CAF50" />
+            <Text style={styles.loadingText}>Loading Chats...</Text>
+          </View>
+        ) : (
+          <FlatList
+            ref={flatListRef}
+            data={sortedMessages}
+            renderItem={renderItem}
+            keyExtractor={(item) => item._id.toString()}
+            contentContainerStyle={{ paddingBottom: 10 }}
+            onContentSizeChange={() => {
+              setTimeout(() => {
+                flatListRef.current?.scrollToEnd({
+                  animated: true,
+                });
               });
-            });
-          }}
-        />
+            }}
+          />
+        )}
+
         <View style={styles.bottomContainer}>
           {showPicker && (
             <View style={styles.picker}>

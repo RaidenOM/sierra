@@ -34,9 +34,6 @@ export const normalizePhoneNumber = (phone) => {
 };
 
 export const validatePhoneNumber = (phone) => {
-  const phoneRegex = /^\+\d{1,3}\d{10}$/;
-  if (!phoneRegex.test(phone)) {
-    return false;
-  }
-  return true;
+  const phoneRegex = /^\d{10}$/;
+  return phoneRegex.test(phone);
 };

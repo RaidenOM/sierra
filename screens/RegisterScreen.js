@@ -4,6 +4,8 @@ import axios from "axios";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 import { validatePhoneNumber } from "../utils/UtilityFunctions";
+import { Picker } from "@react-native-picker/picker";
+import countries from "../utils/CountryCodes";
 
 export default function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState("");
@@ -11,6 +13,7 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [registerLoading, setRegisterLoading] = useState(false);
+  const [country, setCountry] = useState("+91");
 
   // Function to validate phone number and other inputs
   const validateInputs = () => {
@@ -39,10 +42,7 @@ export default function RegisterScreen({ navigation }) {
 
     // Validate phone number with regex for proper format (+<country_code> followed by 10 digits)
     if (!validatePhoneNumber(phone)) {
-      Alert.alert(
-        "Validation Error",
-        "Phone number must be in the format +<country_code><10_digits>."
-      );
+      Alert.alert("Validation Error", "Invalid phone number");
       return false;
     }
 
@@ -79,7 +79,7 @@ export default function RegisterScreen({ navigation }) {
         "https://sierra-backend.onrender.com/register",
         {
           username: trimmedUsername,
-          phone: trimmedPhone,
+          phone: country + trimmedPhone,
           password,
         }
       );
@@ -93,6 +93,7 @@ export default function RegisterScreen({ navigation }) {
     } finally {
       setRegisterLoading(false);
     }
+    console.log(country + phone);
   };
 
   return (
@@ -107,13 +108,28 @@ export default function RegisterScreen({ navigation }) {
         style={styles.input}
         autoCapitalize="none"
       />
-      <CustomInput
-        placeholder="Phone"
-        value={phone}
-        onChangeText={setPhone}
-        style={styles.input}
-        keyboardType="phone-pad"
-      />
+      <View style={styles.phoneContainer}>
+        <Picker
+          style={styles.picker}
+          selectedValue={country}
+          onValueChange={(value) => setCountry(value)}
+        >
+          {countries.map((country) => (
+            <Picker.Item
+              label={country.label}
+              value={country.code}
+              key={country.code}
+            />
+          ))}
+        </Picker>
+        <CustomInput
+          placeholder="Phone Number"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+          style={styles.phoneInput}
+        />
+      </View>
       <CustomInput
         placeholder="Password"
         value={password}
@@ -171,6 +187,7 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 15,
+    width: "100%",
   },
   registerButton: {
     backgroundColor: "#6993ff",
@@ -186,5 +203,19 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "#95a5a6",
+  },
+  phoneContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 15,
+  },
+  picker: {
+    flex: 1,
+    height: 50,
+    marginRight: 10,
+  },
+  phoneInput: {
+    flex: 1,
   },
 });

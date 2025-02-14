@@ -2,9 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../store/user-context";
 import axios from "axios";
 import { StyleSheet } from "react-native";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import ChatItem from "../components/ChatItem";
-import { ActivityIndicator } from "react-native";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -16,7 +15,6 @@ export default function AllChats() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
-  // Get latest chats for current user
   useEffect(() => {
     const fetchChats = async () => {
       const response = await axios.get(
@@ -34,7 +32,6 @@ export default function AllChats() {
     if (isFocused) fetchChats();
   }, [token, isFocused]);
 
-  // handle emits from server
   useEffect(() => {
     if (!socket) return;
 
@@ -47,14 +44,12 @@ export default function AllChats() {
             ? message.receiverId._id
             : message.senderId._id;
 
-        // Find the chat to update, if exists
         const indexToBeUpdated = updatedChats.findIndex(
           (chat) =>
             chat.senderId._id === otherPersonId ||
             chat.receiverId._id === otherPersonId
         );
 
-        // If the chat exists, update it; otherwise, add the new message
         if (indexToBeUpdated >= 0) {
           updatedChats[indexToBeUpdated] = message;
         } else {
@@ -82,75 +77,69 @@ export default function AllChats() {
 
   async function handlePress(otherPersonId) {
     setChats((prevChats) => {
-      let updatedChats = prevChats.map((chat) => {
-        return { ...chat, unreadCount: 0, isRead: true };
-      });
-      return updatedChats;
+      return prevChats.map((chat) => ({
+        ...chat,
+        unreadCount: 0,
+        isRead: true,
+      }));
     });
     navigation.navigate("ChatScreen", { receiverId: otherPersonId });
-  }
-
-  if (loading) {
-    return (
-      <LinearGradient
-        style={styles.loadingContainer}
-        colors={[
-          "rgb(215, 236, 250)",
-          "rgb(239, 239, 255)",
-          "rgb(255, 235, 253)",
-        ]}
-      >
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>Fetching Chats...</Text>
-      </LinearGradient>
-    );
   }
 
   return (
     <LinearGradient
       style={styles.container}
       colors={[
-        "rgba(215, 236, 250)",
-        "rgba(239, 239, 255)",
-        "rgba(255, 235, 253)",
+        "rgba(215, 236, 250, 1)",
+        "rgba(239, 239, 255, 1)",
+        "rgba(255, 235, 253, 1)",
       ]}
     >
       <Text style={styles.title}>Chats</Text>
-      {chats.length > 0 ? (
-        <FlatList
-          data={profiles}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={({ item }) => {
-            const recentMessage = getLatestMessage(item._id);
-            return (
-              <ChatItem
-                name={item.username}
-                recentMessage={
-                  recentMessage.message ||
-                  (recentMessage.mediaType === "image" && (
-                    <Ionicons name="image" />
-                  )) ||
-                  (recentMessage.mediaType === "video" && (
-                    <Ionicons name="videocam" />
-                  )) ||
-                  (recentMessage.mediaType === "audio" && (
-                    <Ionicons name="musical-notes" />
-                  ))
-                }
-                profilePhoto={item.profilePhoto}
-                isSent={recentMessage.senderId._id === user._id}
-                unreadCount={recentMessage.unreadCount || 0}
-                onPress={() => handlePress(item._id)}
-                typing={!!typingUsers[item._id]}
-              />
-            );
-          }}
-          contentContainerStyle={styles.listContainer}
-        />
-      ) : (
-        <View style={styles.noChatsContainer}>
-          <Text style={styles.noChatsText}>No Chats Found</Text>
+      {loading ? (
+        <View style={[styles.container, styles.loadingContainer]}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+          <Text style={styles.loadingText}>Fetching Chats...</Text>
         </View>
+      ) : (
+        <>
+          {chats.length > 0 ? (
+            <FlatList
+              data={profiles}
+              keyExtractor={(item) => item._id.toString()}
+              renderItem={({ item }) => {
+                const recentMessage = getLatestMessage(item._id);
+                return (
+                  <ChatItem
+                    name={item.username}
+                    recentMessage={
+                      recentMessage.message ||
+                      (recentMessage.mediaType === "image" && (
+                        <Ionicons name="image" />
+                      )) ||
+                      (recentMessage.mediaType === "video" && (
+                        <Ionicons name="videocam" />
+                      )) ||
+                      (recentMessage.mediaType === "audio" && (
+                        <Ionicons name="musical-notes" />
+                      ))
+                    }
+                    profilePhoto={item.profilePhoto}
+                    isSent={recentMessage.senderId._id === user._id}
+                    unreadCount={recentMessage.unreadCount || 0}
+                    onPress={() => handlePress(item._id)}
+                    typing={!!typingUsers[item._id]}
+                  />
+                );
+              }}
+              contentContainerStyle={styles.listContainer}
+            />
+          ) : (
+            <View style={styles.noChatsContainer}>
+              <Text style={styles.noChatsText}>No Chats Found</Text>
+            </View>
+          )}
+        </>
       )}
     </LinearGradient>
   );

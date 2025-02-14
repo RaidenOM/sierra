@@ -9,10 +9,11 @@ export default function CustomInput({
   keyboardType,
   autoCapitalize,
   multiline,
+  style,
 }) {
   return (
     <TextInput
-      style={styles.input}
+      style={[styles.input, style]}
       placeholder={placeholder}
       value={value}
       onChangeText={onChangeText}
@@ -27,7 +28,6 @@ export default function CustomInput({
 
 const styles = StyleSheet.create({
   input: {
-    width: "100%",
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 12,
