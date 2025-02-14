@@ -10,6 +10,9 @@ import {
   ActivityIndicator,
   Alert,
   ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
 } from "react-native";
 import {
   useIsFocused,
@@ -26,6 +29,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { getThumbnailAsync } from "expo-video-thumbnails";
 import AudioPlayer from "../components/AudioPlayer";
 import { LinearGradient } from "expo-linear-gradient";
+import EmojiSelector from "react-native-emoji-selector";
 
 const getAudioMimeType = (extension) => {
   switch (extension.toLowerCase()) {
@@ -52,6 +56,7 @@ function ChatScreen() {
   const [showPicker, setShowPicker] = useState(false);
   const [audioName, setAudioName] = useState("");
   const [inputHeight, setInputHeight] = useState(40);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // State for emoji picker visibility
 
   const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -68,6 +73,7 @@ function ChatScreen() {
   const [isTyping, setIsTyping] = useState(false);
 
   const flatListRef = useRef(null);
+  const keyboardRef = useRef(null);
 
   // Fetch receiver information
   useEffect(() => {
@@ -667,6 +673,19 @@ function ChatScreen() {
             </View>
           )}
           <View style={styles.inputTextButton}>
+            <TouchableOpacity
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginRight: 10,
+              }}
+              onPress={() => {
+                setShowEmojiPicker(!showEmojiPicker);
+                Keyboard.dismiss();
+              }}
+            >
+              <Ionicons name="happy-outline" size={30} color="#6993ff" />
+            </TouchableOpacity>
             <View style={styles.inputContainer}>
               <TextInput
                 style={[
@@ -685,6 +704,8 @@ function ChatScreen() {
                   const newHeight = event.nativeEvent.contentSize.height;
                   setInputHeight(Math.min(newHeight, 150));
                 }}
+                onFocus={() => setShowEmojiPicker(false)}
+                ref={keyboardRef}
                 multiline
               />
               <TouchableOpacity
@@ -717,6 +738,16 @@ function ChatScreen() {
               )}
             </TouchableOpacity>
           </View>
+          {showEmojiPicker && (
+            <EmojiSelector
+              onEmojiSelected={(emoji) => {
+                setNewMessage((prevMessage) => prevMessage + emoji);
+              }}
+              style={styles.emojiPicker}
+              showHistory={true}
+              showSearchBar={false}
+            />
+          )}
         </View>
       </ImageBackground>
     </LinearGradient>
@@ -940,6 +971,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 10,
     flexDirection: "row",
+  },
+  emojiPicker: {
+    height: 250,
   },
 });
 

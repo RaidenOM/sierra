@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
+import { View, Text, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import axios from "axios";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
@@ -22,9 +15,7 @@ export default function RegisterScreen({ navigation }) {
   const [registerLoading, setRegisterLoading] = useState(false);
   const [country, setCountry] = useState("+91");
 
-  // Function to validate phone number and other inputs
   const validateInputs = () => {
-    // Username validation
     if (!username.trim()) {
       Alert.alert("Validation Error", "Username is required.");
       return false;
@@ -41,19 +32,16 @@ export default function RegisterScreen({ navigation }) {
       return false;
     }
 
-    // Phone number validation (e.g., +91 followed by 10 digits)
     if (!phone.trim()) {
       Alert.alert("Validation Error", "Phone number is required.");
       return false;
     }
 
-    // Validate phone number with regex for proper format (+<country_code> followed by 10 digits)
     if (!validatePhoneNumber(phone)) {
       Alert.alert("Validation Error", "Invalid phone number");
       return false;
     }
 
-    // Password validation
     if (!password) {
       Alert.alert("Validation Error", "Password is required.");
       return false;
@@ -70,18 +58,16 @@ export default function RegisterScreen({ navigation }) {
       return false;
     }
 
-    return true; // All validations passed
+    return true;
   };
 
   const handleRegister = async () => {
-    // First validate inputs
     if (!validateInputs()) return;
 
     setRegisterLoading(true);
     const trimmedUsername = username.trim();
     const trimmedPhone = phone.trim();
     try {
-      // Sending data to backend for registration
       const response = await axios.post(
         "https://sierra-backend.onrender.com/register",
         {
