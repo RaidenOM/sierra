@@ -11,7 +11,7 @@ import axios from "axios";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 import { validatePhoneNumber } from "../utils/UtilityFunctions";
-import { Picker } from "@react-native-picker/picker";
+import { Dropdown } from "react-native-element-dropdown";
 import countries from "../utils/CountryCodes";
 
 export default function RegisterScreen({ navigation }) {
@@ -116,20 +116,20 @@ export default function RegisterScreen({ navigation }) {
         autoCapitalize="none"
       />
       <View style={styles.phoneContainer}>
-        <Picker
-          style={styles.picker}
-          selectedValue={country}
-          onValueChange={(value) => setCountry(value)}
-          mode={Platform.OS === "ios" ? "dropdown" : "dialog"}
-        >
-          {countries.map((country) => (
-            <Picker.Item
-              label={country.label}
-              value={country.code}
-              key={country.code}
-            />
-          ))}
-        </Picker>
+        <Dropdown
+          style={styles.dropdown}
+          data={countries}
+          search
+          maxHeight={300}
+          labelField="label"
+          valueField="code"
+          placeholder="Select country"
+          searchPlaceholder="Search..."
+          value={country}
+          onChange={(item) => {
+            setCountry(item.code);
+          }}
+        />
         <CustomInput
           placeholder="Phone Number"
           value={phone}
@@ -218,12 +218,14 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 15,
   },
-  picker: {
+  dropdown: {
     flex: 1,
-    height: 50,
     marginRight: 10,
+    borderRadius: 5,
+    paddingHorizontal: 10,
   },
   phoneInput: {
     flex: 1,
+    marginBottom: 0,
   },
 });
