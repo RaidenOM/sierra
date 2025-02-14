@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
 import axios from "axios";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
@@ -113,6 +120,7 @@ export default function RegisterScreen({ navigation }) {
           style={styles.picker}
           selectedValue={country}
           onValueChange={(value) => setCountry(value)}
+          mode={Platform.OS === "ios" ? "dropdown" : "dialog"}
         >
           {countries.map((country) => (
             <Picker.Item
