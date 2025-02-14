@@ -138,7 +138,6 @@ function MainAppStack() {
               </TouchableOpacity>
             </View>
           ),
-          headerTitleContainerStyle: { width: "100%" },
         })}
       />
       <Stack.Screen
@@ -290,17 +289,6 @@ export default function App() {
 
 // Styles
 const styles = StyleSheet.create({
-  tabBarContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#3498db",
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    paddingVertical: 10,
-  },
-  tabBarButton: {
-    alignItems: "center",
-  },
   headerTitle: {
     fontFamily: "Orbitron_400Regular",
     fontSize: 32,
