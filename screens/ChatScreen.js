@@ -10,8 +10,6 @@ import {
   ActivityIndicator,
   Alert,
   ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
   Keyboard,
 } from "react-native";
 import {
@@ -23,7 +21,7 @@ import axios from "axios";
 import { UserContext } from "../store/user-context";
 import { useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { getThumbnailAsync } from "expo-video-thumbnails";
