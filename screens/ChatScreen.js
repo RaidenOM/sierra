@@ -73,7 +73,6 @@ function ChatScreen() {
   const [isTyping, setIsTyping] = useState(false);
 
   const flatListRef = useRef(null);
-  const keyboardRef = useRef(null);
 
   // Fetch receiver information
   useEffect(() => {
@@ -705,7 +704,6 @@ function ChatScreen() {
                   setInputHeight(Math.min(newHeight, 150));
                 }}
                 onFocus={() => setShowEmojiPicker(false)}
-                ref={keyboardRef}
                 multiline
               />
               <TouchableOpacity

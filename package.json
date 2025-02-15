@@ -23,7 +23,6 @@
     "expo": "^51.0.0",
     "expo-av": "~14.0.7",
     "expo-contacts": "~13.0.5",
-    "expo-dev-client": "~4.0.29",
     "expo-document-picker": "~12.0.2",
     "expo-image-picker": "~15.1.0",
     "expo-linear-gradient": "~13.0.2",
