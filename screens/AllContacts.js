@@ -5,7 +5,6 @@ import {
   Text,
   View,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import ContactItem from "../components/ContactItem";
 import { useNavigation } from "@react-navigation/native";
@@ -15,24 +14,18 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 
 function AllContacts() {
-  const { contacts, fetchContacts } = useContext(UserContext);
+  const { contacts, fetchContacts, user } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   useEffect(() => {
     const getContacts = async () => {
-      try {
-        await fetchContacts();
-      } catch (error) {
-        console.error("Failed to fetch contacts", error);
-        Alert.alert("Error", "Unable to fetch contacts.");
-      } finally {
-        setLoading(false);
-      }
+      await fetchContacts();
+      setLoading(false);
     };
 
-    getContacts();
-  }, []);
+    if (user) getContacts();
+  }, [user]);
 
   const navigateToProfile = (contact) => {
     navigation.navigate("ProfileScreen", {

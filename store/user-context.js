@@ -6,6 +6,8 @@ import * as Contacts from "expo-contacts";
 import { Alert } from "react-native";
 import { normalizePhoneNumber } from "../utils/UtilityFunctions";
 import { Orbitron_400Regular, useFonts } from "@expo-google-fonts/orbitron";
+import { Sound } from "expo-av/build/Audio";
+import { Audio } from "expo-av";
 
 // connect socket io to backend
 const socket = io("https://sierra-backend.onrender.com", {
@@ -20,6 +22,8 @@ export const UserProvider = ({ children }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [contacts, setContacts] = useState([]);
   const [token, setToken] = useState();
+  const [messageRecievedSound, setMessageReceivedSound] = useState(null);
+  const [messageSentSound, setMessageSentSound] = useState(null);
   const [fontsLoaded] = useFonts({
     Orbitron_400Regular,
   });
@@ -75,14 +79,21 @@ export const UserProvider = ({ children }) => {
   // fetch contacts for a user and match with backend
   const fetchContacts = async () => {
     try {
-      // request permission
-      const { status } = await Contacts.requestPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permission denied",
-          "Cannot access contacts without permission."
-        );
-        return;
+      // check permission
+      const { status } = await Contacts.getPermissionsAsync();
+
+      // if not permitted request permissions
+      if (status != "granted") {
+        const { status: newStatus } = await Contacts.requestPermissionsAsync();
+
+        // if still denied show alert and return
+        if (newStatus !== "granted") {
+          Alert.alert(
+            "Permission denied",
+            "Cannot access contacts without permission."
+          );
+          return;
+        }
       }
 
       // fetch phone numbers on device
@@ -130,8 +141,6 @@ export const UserProvider = ({ children }) => {
     } catch (error) {
       console.error("Failed to fetch contacts", error);
       Alert.alert("Error", "Unable to fetch contacts.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -142,6 +151,41 @@ export const UserProvider = ({ children }) => {
       socket.emit("join-room", user._id);
     }
   }, [user]);
+
+  // load message sent and received audios
+  useEffect(() => {
+    const loadSound = async () => {
+      const { sound: receivedSound } = await Audio.Sound.createAsync(
+        require("../assets/audio/message_received.mp3")
+      );
+
+      const { sound: sentSound } = await Audio.Sound.createAsync(
+        require("../assets/audio/message_sent.mp3")
+      );
+
+      setMessageReceivedSound(receivedSound);
+      setMessageSentSound(sentSound);
+    };
+
+    loadSound();
+
+    return () => {
+      if (messageRecievedSound) messageRecievedSound.unloadAsync();
+      if (messageSentSound) messageSentSound.unloadAsync();
+    };
+  }, []);
+
+  const playMessageReceivedSound = async () => {
+    if (messageRecievedSound) {
+      await messageRecievedSound.replayAsync();
+    }
+  };
+
+  const playMessageSentSound = async () => {
+    if (messageSentSound) {
+      await messageSentSound.replayAsync();
+    }
+  };
 
   const logout = async () => {
     await AsyncStorage.removeItem("token");
@@ -163,6 +207,8 @@ export const UserProvider = ({ children }) => {
         token,
         fontsLoaded,
         typingUsers,
+        playMessageSentSound,
+        playMessageReceivedSound,
       }}
     >
       {children}

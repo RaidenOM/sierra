@@ -9,7 +9,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function AllChats() {
-  const { socket, user, token, typingUsers } = useContext(UserContext);
+  const { socket, user, token, typingUsers, playMessageReceivedSound } =
+    useContext(UserContext);
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
@@ -35,8 +36,10 @@ export default function AllChats() {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("chat-notify", (message) => {
+    socket.on("chat-notify", async (message) => {
       console.log("Received chat-notify message:", message);
+
+      await playMessageReceivedSound();
       setChats((prevChats) => {
         const updatedChats = [...prevChats];
         const otherPersonId =
@@ -51,10 +54,9 @@ export default function AllChats() {
         );
 
         if (indexToBeUpdated >= 0) {
-          updatedChats[indexToBeUpdated] = message;
-        } else {
-          updatedChats.unshift(message);
+          updatedChats.splice(indexToBeUpdated, 1);
         }
+        updatedChats.unshift(message);
 
         return updatedChats;
       });

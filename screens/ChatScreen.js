@@ -47,7 +47,8 @@ const getAudioMimeType = (extension) => {
 function ChatScreen() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { user, socket, token, typingUsers } = useContext(UserContext);
+  const { user, socket, token, typingUsers, playMessageSentSound } =
+    useContext(UserContext);
   const [sendLoading, setSendLoading] = useState(false);
   const { receiverId } = route.params;
   const [thumbnails, setThumbnails] = useState({});
@@ -539,6 +540,8 @@ function ChatScreen() {
         setSelectedVideoUri("");
         setSelectedAudioUri("");
         setInputHeight(40);
+
+        await playMessageSentSound();
       } catch (error) {
         console.error("Error sending message", error);
       } finally {
