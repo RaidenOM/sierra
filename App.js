@@ -14,8 +14,6 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 import { TransitionSpecs } from "@react-navigation/stack";
-
-// Screens
 import AllContacts from "./screens/AllContacts";
 import ChatScreen from "./screens/ChatScreen";
 import ProfileScreen from "./screens/ProfileScreen";
@@ -23,18 +21,14 @@ import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import UserProfileScreen from "./screens/UserProfileScreen";
 import AllChats from "./screens/AllChats";
-
-// Context
 import { UserContext, UserProvider } from "./store/user-context";
 import ViewImageScreen from "./screens/ViewImageScreen";
 import ViewVideoScreen from "./screens/ViewVideoScreen";
 import EditProfileScreen from "./screens/EditProfileScreen";
 
-// Navigation Instances
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// Home Tab Navigator
 function HomeTab() {
   return (
     <Tab.Navigator
@@ -76,7 +70,6 @@ function HomeTab() {
   );
 }
 
-// Auth Stack Navigator
 function AuthStack() {
   return (
     <Stack.Navigator
@@ -95,7 +88,6 @@ function AuthStack() {
   );
 }
 
-// Main App Stack Navigator
 function MainAppStack() {
   return (
     <Stack.Navigator
@@ -105,7 +97,7 @@ function MainAppStack() {
           shadowOffset: { width: 0, height: 5 },
           shadowOpacity: 0.25,
           shadowRadius: 5,
-          elevation: 5, // Android shadow
+          elevation: 5,
         },
         headerTintColor: "#6993ff",
         cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
@@ -248,7 +240,6 @@ function MainAppStack() {
   );
 }
 
-// Main Navigation Component
 function Navigation() {
   const { user, loading, fontsLoaded } = useContext(UserContext);
 
@@ -275,7 +266,6 @@ function Navigation() {
   );
 }
 
-// App Component
 export default function App() {
   return (
     <>
@@ -287,7 +277,6 @@ export default function App() {
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: "Orbitron_400Regular",

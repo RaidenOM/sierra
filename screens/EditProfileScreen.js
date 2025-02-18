@@ -84,7 +84,7 @@ export default function EditProfileScreen() {
     }
 
     try {
-      const response = await axios({
+      await axios({
         method: "put",
         url: `https://sierra-backend.onrender.com/users/${user._id}`,
         data: formData,

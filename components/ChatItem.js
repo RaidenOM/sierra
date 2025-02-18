@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginHorizontal: 15,
     marginVertical: 5,
-    borderRadius: 10, // Same as ContactItem
-    backgroundColor: "#fff", // Similar to ContactItem's background color
+    borderRadius: 10,
+    backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.25,
@@ -73,14 +73,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   name: {
-    fontSize: 18, // Similar to ContactItem's name size
+    fontSize: 18,
     fontWeight: "bold",
     color: "#333",
   },
   messageContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 6, // Space between the name and message
+    marginTop: 6,
   },
   icon: {
     marginRight: 4,

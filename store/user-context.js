@@ -6,7 +6,6 @@ import * as Contacts from "expo-contacts";
 import { Alert } from "react-native";
 import { normalizePhoneNumber } from "../utils/UtilityFunctions";
 import { Orbitron_400Regular, useFonts } from "@expo-google-fonts/orbitron";
-import { Sound } from "expo-av/build/Audio";
 import { Audio } from "expo-av";
 
 // connect socket io to backend
@@ -79,14 +78,11 @@ export const UserProvider = ({ children }) => {
   // fetch contacts for a user and match with backend
   const fetchContacts = async () => {
     try {
-      // check permission
       const { status } = await Contacts.getPermissionsAsync();
 
-      // if not permitted request permissions
       if (status != "granted") {
         const { status: newStatus } = await Contacts.requestPermissionsAsync();
 
-        // if still denied show alert and return
         if (newStatus !== "granted") {
           Alert.alert(
             "Permission denied",
@@ -133,7 +129,7 @@ export const UserProvider = ({ children }) => {
 
         return {
           ...contact,
-          savedName: phoneContact?.name || "No Name", // Saved name or fallback
+          savedName: phoneContact?.name || "No Name",
         };
       });
 

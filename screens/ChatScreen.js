@@ -55,7 +55,7 @@ function ChatScreen() {
   const [showPicker, setShowPicker] = useState(false);
   const [audioName, setAudioName] = useState("");
   const [inputHeight, setInputHeight] = useState(40);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // State for emoji picker visibility
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -535,7 +535,7 @@ function ChatScreen() {
           },
         });
         console.log(response.data);
-        setNewMessage(""); // Clear input after sending
+        setNewMessage("");
         setSelectedImageUri("");
         setSelectedVideoUri("");
         setSelectedAudioUri("");
@@ -612,7 +612,7 @@ function ChatScreen() {
               <View style={styles.previewImage}>
                 <Image
                   source={{ uri: selectedImageUri }}
-                  style={{ width: "100%", height: "100%", borderRadius: 8 }} // Add styles for preview image
+                  style={{ width: "100%", height: "100%", borderRadius: 8 }}
                 />
                 <TouchableOpacity
                   style={styles.previewImageCancel}
@@ -857,7 +857,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: "green", // Green marker for unread message
+    backgroundColor: "green",
   },
   headerTitle: {
     flexDirection: "row",
