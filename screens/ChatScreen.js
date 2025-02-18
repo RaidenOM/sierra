@@ -165,7 +165,11 @@ function ChatScreen() {
             style={styles.headerTitle}
           >
             <Image
-              source={{ uri: receiver.profilePhoto }}
+              source={
+                receiver.profilePhoto
+                  ? { uri: receiver.profilePhoto }
+                  : require("../assets/images/user.png")
+              }
               style={styles.headerProfileImage}
             />
             <View style={styles.headerTitleContainer}>
@@ -325,7 +329,11 @@ function ChatScreen() {
         >
           {!isCurrentUser && (
             <Image
-              source={{ uri: receiver.profilePhoto }}
+              source={
+                receiver.profilePhoto
+                  ? { uri: receiver.profilePhoto }
+                  : require("../assets/images/user.png")
+              }
               style={styles.profileImage}
             />
           )}
@@ -390,7 +398,11 @@ function ChatScreen() {
           </View>
           {isCurrentUser && (
             <Image
-              source={{ uri: user.profilePhoto }}
+              source={
+                user.profilePhoto
+                  ? { uri: user.profilePhoto }
+                  : require("../assets/images/user.png")
+              }
               style={styles.profileImage}
             />
           )}

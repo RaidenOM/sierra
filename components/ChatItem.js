@@ -13,7 +13,14 @@ const ChatItem = ({
 }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Image source={{ uri: profilePhoto }} style={styles.profilePhoto} />
+      <Image
+        source={
+          profilePhoto
+            ? { uri: profilePhoto }
+            : require("../assets/images/user.png")
+        }
+        style={styles.profilePhoto}
+      />
       <View style={styles.textContainer}>
         <Text style={styles.name} numberOfLines={1}>
           {name}
@@ -50,17 +57,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 15,
     paddingHorizontal: 15,
-    marginHorizontal: 15,
-    marginVertical: 5,
-    borderRadius: 10,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.25,
-    shadowRadius: 5,
-    elevation: 5,
   },
   profilePhoto: {
     width: 50,

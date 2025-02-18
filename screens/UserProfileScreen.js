@@ -37,7 +37,11 @@ export default function UserProfileScreen({ navigation }) {
     >
       <View style={styles.card}>
         <Image
-          source={{ uri: user.profilePhoto }}
+          source={
+            user.profilePhoto
+              ? { uri: user.profilePhoto }
+              : require("../assets/images/user.png")
+          }
           style={styles.profileImage}
         />
         <Text style={styles.name}>{user.username}</Text>
@@ -86,8 +90,6 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     marginBottom: 15,
-    borderWidth: 3,
-    borderColor: "#6993ff",
   },
   name: {
     fontSize: 26,
