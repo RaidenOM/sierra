@@ -60,7 +60,7 @@ function ProfileScreen() {
               source={
                 user.profilePhoto
                   ? { uri: user.profilePhoto }
-                  : require("../assets/images/user.png")
+                  : require("../assets/imgs/user.png")
               }
               style={styles.profileImage}
             />
