@@ -36,7 +36,7 @@ export const UserProvider = ({ children }) => {
       if (storedTheme) {
         setTheme(storedTheme);
       } else {
-        setTheme("dark");
+        setTheme("light");
       }
     };
 
