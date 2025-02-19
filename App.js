@@ -30,6 +30,8 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function HomeTab() {
+  const { theme } = useContext(UserContext);
+  const isDarkTheme = theme === "dark";
   return (
     <Tab.Navigator
       screenOptions={{
@@ -42,6 +44,8 @@ function HomeTab() {
           shadowOpacity: 0.25,
           shadowRadius: 5,
           elevation: 5,
+          backgroundColor: isDarkTheme ? "rgb(30, 30, 30)" : "white",
+          borderTopWidth: 0,
         },
         paddingVertical: 10,
       }}
@@ -89,6 +93,8 @@ function AuthStack() {
 }
 
 function MainAppStack() {
+  const { theme, toggleTheme } = useContext(UserContext);
+  const isDarkTheme = theme === "dark";
   return (
     <Stack.Navigator
       screenOptions={{
@@ -98,6 +104,8 @@ function MainAppStack() {
           shadowOpacity: 0.25,
           shadowRadius: 5,
           elevation: 5,
+          backgroundColor: isDarkTheme ? "rgb(30, 30, 30)" : "white",
+          borderBottomWidth: 0,
         },
         headerTintColor: "#6993ff",
         cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
@@ -122,9 +130,26 @@ function MainAppStack() {
           headerRight: ({ tintColor }) => (
             <View style={styles.headerButtonContainer}>
               <TouchableOpacity
+                style={{
+                  marginHorizontal: 15,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  toggleTheme();
+                }}
+              >
+                <Ionicons
+                  name={isDarkTheme ? "sunny" : "moon"}
+                  size={20}
+                  color={isDarkTheme ? "white" : "black"}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={() => {
                   navigation.navigate("UserProfileScreen");
                 }}
+                style={{ justifyContent: "center", alignItems: "center" }}
               >
                 <Ionicons name="person-circle" size={30} color={tintColor} />
               </TouchableOpacity>
@@ -241,7 +266,8 @@ function MainAppStack() {
 }
 
 function Navigation() {
-  const { user, loading, fontsLoaded } = useContext(UserContext);
+  const { user, loading, fontsLoaded, theme } = useContext(UserContext);
+  const isDarkTheme = theme === "dark";
 
   if (loading || !fontsLoaded) {
     return (
@@ -260,25 +286,26 @@ function Navigation() {
   }
 
   return (
-    <NavigationContainer>
-      {!user ? <AuthStack /> : <MainAppStack />}
-    </NavigationContainer>
-  );
-}
-
-// App Component
-export default function App() {
-  return (
     <>
-      <UserProvider>
-        <Navigation />
-      </UserProvider>
-      <StatusBar backgroundColor={"white"} barStyle={"dark-content"} />
+      <NavigationContainer>
+        {!user ? <AuthStack /> : <MainAppStack />}
+      </NavigationContainer>
+      <StatusBar
+        backgroundColor={isDarkTheme ? "black" : "white"}
+        barStyle={isDarkTheme ? "light-content" : "dark-content"}
+      />
     </>
   );
 }
 
-// Styles
+export default function App() {
+  return (
+    <UserProvider>
+      <Navigation />
+    </UserProvider>
+  );
+}
+
 const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: "Orbitron_400Regular",

@@ -16,8 +16,10 @@ import axios from "axios";
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { setIsAuthenticating } = useContext(UserContext);
+  const { setIsAuthenticating, theme } = useContext(UserContext);
   const [loginLoading, setLoginLoading] = useState(false);
+
+  const isDarkTheme = theme === "dark";
 
   const validateInputs = () => {
     if (!username.trim()) {
@@ -77,13 +79,22 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: isDarkTheme ? "black" : "white" },
+      ]}
+    >
       <Image
         source={require("../assets/sierra.png")}
         resizeMode="contain"
         style={styles.logo}
       />
-      <Text style={styles.title}>Welcome Back</Text>
+      <Text
+        style={[styles.title, { color: isDarkTheme ? "#d3c1af" : "#2c3e50" }]}
+      >
+        Welcome Back
+      </Text>
       <Text style={styles.subtitle}>Log in to your account</Text>
       <CustomInput
         placeholder="Username"
@@ -119,7 +130,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#fff",
   },
   logo: {
     height: 120,
@@ -129,7 +139,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#2c3e50",
     marginBottom: 10,
     textAlign: "center",
   },

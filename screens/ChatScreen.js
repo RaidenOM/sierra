@@ -13,6 +13,7 @@ import {
   Keyboard,
 } from "react-native";
 import {
+  DarkTheme,
   useIsFocused,
   useNavigation,
   useRoute,
@@ -47,7 +48,7 @@ const getAudioMimeType = (extension) => {
 function ChatScreen() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { user, socket, token, typingUsers, playMessageSentSound } =
+  const { user, socket, token, typingUsers, playMessageSentSound, theme } =
     useContext(UserContext);
   const [sendLoading, setSendLoading] = useState(false);
   const { receiverId } = route.params;
@@ -72,6 +73,8 @@ function ChatScreen() {
   const [isTyping, setIsTyping] = useState(false);
 
   const flatListRef = useRef(null);
+
+  const isDarkTheme = theme === "dark";
 
   // Fetch receiver information
   useEffect(() => {
@@ -340,6 +343,7 @@ function ChatScreen() {
           <View
             style={[
               styles.messageBubble,
+              { backgroundColor: isDarkTheme ? "rgb(30,30,30)" : "#ccc" },
               isCurrentUser && styles.currentUserBubble,
             ]}
           >
@@ -389,12 +393,26 @@ function ChatScreen() {
                   />
                 )))}
             {item.message && (
-              <Text style={styles.messageText}>{item.message}</Text>
+              <Text
+                style={[
+                  styles.messageText,
+                  { color: !isDarkTheme ? "black" : "white" },
+                ]}
+              >
+                {item.message}
+              </Text>
             )}
             {item.senderId !== user._id && !item.isRead && (
               <View style={styles.unreadMarker} />
             )}
-            <Text style={styles.timestamp}>{formatTime(item.sentAt)}</Text>
+            <Text
+              style={[
+                styles.timestamp,
+                { color: isDarkTheme ? "#EAEAEA" : "#333" },
+              ]}
+            >
+              {formatTime(item.sentAt)}
+            </Text>
           </View>
           {isCurrentUser && (
             <Image
@@ -562,20 +580,9 @@ function ChatScreen() {
     }
   };
 
-  return (
-    <LinearGradient
-      style={styles.container}
-      colors={[
-        "rgb(215, 236, 250)",
-        "rgb(239, 239, 255)",
-        "rgb(255, 235, 253)",
-      ]}
-    >
-      <ImageBackground
-        style={{ flex: 1 }}
-        source={require("../assets/chat-background.png")}
-        resizeMode="contain"
-      >
+  function renderContent() {
+    const content = (
+      <>
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#4CAF50" />
@@ -598,7 +605,12 @@ function ChatScreen() {
           />
         )}
 
-        <View style={styles.bottomContainer}>
+        <View
+          style={[
+            styles.bottomContainer,
+            { backgroundColor: isDarkTheme ? "rgb(30,30,30)" : "#fff" },
+          ]}
+        >
           {showPicker && (
             <View style={styles.picker}>
               <View style={styles.pickerOptionsContainer}>
@@ -702,8 +714,12 @@ function ChatScreen() {
               <TextInput
                 style={[
                   styles.textInput,
-                  { height: Math.max(inputHeight, 40) },
+                  {
+                    height: Math.max(inputHeight, 40),
+                    color: isDarkTheme ? "white" : "black",
+                  },
                 ]}
+                placeholderTextColor={"#7f8c8d"}
                 placeholder="Type your message..."
                 value={newMessage}
                 onChangeText={(newText) => {
@@ -732,7 +748,11 @@ function ChatScreen() {
                   setSelectedAudioUri("");
                 }}
               >
-                <Ionicons name="ellipsis-vertical" size={20} />
+                <Ionicons
+                  name="ellipsis-vertical"
+                  size={20}
+                  color={isDarkTheme ? "white" : "black"}
+                />
               </TouchableOpacity>
             </View>
             <TouchableOpacity
@@ -760,8 +780,45 @@ function ChatScreen() {
             />
           )}
         </View>
-      </ImageBackground>
-    </LinearGradient>
+      </>
+    );
+
+    return (
+      <>
+        {isDarkTheme ? (
+          <View style={{ flex: 1 }}>{content}</View>
+        ) : (
+          <ImageBackground
+            style={{ flex: 1 }}
+            source={require("../assets/chat-background.png")}
+            resizeMode="contain"
+          >
+            {content}
+          </ImageBackground>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <>
+      {isDarkTheme ? (
+        <View style={[styles.container, { backgroundColor: "black" }]}>
+          {renderContent()}
+        </View>
+      ) : (
+        <LinearGradient
+          style={styles.container}
+          colors={[
+            "rgb(215, 236, 250)",
+            "rgb(239, 239, 255)",
+            "rgb(255, 235, 253)",
+          ]}
+        >
+          {renderContent()}
+        </LinearGradient>
+      )}
+    </>
   );
 }
 
@@ -774,7 +831,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   dateText: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#fff",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
@@ -802,7 +859,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   messageBubble: {
-    backgroundColor: "#e1e1e3",
+    backgroundColor: "#1e1e1c",
     padding: 10,
     borderRadius: 15,
     maxWidth: "75%",
@@ -811,12 +868,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#6993ff",
   },
   messageText: {
-    color: "#000",
     fontSize: 16,
   },
   timestamp: {
     fontSize: 12,
-    color: "#333",
     marginTop: 5,
     alignSelf: "flex-end",
   },
@@ -825,7 +880,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderTopWidth: 1,
     borderTopColor: "#ccc",
-    backgroundColor: "#fff",
   },
   textInput: {
     flex: 1,

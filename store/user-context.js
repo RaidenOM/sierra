@@ -23,10 +23,32 @@ export const UserProvider = ({ children }) => {
   const [token, setToken] = useState();
   const [messageRecievedSound, setMessageReceivedSound] = useState(null);
   const [messageSentSound, setMessageSentSound] = useState(null);
+  const [theme, setTheme] = useState("dark");
   const [fontsLoaded] = useFonts({
     Orbitron_400Regular,
   });
   const [typingUsers, setTypingUsers] = useState({});
+
+  // fetch theme from device local storage
+  useEffect(() => {
+    const loadTheme = async () => {
+      const storedTheme = await AsyncStorage.getItem("theme");
+      if (storedTheme) {
+        setTheme(storedTheme);
+      } else {
+        setTheme("dark");
+      }
+    };
+
+    loadTheme();
+  }, []);
+
+  // function to toggle theme
+  const toggleTheme = async () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    await AsyncStorage.setItem("theme", newTheme);
+  };
 
   // event handler to set typing users
   useEffect(() => {
@@ -205,6 +227,8 @@ export const UserProvider = ({ children }) => {
         typingUsers,
         playMessageSentSound,
         playMessageReceivedSound,
+        theme,
+        toggleTheme,
       }}
     >
       {children}

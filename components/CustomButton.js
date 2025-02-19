@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { UserContext } from "../store/user-context";
 
 export default function CustomButton({
   children,
@@ -8,6 +9,10 @@ export default function CustomButton({
   style,
   disabled,
 }) {
+  const { theme } = useContext(UserContext);
+
+  const isDarkTheme = theme === "dark";
+
   return (
     <TouchableOpacity
       style={[
@@ -34,11 +39,6 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.25,
-    shadowRadius: 5,
-    elevation: 5,
     backgroundColor: "#6993ff",
     paddingVertical: 12,
     paddingHorizontal: 25,
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   secondaryButton: {
-    backgroundColor: "#ecf0f1",
+    backgroundColor: "#ccc",
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 5,

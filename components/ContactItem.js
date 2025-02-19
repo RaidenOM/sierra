@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { UserContext } from "../store/user-context";
 
 const ContactItem = ({ profilePhoto, name, bio, onPress }) => {
+  const { theme } = useContext(UserContext);
+  const isDarkTheme = theme === "dark";
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image
@@ -13,7 +16,10 @@ const ContactItem = ({ profilePhoto, name, bio, onPress }) => {
         style={styles.profilePhoto}
       />
       <View style={styles.textContainer}>
-        <Text style={styles.name} numberOfLines={1}>
+        <Text
+          style={[styles.name, { color: isDarkTheme ? "#EAEAEA" : "#333" }]}
+          numberOfLines={1}
+        >
           {name}
         </Text>
         <Text style={styles.bio} numberOfLines={1}>
@@ -44,7 +50,6 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
   },
   bio: {
     fontSize: 14,

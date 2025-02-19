@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { UserContext } from "../store/user-context";
 
 const ChatItem = ({
   profilePhoto,
@@ -11,6 +12,8 @@ const ChatItem = ({
   unreadCount,
   typing,
 }) => {
+  const { theme } = useContext(UserContext);
+  const isDarkTheme = theme === "dark";
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image
@@ -22,7 +25,10 @@ const ChatItem = ({
         style={styles.profilePhoto}
       />
       <View style={styles.textContainer}>
-        <Text style={styles.name} numberOfLines={1}>
+        <Text
+          style={[styles.name, { color: isDarkTheme ? "#EAEAEA" : "#333" }]}
+          numberOfLines={1}
+        >
           {name}
         </Text>
         <View style={styles.messageContainer}>
@@ -73,7 +79,6 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
   },
   messageContainer: {
     flexDirection: "row",

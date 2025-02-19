@@ -9,12 +9,13 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function AllChats() {
-  const { socket, user, token, typingUsers, playMessageReceivedSound } =
+  const { socket, user, token, typingUsers, playMessageReceivedSound, theme } =
     useContext(UserContext);
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  const isDarkTheme = theme === "dark";
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -79,71 +80,98 @@ export default function AllChats() {
 
   async function handlePress(otherPersonId) {
     setChats((prevChats) => {
-      return prevChats.map((chat) => ({
-        ...chat,
+      const updatedChats = [...prevChats];
+      const indexToBeUpdated = updatedChats.findIndex(
+        (chat) =>
+          chat.senderId._id === otherPersonId ||
+          chat.receiverId._id === otherPersonId
+      );
+      updatedChats[indexToBeUpdated] = {
+        ...updatedChats[indexToBeUpdated],
         unreadCount: 0,
         isRead: true,
-      }));
+      };
+      return updatedChats;
     });
     navigation.navigate("ChatScreen", { receiverId: otherPersonId });
   }
 
+  function renderChatList() {
+    return (
+      <>
+        <Text
+          style={[styles.title, { color: isDarkTheme ? "#EAEAEA" : "#333" }]}
+        >
+          Chats
+        </Text>
+        {loading ? (
+          <View style={[styles.container, styles.loadingContainer]}>
+            <ActivityIndicator size="large" color="#4CAF50" />
+            <Text style={styles.loadingText}>Fetching Chats...</Text>
+          </View>
+        ) : (
+          <>
+            {chats.length > 0 ? (
+              <FlatList
+                data={profiles}
+                keyExtractor={(item) => item._id.toString()}
+                renderItem={({ item }) => {
+                  const recentMessage = getLatestMessage(item._id);
+                  return (
+                    <ChatItem
+                      name={item.username}
+                      recentMessage={
+                        recentMessage.message ||
+                        (recentMessage.mediaType === "image" && (
+                          <Ionicons name="image" />
+                        )) ||
+                        (recentMessage.mediaType === "video" && (
+                          <Ionicons name="videocam" />
+                        )) ||
+                        (recentMessage.mediaType === "audio" && (
+                          <Ionicons name="musical-notes" />
+                        ))
+                      }
+                      profilePhoto={item.profilePhoto}
+                      isSent={recentMessage.senderId._id === user._id}
+                      unreadCount={recentMessage.unreadCount || 0}
+                      onPress={() => handlePress(item._id)}
+                      typing={!!typingUsers[item._id]}
+                    />
+                  );
+                }}
+                contentContainerStyle={styles.listContainer}
+              />
+            ) : (
+              <View style={styles.noChatsContainer}>
+                <Text style={styles.noChatsText}>No Chats Found</Text>
+              </View>
+            )}
+          </>
+        )}
+      </>
+    );
+  }
+
   return (
-    <LinearGradient
-      style={styles.container}
-      colors={[
-        "rgba(215, 236, 250, 1)",
-        "rgba(239, 239, 255, 1)",
-        "rgba(255, 235, 253, 1)",
-      ]}
-    >
-      <Text style={styles.title}>Chats</Text>
-      {loading ? (
-        <View style={[styles.container, styles.loadingContainer]}>
-          <ActivityIndicator size="large" color="#4CAF50" />
-          <Text style={styles.loadingText}>Fetching Chats...</Text>
+    <>
+      {isDarkTheme ? (
+        <View style={[styles.container, { backgroundColor: "black" }]}>
+          {renderChatList()}
         </View>
       ) : (
-        <>
-          {chats.length > 0 ? (
-            <FlatList
-              data={profiles}
-              keyExtractor={(item) => item._id.toString()}
-              renderItem={({ item }) => {
-                const recentMessage = getLatestMessage(item._id);
-                return (
-                  <ChatItem
-                    name={item.username}
-                    recentMessage={
-                      recentMessage.message ||
-                      (recentMessage.mediaType === "image" && (
-                        <Ionicons name="image" />
-                      )) ||
-                      (recentMessage.mediaType === "video" && (
-                        <Ionicons name="videocam" />
-                      )) ||
-                      (recentMessage.mediaType === "audio" && (
-                        <Ionicons name="musical-notes" />
-                      ))
-                    }
-                    profilePhoto={item.profilePhoto}
-                    isSent={recentMessage.senderId._id === user._id}
-                    unreadCount={recentMessage.unreadCount || 0}
-                    onPress={() => handlePress(item._id)}
-                    typing={!!typingUsers[item._id]}
-                  />
-                );
-              }}
-              contentContainerStyle={styles.listContainer}
-            />
-          ) : (
-            <View style={styles.noChatsContainer}>
-              <Text style={styles.noChatsText}>No Chats Found</Text>
-            </View>
-          )}
-        </>
+        <LinearGradient
+          style={styles.container}
+          colors={[
+            "rgba(215, 236, 250, 1)",
+            "rgba(239, 239, 255, 1)",
+            "rgba(255, 235, 253, 1)",
+          ]}
+        >
+          {renderChatList()}
+        </LinearGradient>
       )}
-    </LinearGradient>
+    </>
   );
 }
 
@@ -154,7 +182,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#333",
     marginBottom: 20,
     marginTop: 15,
     marginLeft: 15,

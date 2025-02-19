@@ -5,64 +5,79 @@ import { UserContext } from "../store/user-context";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function UserProfileScreen({ navigation }) {
-  const { user, logout, loading } = useContext(UserContext);
+  const { user, logout, loading, theme } = useContext(UserContext);
+  const isDarkTheme = theme === "dark";
 
-  // Check if user data is available
-  if (loading) {
+  function renderContent() {
     return (
-      <LinearGradient
-        style={styles.loadingContainer}
-        colors={[
-          "rgb(215, 236, 250)",
-          "rgb(239, 239, 255)",
-          "rgb(255, 235, 253)",
-        ]}
-      >
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>Loading Details...</Text>
-      </LinearGradient>
+      <>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: isDarkTheme ? "rgb(30,30,30)" : "white" },
+          ]}
+        >
+          <Image
+            source={
+              user.profilePhoto
+                ? { uri: user.profilePhoto }
+                : require("../assets/images/user.png")
+            }
+            style={styles.profileImage}
+          />
+          <Text
+            style={[styles.name, { color: isDarkTheme ? "#EAEAEA" : "#333" }]}
+          >
+            {user.username}
+          </Text>
+          <Text style={styles.bio}>{user.bio}</Text>
+          <Text style={styles.phoneNumber}>{user.phone}</Text>
+          <View style={styles.iconContainer}>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => navigation.navigate("EditProfileScreen")}
+            >
+              <Ionicons name="create-outline" size={28} color="#ff9800" />
+              <Text
+                style={[styles.iconLabel, { color: isDarkTheme && "white" }]}
+              >
+                Edit
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.iconButton} onPress={logout}>
+              <Ionicons name="log-out-outline" size={28} color="#e74c3c" />
+              <Text
+                style={[styles.iconLabel, { color: isDarkTheme && "white" }]}
+              >
+                Logout
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </>
     );
   }
 
-  console.log(user);
-
   return (
-    <LinearGradient
-      style={styles.container}
-      colors={[
-        "rgb(215, 236, 250)",
-        "rgb(239, 239, 255)",
-        "rgb(255, 235, 253)",
-      ]}
-    >
-      <View style={styles.card}>
-        <Image
-          source={
-            user.profilePhoto
-              ? { uri: user.profilePhoto }
-              : require("../assets/images/user.png")
-          }
-          style={styles.profileImage}
-        />
-        <Text style={styles.name}>{user.username}</Text>
-        <Text style={styles.bio}>{user.bio}</Text>
-        <Text style={styles.phoneNumber}>{user.phone}</Text>
-        <View style={styles.iconContainer}>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => navigation.navigate("EditProfileScreen")}
-          >
-            <Ionicons name="create-outline" size={28} color="#ff9800" />
-            <Text style={styles.iconLabel}>Edit</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.iconButton} onPress={logout}>
-            <Ionicons name="log-out-outline" size={28} color="#e74c3c" />
-            <Text style={styles.iconLabel}>Logout</Text>
-          </TouchableOpacity>
+    <>
+      {isDarkTheme ? (
+        <View style={[styles.container, { backgroundColor: "black" }]}>
+          {renderContent()}
         </View>
-      </View>
-    </LinearGradient>
+      ) : (
+        <LinearGradient
+          style={styles.container}
+          colors={[
+            "rgb(215, 236, 250)",
+            "rgb(239, 239, 255)",
+            "rgb(255, 235, 253)",
+          ]}
+        >
+          {renderContent()}
+        </LinearGradient>
+      )}
+    </>
   );
 }
 
@@ -74,7 +89,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   card: {
-    backgroundColor: "white",
     borderRadius: 15,
     padding: 20,
     alignItems: "center",
@@ -94,12 +108,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 26,
     fontWeight: "bold",
-    color: "#333",
     marginBottom: 10,
   },
   bio: {
     fontSize: 16,
-    color: "#555",
+    color: "#7f8c8d",
     textAlign: "center",
     marginBottom: 15,
   },
@@ -129,7 +142,7 @@ const styles = StyleSheet.create({
   },
   phoneNumber: {
     fontSize: 16,
-    color: "#919090",
+    color: "#7f8c8d",
     marginBottom: 15,
   },
 });

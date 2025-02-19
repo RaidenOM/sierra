@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import axios from "axios";
 import CustomInput from "../components/CustomInput";
@@ -6,6 +6,7 @@ import CustomButton from "../components/CustomButton";
 import { validatePhoneNumber } from "../utils/UtilityFunctions";
 import { Dropdown } from "react-native-element-dropdown";
 import countries from "../utils/CountryCodes";
+import { UserContext } from "../store/user-context";
 
 export default function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState("");
@@ -14,6 +15,9 @@ export default function RegisterScreen({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [registerLoading, setRegisterLoading] = useState(false);
   const [country, setCountry] = useState("+91");
+  const { theme } = useContext(UserContext);
+
+  const isDarkTheme = theme === "dark";
 
   const validateInputs = () => {
     if (!username.trim()) {
@@ -90,8 +94,17 @@ export default function RegisterScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create an Account</Text>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: isDarkTheme ? "black" : "white" },
+      ]}
+    >
+      <Text
+        style={[styles.title, { color: isDarkTheme ? "#d3c1af" : "#2c3e50" }]}
+      >
+        Create an Account
+      </Text>
       <Text style={styles.subtitle}>Sign up to get started</Text>
 
       <CustomInput
@@ -104,6 +117,11 @@ export default function RegisterScreen({ navigation }) {
       <View style={styles.phoneContainer}>
         <Dropdown
           style={styles.dropdown}
+          placeholderStyle={{ color: isDarkTheme ? "white" : "black" }}
+          selectedTextStyle={{ color: isDarkTheme ? "white" : "black" }}
+          containerStyle={{
+            backgroundColor: isDarkTheme ? "rgb(30,30,30)" : "white",
+          }}
           data={countries}
           search
           maxHeight={300}
@@ -115,7 +133,10 @@ export default function RegisterScreen({ navigation }) {
           onChange={(item) => {
             setCountry(item.code);
           }}
+          itemTextStyle={{ color: isDarkTheme ? "white" : "black" }}
+          activeColor="#6993ff"
         />
+
         <CustomInput
           placeholder="Phone Number"
           value={phone}
@@ -140,18 +161,10 @@ export default function RegisterScreen({ navigation }) {
         style={styles.input}
         autoCapitalize="none"
       />
-      <CustomButton
-        onPress={handleRegister}
-        style={styles.registerButton}
-        disabled={registerLoading}
-      >
+      <CustomButton onPress={handleRegister} disabled={registerLoading}>
         {registerLoading ? <ActivityIndicator color="#fff" /> : "Register"}
       </CustomButton>
-      <CustomButton
-        onPress={() => navigation.goBack()}
-        type="secondary"
-        style={styles.loginButton}
-      >
+      <CustomButton onPress={() => navigation.goBack()} type="secondary">
         Already have an account? Login
       </CustomButton>
     </View>
@@ -164,12 +177,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#fff",
   },
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#2c3e50",
     marginBottom: 10,
     textAlign: "center",
   },
@@ -182,21 +193,6 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 15,
     width: "100%",
-  },
-  registerButton: {
-    backgroundColor: "#6993ff",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 5,
-    marginBottom: 15,
-  },
-  loginButton: {
-    backgroundColor: "#ecf0f1",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#95a5a6",
   },
   phoneContainer: {
     flexDirection: "row",

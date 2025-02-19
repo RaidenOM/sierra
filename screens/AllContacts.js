@@ -14,9 +14,10 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 
 function AllContacts() {
-  const { contacts, fetchContacts, user } = useContext(UserContext);
+  const { contacts, fetchContacts, user, theme } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const isDarkTheme = theme === "dark";
 
   useEffect(() => {
     const getContacts = async () => {
@@ -33,54 +34,74 @@ function AllContacts() {
     });
   };
 
-  return (
-    <LinearGradient
-      style={styles.container}
-      colors={[
-        "rgb(215, 236, 250)",
-        "rgb(239, 239, 255)",
-        "rgb(255, 235, 253)",
-      ]}
-    >
-      <View style={styles.refreshButtonContainer}>
-        <Text style={styles.title}>Contacts</Text>
-        {!loading ? (
-          <TouchableOpacity
-            onPress={async () => {
-              setLoading(true);
-              await fetchContacts();
-              setLoading(false);
-            }}
-            disabled={loading}
+  function renderContactList() {
+    return (
+      <>
+        <View style={styles.refreshButtonContainer}>
+          <Text
+            style={[styles.title, { color: isDarkTheme ? "#EAEAEA" : "#333" }]}
           >
-            <Ionicons name="refresh" size={24} color={"#7f8c8d"} />
-          </TouchableOpacity>
-        ) : (
-          <ActivityIndicator color="#4CAF50" />
-        )}
-      </View>
-      {contacts.length > 0 ? (
-        <FlatList
-          data={contacts}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={({ item }) => (
-            <ContactItem
-              name={item.username + " (" + item.savedName + ")"}
-              bio={item.bio}
-              profilePhoto={item.profilePhoto}
-              onPress={() => navigateToProfile(item)}
-            />
-          )}
-          contentContainerStyle={styles.listContainer}
-        />
-      ) : (
-        <View style={styles.noContactsContainer}>
-          <Text style={styles.noContactsText}>
-            {loading ? "Fetching Contacts..." : "No Contacts Found"}
+            Contacts
           </Text>
+          {!loading ? (
+            <TouchableOpacity
+              onPress={async () => {
+                setLoading(true);
+                await fetchContacts();
+                setLoading(false);
+              }}
+              disabled={loading}
+            >
+              <Ionicons name="refresh" size={24} color={"#7f8c8d"} />
+            </TouchableOpacity>
+          ) : (
+            <ActivityIndicator color="#4CAF50" />
+          )}
         </View>
+        {contacts.length > 0 ? (
+          <FlatList
+            data={contacts}
+            keyExtractor={(item) => item._id.toString()}
+            renderItem={({ item }) => (
+              <ContactItem
+                name={item.username + " (" + item.savedName + ")"}
+                bio={item.bio}
+                profilePhoto={item.profilePhoto}
+                onPress={() => navigateToProfile(item)}
+              />
+            )}
+            contentContainerStyle={styles.listContainer}
+          />
+        ) : (
+          <View style={styles.noContactsContainer}>
+            <Text style={styles.noContactsText}>
+              {loading ? "Fetching Contacts..." : "No Contacts Found"}
+            </Text>
+          </View>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <>
+      {isDarkTheme ? (
+        <View style={[styles.container, { backgroundColor: "black" }]}>
+          {renderContactList()}
+        </View>
+      ) : (
+        <LinearGradient
+          style={styles.container}
+          colors={[
+            "rgb(215, 236, 250)",
+            "rgb(239, 239, 255)",
+            "rgb(255, 235, 253)",
+          ]}
+        >
+          {renderContactList()}
+        </LinearGradient>
       )}
-    </LinearGradient>
+    </>
   );
 }
 
@@ -91,7 +112,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#333",
   },
   loadingContainer: {
     flex: 1,
