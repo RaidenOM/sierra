@@ -833,6 +833,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     color: "#555",
     fontSize: 14,
+    overflow: "hidden",
   },
   messageContainer: {
     flexDirection: "row",
