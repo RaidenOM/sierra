@@ -29,6 +29,7 @@ import { getThumbnailAsync } from "expo-video-thumbnails";
 import AudioPlayer from "../components/AudioPlayer";
 import { LinearGradient } from "expo-linear-gradient";
 import EmojiSelector from "react-native-emoji-selector";
+import CustomInput from "../components/CustomInput";
 
 const getAudioMimeType = (extension) => {
   switch (extension.toLowerCase()) {
@@ -711,11 +712,10 @@ function ChatScreen() {
               <Ionicons name="happy-outline" size={30} color="#6993ff" />
             </TouchableOpacity>
             <View style={styles.inputContainer}>
-              <TextInput
+              <CustomInput
                 style={[
                   styles.textInput,
                   {
-                    height: Math.max(inputHeight, 40),
                     color: isDarkTheme ? "white" : "black",
                   },
                 ]}
@@ -727,10 +727,6 @@ function ChatScreen() {
                   if (!isTyping) {
                     setIsTyping(true);
                   }
-                }}
-                onContentSizeChange={(event) => {
-                  const newHeight = event.nativeEvent.contentSize.height;
-                  setInputHeight(Math.min(newHeight, 150));
                 }}
                 onFocus={() => setShowEmojiPicker(false)}
                 multiline
@@ -884,8 +880,9 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     maxHeight: 100,
-    fontSize: 16,
-    paddingRight: 15,
+    paddingHorizontal: 0,
+    borderWidth: 0,
+    borderRadius: 0,
   },
   sendButton: {
     marginLeft: 10,

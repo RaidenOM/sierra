@@ -161,7 +161,11 @@ export default function RegisterScreen({ navigation }) {
         style={styles.input}
         autoCapitalize="none"
       />
-      <CustomButton onPress={handleRegister} disabled={registerLoading}>
+      <CustomButton
+        onPress={handleRegister}
+        disabled={registerLoading}
+        style={{ marginBottom: 15 }}
+      >
         {registerLoading ? <ActivityIndicator color="#fff" /> : "Register"}
       </CustomButton>
       <CustomButton onPress={() => navigation.goBack()} type="secondary">

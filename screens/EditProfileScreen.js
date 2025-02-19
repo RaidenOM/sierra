@@ -10,18 +10,21 @@ import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import CustomInput from "../components/CustomInput";
 
 export default function EditProfileScreen() {
-  const { user, token, setIsAuthenticating, logout } = useContext(UserContext);
+  const { user, token, setIsAuthenticating, logout, theme } =
+    useContext(UserContext);
   const [bio, setBio] = useState(user.bio);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const [cameraPermissionInfo, requestPermission] =
     ImagePicker.useCameraPermissions();
-  const [inputHeight, setInputHeight] = useState(40);
 
   const [pickedImageUri, setPickedImageUri] = useState();
   const [viewProfilePhoto, setViewProfilePhoto] = useState(user.profilePhoto);
+
+  const isDarkTheme = theme === "dark";
 
   const handleRemoveProfilePhoto = () => {
     setViewProfilePhoto("");
@@ -124,63 +127,89 @@ export default function EditProfileScreen() {
     );
   };
 
-  return (
-    <LinearGradient
-      style={styles.container}
-      colors={[
-        "rgb(215, 236, 250)",
-        "rgb(239, 239, 255)",
-        "rgb(255, 235, 253)",
-      ]}
-    >
-      <View style={styles.card}>
-        <View style={styles.profileImage}>
-          <Image
-            source={
-              viewProfilePhoto
-                ? { uri: viewProfilePhoto }
-                : require("../assets/images/user.png")
-            }
-            style={{ width: "100%", height: "100%", borderRadius: 60 }}
-          />
-          <TouchableOpacity
-            style={styles.editProfilePhotoIcon}
-            onPress={handleImagePick}
-          >
-            <Ionicons name="pencil" size={20} color="blue" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.deleteProfilePhotoIcon}
-            onPress={handleRemoveProfilePhoto}
-          >
-            <Ionicons name="trash" size={20} color="red" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.bioContainer}>
-          <Text style={styles.label}>Your Bio</Text>
-          <TextInput
-            style={[styles.inputText, { height: Math.max(40, inputHeight) }]}
-            value={bio}
-            onChangeText={setBio}
-            placeholder="Enter bio"
-            multiline
-            onContentSizeChange={(event) => {
-              const newHeight = event.nativeEvent.contentSize.height;
-              setInputHeight(Math.min(newHeight, 150));
-            }}
-          />
-        </View>
-        <CustomButton onPress={handleConfirm} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : "Update Profile"}
-        </CustomButton>
-        <CustomButton
-          style={{ backgroundColor: "red" }}
-          onPress={profileDeleteHandler}
+  function renderContent() {
+    return (
+      <>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: isDarkTheme ? "rgb(30,30,30)" : "white" },
+          ]}
         >
-          Delete Profile
-        </CustomButton>
-      </View>
-    </LinearGradient>
+          <View style={styles.profileImage}>
+            <Image
+              source={
+                viewProfilePhoto
+                  ? { uri: viewProfilePhoto }
+                  : require("../assets/images/user.png")
+              }
+              style={{ width: "100%", height: "100%", borderRadius: 60 }}
+            />
+            <TouchableOpacity
+              style={styles.editProfilePhotoIcon}
+              onPress={handleImagePick}
+            >
+              <Ionicons name="pencil" size={20} color="blue" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteProfilePhotoIcon}
+              onPress={handleRemoveProfilePhoto}
+            >
+              <Ionicons name="trash" size={20} color="red" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.bioContainer}>
+            <Text style={styles.label}>Your Bio</Text>
+            <CustomInput
+              style={{
+                backgroundColor: isDarkTheme ? "black" : "white",
+                maxHeight: 100,
+              }}
+              value={bio}
+              onChangeText={setBio}
+              placeholder="Enter bio"
+              multiline
+            />
+          </View>
+          <CustomButton
+            onPress={handleConfirm}
+            disabled={loading}
+            style={{
+              marginBottom: 15,
+            }}
+          >
+            {loading ? <ActivityIndicator color="#fff" /> : "Update Profile"}
+          </CustomButton>
+          <CustomButton
+            style={{ backgroundColor: "red" }}
+            onPress={profileDeleteHandler}
+          >
+            Delete Profile
+          </CustomButton>
+        </View>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {isDarkTheme ? (
+        <View style={[styles.container, { backgroundColor: "black" }]}>
+          {renderContent()}
+        </View>
+      ) : (
+        <LinearGradient
+          style={styles.container}
+          colors={[
+            "rgb(215, 236, 250)",
+            "rgb(239, 239, 255)",
+            "rgb(255, 235, 253)",
+          ]}
+        >
+          {renderContent()}
+        </LinearGradient>
+      )}
+    </>
   );
 }
 
@@ -190,7 +219,6 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#dfe5f7",
   },
   card: {
     backgroundColor: "white",
@@ -238,29 +266,13 @@ const styles = StyleSheet.create({
   },
   bioContainer: {
     width: "100%",
-    marginBottom: 25,
-  },
-  inputText: {
-    backgroundColor: "#f8f9fa",
-    borderWidth: 1,
-    borderColor: "#e9ecef",
-    borderRadius: 15,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: "#212529",
-    textAlignVertical: "top",
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-    maxHeight: 150,
+    marginBottom: 15,
   },
   label: {
     fontSize: 16,
     fontWeight: "500",
-    color: "#212529",
     marginBottom: 8,
     paddingLeft: 5,
+    color: "#7f8c8d",
   },
 });

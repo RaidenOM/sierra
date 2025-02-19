@@ -11,6 +11,7 @@ export default function CustomInput({
   autoCapitalize,
   multiline,
   style,
+  onContentSizeChange,
 }) {
   const { theme } = useContext(UserContext);
 
@@ -20,11 +21,11 @@ export default function CustomInput({
     <TextInput
       style={[
         styles.input,
-        style,
         {
           backgroundColor: isDarkTheme ? "rgb(30,30,30)" : "white",
           color: isDarkTheme ? "white" : "black",
         },
+        style,
       ]}
       placeholder={placeholder}
       value={value}
@@ -34,6 +35,7 @@ export default function CustomInput({
       placeholderTextColor="#7f8c8d"
       autoCapitalize={autoCapitalize}
       multiline={multiline}
+      onContentSizeChange={onContentSizeChange}
     />
   );
 }
@@ -41,10 +43,11 @@ export default function CustomInput({
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 8,
+    borderColor: "#D3D3D3",
+    borderRadius: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
     backgroundColor: "#fff",
+    fontSize: 16,
   },
 });

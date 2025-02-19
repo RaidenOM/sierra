@@ -111,7 +111,11 @@ export default function LoginScreen({ navigation }) {
         style={styles.input}
         autoCapitalize="none"
       />
-      <CustomButton onPress={handleLogin} disabled={loginLoading}>
+      <CustomButton
+        onPress={handleLogin}
+        disabled={loginLoading}
+        style={{ marginBottom: 15 }}
+      >
         {loginLoading ? <ActivityIndicator color="#fff" /> : "Login"}
       </CustomButton>
       <CustomButton
