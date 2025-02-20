@@ -120,12 +120,14 @@ function ChatScreen() {
 
   // bind handler to handler emits from server
   useEffect(() => {
-    socket.on("new-message", (newMessage) => {
+    const handleNewMessage = (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
-    });
+    };
+
+    socket.on("new-message", handleNewMessage);
 
     return () => {
-      socket.off("new-message");
+      socket.off("new-message", handleNewMessage);
     };
   }, [socket]);
 

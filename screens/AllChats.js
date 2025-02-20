@@ -38,7 +38,7 @@ export default function AllChats() {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("chat-notify", async (message) => {
+    const handleNewMessage = async (message) => {
       console.log("Received chat-notify message:", message);
 
       await playMessageReceivedSound();
@@ -62,10 +62,12 @@ export default function AllChats() {
 
         return updatedChats;
       });
-    });
+    };
+
+    socket.on("new-message", handleNewMessage);
 
     return () => {
-      socket.off("chat-notify");
+      socket.off("new-message", handleNewMessage);
     };
   }, [socket, user._id]);
 
