@@ -336,7 +336,7 @@ function ChatScreen() {
               source={
                 receiver.profilePhoto
                   ? { uri: receiver.profilePhoto }
-                  : require("../assets/imgs/user.png")
+                  : require("../assets/image/user.png")
               }
               style={styles.profileImage}
             />
@@ -420,7 +420,7 @@ function ChatScreen() {
               source={
                 user.profilePhoto
                   ? { uri: user.profilePhoto }
-                  : require("../assets/imgs/user.png")
+                  : require("../assets/image/user.png")
               }
               style={styles.profileImage}
             />
