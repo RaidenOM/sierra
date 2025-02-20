@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 import axios from "axios";
 import { StyleSheet } from "react-native";
 import { View, Text, FlatList, ActivityIndicator } from "react-native";
@@ -7,11 +7,12 @@ import ChatItem from "../components/ChatItem";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
+import { ChatContext } from "../store/chat-context";
 
 export default function AllChats() {
   const { socket, user, token, typingUsers, playMessageReceivedSound, theme } =
     useContext(UserContext);
-  const [chats, setChats] = useState([]);
+  const { chats, setChats } = useContext(ChatContext);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -32,7 +33,7 @@ export default function AllChats() {
     };
 
     if (isFocused) fetchChats();
-  }, [token, isFocused]);
+  }, [token]);
 
   useEffect(() => {
     if (!socket) return;
@@ -68,6 +69,23 @@ export default function AllChats() {
     };
   }, [socket, user._id]);
 
+  useEffect(() => {
+    const handleDeleteChat = ({ receiverId }) => {
+      setChats((prevChats) =>
+        prevChats.filter(
+          (chat) =>
+            chat.senderId._id !== receiverId &&
+            chat.receiverId._id !== receiverId
+        )
+      );
+    };
+    socket.on("delete-chat", handleDeleteChat);
+
+    return () => {
+      socket.off("delete-chat", handleDeleteChat);
+    };
+  }, [socket]);
+
   const profiles = chats.map((chat) =>
     chat.senderId._id === user._id ? chat.receiverId : chat.senderId
   );
@@ -93,7 +111,9 @@ export default function AllChats() {
       };
       return updatedChats;
     });
-    navigation.navigate("ChatScreen", { receiverId: otherPersonId });
+    navigation.navigate("ChatScreen", {
+      receiverId: otherPersonId,
+    });
   }
 
   function renderChatList() {

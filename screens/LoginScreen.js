@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 import axios from "axios";

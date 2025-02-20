@@ -6,7 +6,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Slider from "@react-native-community/slider";
 import { useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 
 export default function AudioPlayer({
   uri,

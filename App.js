@@ -21,10 +21,11 @@ import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import UserProfileScreen from "./screens/UserProfileScreen";
 import AllChats from "./screens/AllChats";
-import { UserContext, UserProvider } from "./store/user-context";
+import { UserContext, UserProvider } from "./store/app-context";
 import ViewImageScreen from "./screens/ViewImageScreen";
 import ViewVideoScreen from "./screens/ViewVideoScreen";
 import EditProfileScreen from "./screens/EditProfileScreen";
+import { ChatProvider } from "./store/chat-context";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -301,7 +302,9 @@ function Navigation() {
 export default function App() {
   return (
     <UserProvider>
-      <Navigation />
+      <ChatProvider>
+        <Navigation />
+      </ChatProvider>
     </UserProvider>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 
 const ChatItem = ({
   profilePhoto,

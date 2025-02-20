@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 
 export default function CustomButton({
   children,

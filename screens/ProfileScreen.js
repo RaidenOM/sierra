@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 
 function ProfileScreen() {
   const navigation = useNavigation();

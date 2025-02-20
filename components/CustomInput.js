@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { TextInput, StyleSheet } from "react-native";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 
 export default function CustomInput({
   placeholder,

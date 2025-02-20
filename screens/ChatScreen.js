@@ -19,7 +19,7 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import axios from "axios";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 import { useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { format } from "date-fns";
@@ -30,6 +30,7 @@ import AudioPlayer from "../components/AudioPlayer";
 import { LinearGradient } from "expo-linear-gradient";
 import EmojiSelector from "react-native-emoji-selector";
 import CustomInput from "../components/CustomInput";
+import { ChatContext } from "../store/chat-context";
 
 const getAudioMimeType = (extension) => {
   switch (extension.toLowerCase()) {
@@ -51,6 +52,7 @@ function ChatScreen() {
   const navigation = useNavigation();
   const { user, socket, token, typingUsers, playMessageSentSound, theme } =
     useContext(UserContext);
+  const { setChats } = useContext(ChatContext);
   const [sendLoading, setSendLoading] = useState(false);
   const { receiverId } = route.params;
   const [thumbnails, setThumbnails] = useState({});
@@ -131,6 +133,19 @@ function ChatScreen() {
   useEffect(() => {
     socket.on("message-sent", (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setChats((prevChats) => {
+        const updatedChats = [...prevChats];
+        const indexToBeUpdated = updatedChats.findIndex(
+          (chat) =>
+            chat.senderId._id === receiverId ||
+            chat.receiverId._id === receiverId
+        );
+        if (indexToBeUpdated >= 0) {
+          updatedChats.splice(indexToBeUpdated, 1);
+        }
+        updatedChats.unshift(newMessage);
+        return updatedChats;
+      });
     });
 
     return () => {
@@ -141,6 +156,7 @@ function ChatScreen() {
   // useEffect to mark messages as read between current user and other user on screen exit
   useEffect(() => {
     const markAsRead = async () => {
+      console.log("marking as read");
       console.log(receiverId);
       console.log(token);
       await axios.put(
@@ -152,10 +168,18 @@ function ChatScreen() {
           },
         }
       );
+
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.senderId._id === receiverId || chat.receiverId._id === receiverId
+            ? { ...chat, unreadCount: 0, isRead: true }
+            : chat
+        )
+      );
     };
 
-    if (!isFocused) markAsRead();
-  }, [isFocused, receiverId, token]);
+    markAsRead();
+  }, [messages, receiverId, token]);
 
   // useLayoutEffect to set the title for ChatScreen
   useLayoutEffect(() => {
@@ -309,7 +333,7 @@ function ChatScreen() {
   }
 
   const renderItem = ({ item, index }) => {
-    const isCurrentUser = item.senderId === user._id;
+    const isCurrentUser = item.senderId._id === user._id;
     console.log(item.mediaURL);
 
     // Check if the current message is the first of a new day
@@ -403,7 +427,7 @@ function ChatScreen() {
                 {item.message}
               </Text>
             )}
-            {item.senderId !== user._id && !item.isRead && (
+            {item.senderId._id !== user._id && !item.isRead && (
               <View style={styles.unreadMarker} />
             )}
             <Text

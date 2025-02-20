@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 
 const ContactItem = ({ profilePhoto, name, bio, onPress }) => {
   const { theme } = useContext(UserContext);

@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TextInput } from "react-native-gesture-handler";

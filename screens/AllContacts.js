@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import ContactItem from "../components/ContactItem";
 import { useNavigation } from "@react-navigation/native";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";

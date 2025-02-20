@@ -6,7 +6,7 @@ import CustomButton from "../components/CustomButton";
 import { validatePhoneNumber } from "../utils/UtilityFunctions";
 import { Dropdown } from "react-native-element-dropdown";
 import countries from "../utils/CountryCodes";
-import { UserContext } from "../store/user-context";
+import { UserContext } from "../store/app-context";
 
 export default function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState("");
