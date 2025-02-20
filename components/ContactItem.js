@@ -11,7 +11,7 @@ const ContactItem = ({ profilePhoto, name, bio, onPress }) => {
         source={
           profilePhoto
             ? { uri: profilePhoto }
-            : require("../assets/imgs/user.png")
+            : require("../assets/image/user.png")
         }
         style={styles.profilePhoto}
       />

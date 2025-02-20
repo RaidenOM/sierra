@@ -1,11 +1,12 @@
 import { Audio } from "expo-av";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Slider from "@react-native-community/slider";
 import { useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
+import { UserContext } from "../store/user-context";
 
 export default function AudioPlayer({
   uri,
@@ -15,6 +16,9 @@ export default function AudioPlayer({
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const isFocused = useIsFocused();
+  const { theme } = useContext(UserContext);
+
+  const isDarkTheme = theme === "dark";
 
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -127,7 +131,9 @@ export default function AudioPlayer({
         minimumTrackTintColor="#fff"
         thumbTintColor="#fff"
       />
-      <Text style={styles.audioTime}>
+      <Text
+        style={[styles.audioTime, { color: isDarkTheme ? "white" : "black" }]}
+      >
         {formatTime(position)} / {formatTime(duration)}
       </Text>
     </View>
@@ -148,6 +154,5 @@ const styles = StyleSheet.create({
   },
   audioTime: {
     fontSize: 12,
-    color: "black",
   },
 });

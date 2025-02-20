@@ -172,7 +172,7 @@ function ChatScreen() {
               source={
                 receiver.profilePhoto
                   ? { uri: receiver.profilePhoto }
-                  : require("../assets/imgs/user.png")
+                  : require("../assets/image/user.png")
               }
               style={styles.headerProfileImage}
             />
@@ -875,8 +875,11 @@ const styles = StyleSheet.create({
   bottomContainer: {
     alignItems: "center",
     padding: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -5 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 5,
   },
   textInput: {
     flex: 1,

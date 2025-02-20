@@ -21,7 +21,7 @@ export default function UserProfileScreen({ navigation }) {
             source={
               user.profilePhoto
                 ? { uri: user.profilePhoto }
-                : require("../assets/imgs/user.png")
+                : require("../assets/image/user.png")
             }
             style={styles.profileImage}
           />

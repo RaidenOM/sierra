@@ -20,7 +20,7 @@ const ChatItem = ({
         source={
           profilePhoto
             ? { uri: profilePhoto }
-            : require("../assets/imgs/user.png")
+            : require("../assets/image/user.png")
         }
         style={styles.profilePhoto}
       />

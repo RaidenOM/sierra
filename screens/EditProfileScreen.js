@@ -141,7 +141,7 @@ export default function EditProfileScreen() {
               source={
                 viewProfilePhoto
                   ? { uri: viewProfilePhoto }
-                  : require("../assets/imgs/user.png")
+                  : require("../assets/image/user.png")
               }
               style={{ width: "100%", height: "100%", borderRadius: 60 }}
             />
