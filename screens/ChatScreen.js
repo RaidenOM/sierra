@@ -107,9 +107,10 @@ function ChatScreen() {
           }
         );
         setMessages(response.data);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching messages", error);
+      } finally {
+        setLoading(false);
       }
     }
 
