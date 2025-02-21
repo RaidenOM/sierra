@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Sierra",
+    "scheme": "sierra",
     "slug": "Sierra",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,9 +22,11 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.sierra.app",
+      "googleServicesFile": "./google-services.json",
       "permissions": [
         "READ_CONTACTS",
-        "WRITE_CONTACTS"
+        "WRITE_CONTACTS",
+        "POST_NOTIFICATIONS"
       ]
     },
     "web": {
@@ -38,15 +41,13 @@
           "color": "#ffffff",
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": true,
-          "sounds": [
-            "./assets/message_received.mp3"
-          ]
+          "useNextNotificationsApi": true
         }
       ]
     ],
     "extra": {
       "eas": {
-        "projectId": "cd6bc18b-62a8-4cc0-96e3-52fdbf3e6b4d"
+        "projectId": "99f6fedf-f095-441b-b0ea-c24f537eaf7e"
       }
     }
   }

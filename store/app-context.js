@@ -3,11 +3,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { io } from "socket.io-client";
 import * as Contacts from "expo-contacts";
-import { Alert, Platform } from "react-native";
+import { Alert, AppState, Platform } from "react-native";
 import { normalizePhoneNumber } from "../utils/UtilityFunctions";
 import { Orbitron_400Regular, useFonts } from "@expo-google-fonts/orbitron";
 import { Audio } from "expo-av";
 import * as Notifications from "expo-notifications";
+import * as TaskManager from "expo-task-manager";
 import { useNavigation } from "@react-navigation/native";
 
 // connect socket io to backend
@@ -33,12 +34,27 @@ export const UserProvider = ({ children }) => {
   const [typingUsers, setTypingUsers] = useState({});
   const navigation = useNavigation();
 
+  // define a background task and register it
+  TaskManager.defineTask("BACKGROUND_NOTIFICATION_TASK", ({ data, error }) => {
+    if (error) {
+      console.error("Background task error:", error);
+      return;
+    }
+
+    if (data) {
+      console.log("Background notification received:", data);
+      // Process the notification data here
+    }
+  });
+
+  Notifications.registerTaskAsync("BACKGROUND_TASK_ASYNC");
+
   Notifications.setNotificationHandler({
-    handleNotification: async () => {
+    handleNotification: async (notification) => {
       return {
+        shouldShowAlert: AppState.currentState === "active" ? false : true,
         shouldPlaySound: true,
         shouldSetBadge: true,
-        shouldShowAlert: true,
       };
     },
   });
@@ -53,21 +69,23 @@ export const UserProvider = ({ children }) => {
         navigation.navigate("ChatScreen", { receiverId: receiverId });
       }
     );
-
-    const subscription2 = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        console.log("Notification received:", notification);
-        console.log(
-          "Attachment URL:",
-          notification.request.content.attachments
-        );
-      }
-    );
-
     return () => {
       subscription.remove();
-      subscription2.remove();
     };
+  }, []);
+
+  // Handle notifications that launched the app from a terminated state
+  useEffect(() => {
+    const checkInitialNotification = async () => {
+      const initialNotification =
+        await Notifications.getLastNotificationResponseAsync();
+      if (initialNotification) {
+        const receiverId = initialNotification.request.content.data.receiverId;
+        navigation.navigate("ChatScreen", { receiverId });
+      }
+    };
+
+    checkInitialNotification();
   }, []);
 
   // configure push notification
@@ -105,7 +123,8 @@ export const UserProvider = ({ children }) => {
       if (Platform.OS === "android") {
         Notifications.setNotificationChannelAsync("default", {
           name: "default",
-          importance: Notifications.AndroidNotificationPriority.DEFAULT,
+          importance: Notifications.AndroidNotificationPriority.HIGH,
+          sound: "default",
         });
       }
     };

@@ -159,9 +159,6 @@ function ChatScreen() {
   // useEffect to mark messages as read between current user and other user on screen exit
   useEffect(() => {
     const markAsRead = async () => {
-      console.log("marking as read");
-      console.log(receiverId);
-      console.log(token);
       await axios.put(
         `https://sierra-backend.onrender.com/messages/mark-read/${receiverId}`,
         {},
@@ -337,7 +334,6 @@ function ChatScreen() {
 
   const renderItem = ({ item, index }) => {
     const isCurrentUser = item.senderId._id === user._id;
-    console.log(item.mediaURL);
 
     // Check if the current message is the first of a new day
     const showDateSeparator =
@@ -502,8 +498,6 @@ function ChatScreen() {
         // deselect all other
         setSelectedAudioUri("");
         setSelectedImageUri("");
-
-        console.log(selectedVideoUri);
       }
       setShowPicker(false);
     }
@@ -515,7 +509,6 @@ function ChatScreen() {
         type: "audio/*",
       });
       if (result.canceled) return;
-      console.log(result);
 
       // select audio file
       setSelectedAudioUri(result.assets[0].uri);
@@ -566,13 +559,11 @@ function ChatScreen() {
           name: `video.${fileType}`,
         });
         formData.append("mediaType", "video");
-        console.log(formData);
       } else if (selectedAudioUri) {
         const audioUri = selectedAudioUri;
         const uriParts = audioUri.split(".");
         const fileType = uriParts[uriParts.length - 1];
         const mimeType = getAudioMimeType(fileType);
-        console.log(mimeType);
 
         formData.append("mediaURL", {
           uri: audioUri,
@@ -592,7 +583,6 @@ function ChatScreen() {
             "Content-Type": "multipart/form-data",
           },
         });
-        console.log(response.data);
         setNewMessage("");
         setSelectedImageUri("");
         setSelectedVideoUri("");
