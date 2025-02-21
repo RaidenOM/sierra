@@ -288,9 +288,7 @@ function Navigation() {
 
   return (
     <>
-      <NavigationContainer>
-        {!user ? <AuthStack /> : <MainAppStack />}
-      </NavigationContainer>
+      {!user ? <AuthStack /> : <MainAppStack />}
       <StatusBar
         backgroundColor={isDarkTheme ? "black" : "white"}
         barStyle={isDarkTheme ? "light-content" : "dark-content"}
@@ -301,11 +299,13 @@ function Navigation() {
 
 export default function App() {
   return (
-    <UserProvider>
-      <ChatProvider>
-        <Navigation />
-      </ChatProvider>
-    </UserProvider>
+    <NavigationContainer>
+      <UserProvider>
+        <ChatProvider>
+          <Navigation />
+        </ChatProvider>
+      </UserProvider>
+    </NavigationContainer>
   );
 }
 

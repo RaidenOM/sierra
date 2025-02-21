@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../store/app-context";
 import axios from "axios";
-import { StyleSheet } from "react-native";
+import { AppState, StyleSheet } from "react-native";
 import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import ChatItem from "../components/ChatItem";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -17,6 +17,24 @@ export default function AllChats() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const isDarkTheme = theme === "dark";
+  const [appState, setAppState] = useState(AppState.currentState);
+
+  // handler to handle app state change
+  useEffect(() => {
+    const handleAppStateChange = (nextState) => {
+      console.log("App state changed");
+      setAppState(nextState);
+    };
+
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -33,35 +51,37 @@ export default function AllChats() {
     };
 
     if (isFocused) fetchChats();
-  }, [token]);
+  }, [token, isFocused, appState]);
 
   useEffect(() => {
     if (!socket) return;
 
     const handleNewMessage = async (message) => {
-      console.log("Received chat-notify message:", message);
+      if (appState === "active") {
+        console.log("Received chat-notify message:", message);
 
-      await playMessageReceivedSound();
-      setChats((prevChats) => {
-        const updatedChats = [...prevChats];
-        const otherPersonId =
-          message.senderId._id === user._id
-            ? message.receiverId._id
-            : message.senderId._id;
+        await playMessageReceivedSound();
+        setChats((prevChats) => {
+          const updatedChats = [...prevChats];
+          const otherPersonId =
+            message.senderId._id === user._id
+              ? message.receiverId._id
+              : message.senderId._id;
 
-        const indexToBeUpdated = updatedChats.findIndex(
-          (chat) =>
-            chat.senderId._id === otherPersonId ||
-            chat.receiverId._id === otherPersonId
-        );
+          const indexToBeUpdated = updatedChats.findIndex(
+            (chat) =>
+              chat.senderId._id === otherPersonId ||
+              chat.receiverId._id === otherPersonId
+          );
 
-        if (indexToBeUpdated >= 0) {
-          updatedChats.splice(indexToBeUpdated, 1);
-        }
-        updatedChats.unshift(message);
+          if (indexToBeUpdated >= 0) {
+            updatedChats.splice(indexToBeUpdated, 1);
+          }
+          updatedChats.unshift(message);
 
-        return updatedChats;
-      });
+          return updatedChats;
+        });
+      }
     };
 
     socket.on("new-message", handleNewMessage);
@@ -69,7 +89,7 @@ export default function AllChats() {
     return () => {
       socket.off("new-message", handleNewMessage);
     };
-  }, [socket, user._id]);
+  }, [socket, user._id, isFocused, appState]);
 
   useEffect(() => {
     const handleDeleteChat = ({ receiverId }) => {

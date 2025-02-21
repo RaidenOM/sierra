@@ -30,7 +30,19 @@
       "favicon": "./assets/sierra.png"
     },
     "plugins": [
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/sierra_monochrome.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": true,
+          "sounds": [
+            "./assets/message_received.mp3"
+          ]
+        }
+      ]
     ],
     "extra": {
       "eas": {

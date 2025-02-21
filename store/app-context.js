@@ -3,10 +3,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { io } from "socket.io-client";
 import * as Contacts from "expo-contacts";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 import { normalizePhoneNumber } from "../utils/UtilityFunctions";
 import { Orbitron_400Regular, useFonts } from "@expo-google-fonts/orbitron";
 import { Audio } from "expo-av";
+import * as Notifications from "expo-notifications";
+import { useNavigation } from "@react-navigation/native";
 
 // connect socket io to backend
 const socket = io("https://sierra-backend.onrender.com", {
@@ -21,6 +23,7 @@ export const UserProvider = ({ children }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [contacts, setContacts] = useState([]);
   const [token, setToken] = useState();
+  const [pushToken, setPushToken] = useState();
   const [messageRecievedSound, setMessageReceivedSound] = useState(null);
   const [messageSentSound, setMessageSentSound] = useState(null);
   const [theme, setTheme] = useState("dark");
@@ -28,6 +31,87 @@ export const UserProvider = ({ children }) => {
     Orbitron_400Regular,
   });
   const [typingUsers, setTypingUsers] = useState({});
+  const navigation = useNavigation();
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => {
+      return {
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+        shouldShowAlert: true,
+      };
+    },
+  });
+
+  // set notifications handler
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const receiverId =
+          response.notification.request.content.data.receiverId;
+        console.log(receiverId);
+        navigation.navigate("ChatScreen", { receiverId: receiverId });
+      }
+    );
+
+    const subscription2 = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log("Notification received:", notification);
+        console.log(
+          "Attachment URL:",
+          notification.request.content.attachments
+        );
+      }
+    );
+
+    return () => {
+      subscription.remove();
+      subscription2.remove();
+    };
+  }, []);
+
+  // configure push notification
+  useEffect(() => {
+    const configurePushNotification = async () => {
+      const { status } = await Notifications.getPermissionsAsync();
+      let finalStatus = status;
+      if (finalStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== "granted") {
+        Alert.alert(
+          "Permission denied",
+          "Permission needed to push notifications."
+        );
+        return;
+      }
+
+      const pushTokenData = await Notifications.getExpoPushTokenAsync();
+      setPushToken(pushTokenData.data);
+
+      // store the push token in backend
+      await axios.put(
+        "https://sierra-backend.onrender.com/store-push-token",
+        { pushToken: pushTokenData.data },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (Platform.OS === "android") {
+        Notifications.setNotificationChannelAsync("default", {
+          name: "default",
+          importance: Notifications.AndroidNotificationPriority.DEFAULT,
+        });
+      }
+    };
+
+    if (user) configurePushNotification();
+  }, [user]);
 
   // fetch theme from device local storage
   useEffect(() => {
@@ -71,7 +155,7 @@ export const UserProvider = ({ children }) => {
     const fetchUserData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        console.log(token);
+        setToken(token);
 
         if (token) {
           const response = await axios.get(
@@ -83,7 +167,6 @@ export const UserProvider = ({ children }) => {
             }
           );
 
-          setToken(token);
           setUser(response.data);
           setIsAuthenticating(false);
         }
@@ -208,8 +291,22 @@ export const UserProvider = ({ children }) => {
   const logout = async () => {
     await AsyncStorage.removeItem("token");
     socket.emit("leave-room", user._id);
+
+    // delete the push token from backend
+    await axios.put(
+      "https://sierra-backend.onrender.com/delete-push-token",
+      {
+        pushToken: pushToken,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     setUser(null);
     setToken(null);
+    setPushToken(null);
   };
 
   return (
