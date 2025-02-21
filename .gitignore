@@ -6,7 +6,6 @@ node_modules/
 # backend files
 SierraBackend/
 
-google-services.json
 
 # Expo
 .expo/
