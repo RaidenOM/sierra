@@ -10,6 +10,7 @@ import { Audio } from "expo-av";
 import * as Notifications from "expo-notifications";
 import * as TaskManager from "expo-task-manager";
 import { useNavigation } from "@react-navigation/native";
+import Constants from "expo-constants";
 
 // connect socket io to backend
 const socket = io("https://sierra-backend.onrender.com", {
@@ -80,8 +81,9 @@ export const UserProvider = ({ children }) => {
       const initialNotification =
         await Notifications.getLastNotificationResponseAsync();
       if (initialNotification) {
-        const receiverId = initialNotification.request.content.data.receiverId;
-        navigation.navigate("ChatScreen", { receiverId });
+        const receiverId =
+          initialNotification?.request?.content?.data?.receiverId;
+        if (receiverId) navigation.navigate("ChatScreen", { receiverId });
       }
     };
 
@@ -91,6 +93,16 @@ export const UserProvider = ({ children }) => {
   // configure push notification
   useEffect(() => {
     const configurePushNotification = async () => {
+      if (Platform.OS === "android") {
+        await Notifications.setNotificationChannelAsync("default", {
+          name: "Default",
+          importance: Notifications.AndroidImportance.HIGH,
+          sound: "default",
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: "#FF231F7C",
+        });
+      }
+
       const { status } = await Notifications.getPermissionsAsync();
       let finalStatus = status;
       if (finalStatus !== "granted") {
@@ -106,27 +118,28 @@ export const UserProvider = ({ children }) => {
         return;
       }
 
-      const pushTokenData = await Notifications.getExpoPushTokenAsync();
-      setPushToken(pushTokenData.data);
+      const projectId =
+        Constants?.expoConfig?.extra?.eas?.projectId ??
+        Constants?.easConfig?.projectId;
+      if (!projectId) {
+        throw new Error("Project ID not found");
+      }
+
+      const pushtoken = await Notifications.getExpoPushTokenAsync({
+        projectId: projectId,
+      });
+      setPushToken(pushtoken);
 
       // store the push token in backend
       await axios.put(
         "https://sierra-backend.onrender.com/store-push-token",
-        { pushToken: pushTokenData.data },
+        { pushToken: pushtoken },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      if (Platform.OS === "android") {
-        Notifications.setNotificationChannelAsync("default", {
-          name: "default",
-          importance: Notifications.AndroidNotificationPriority.HIGH,
-          sound: "default",
-        });
-      }
     };
 
     if (user) configurePushNotification();
