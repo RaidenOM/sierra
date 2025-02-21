@@ -13,6 +13,8 @@ dist/
 web-build/
 expo-env.d.ts
 
+sierra-bba29-firebase-adminsdk-fbsvc-842e8ca106.json:1
+
 # Native
 *.orig.*
 *.jks
