@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../store/app-context";
 import axios from "axios";
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import ChatItem from "../components/ChatItem";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -87,7 +87,10 @@ export default function AllChats() {
             chat.receiverId._id !== receiverId
         )
       );
+      Alert.alert("Chats Deleted", "The other user deleted the chats");
+      if (navigation.canGoBack()) navigation.goBack();
     };
+
     socket.on("delete-chat", handleDeleteChat);
 
     return () => {
