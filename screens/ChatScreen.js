@@ -178,8 +178,8 @@ function ChatScreen() {
       );
     };
 
-    markAsRead();
-  }, [messages, receiverId, token]);
+    if (!isFocused) markAsRead();
+  }, [messages, receiverId, token, isFocused]);
 
   // useLayoutEffect to set the title for ChatScreen
   useLayoutEffect(() => {

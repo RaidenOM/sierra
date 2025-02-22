@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { io } from "socket.io-client";
@@ -8,9 +8,10 @@ import { normalizePhoneNumber } from "../utils/UtilityFunctions";
 import { Orbitron_400Regular, useFonts } from "@expo-google-fonts/orbitron";
 import { Audio } from "expo-av";
 import * as Notifications from "expo-notifications";
-import * as TaskManager from "expo-task-manager";
 import { useNavigation } from "@react-navigation/native";
 import Constants from "expo-constants";
+import * as Linking from "expo-linking";
+import { ChatContext } from "./chat-context";
 
 // connect socket io to backend
 const socket = io("https://sierra-backend.onrender.com", {
@@ -33,62 +34,18 @@ export const UserProvider = ({ children }) => {
     Orbitron_400Regular,
   });
   const [typingUsers, setTypingUsers] = useState({});
+  const { chats, setChats } = useContext(ChatContext);
   const navigation = useNavigation();
-
-  // define a background task and register it
-  TaskManager.defineTask("BACKGROUND_NOTIFICATION_TASK", ({ data, error }) => {
-    if (error) {
-      console.error("Background task error:", error);
-      return;
-    }
-
-    if (data) {
-      console.log("Background notification received:", data);
-      // Process the notification data here
-    }
-  });
-
-  Notifications.registerTaskAsync("BACKGROUND_TASK_ASYNC");
 
   Notifications.setNotificationHandler({
     handleNotification: async (notification) => {
       return {
         shouldShowAlert: AppState.currentState === "active" ? false : true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
+        shouldPlaySound: AppState.currentState === "active" ? false : true,
+        shouldSetBadge: AppState.currentState === "active" ? false : true,
       };
     },
   });
-
-  // set notifications handler
-  useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        const receiverId =
-          response.notification.request.content.data.receiverId;
-        console.log(receiverId);
-        navigation.navigate("ChatScreen", { receiverId: receiverId });
-      }
-    );
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  // Handle notifications that launched the app from a terminated state
-  useEffect(() => {
-    const checkInitialNotification = async () => {
-      const initialNotification =
-        await Notifications.getLastNotificationResponseAsync();
-      if (initialNotification) {
-        const receiverId =
-          initialNotification?.request?.content?.data?.receiverId;
-        if (receiverId) navigation.navigate("ChatScreen", { receiverId });
-      }
-    };
-
-    checkInitialNotification();
-  }, []);
 
   // configure push notification
   useEffect(() => {
@@ -125,15 +82,16 @@ export const UserProvider = ({ children }) => {
         throw new Error("Project ID not found");
       }
 
-      const pushtoken = await Notifications.getExpoPushTokenAsync({
+      const pushTokenData = await Notifications.getExpoPushTokenAsync({
         projectId: projectId,
       });
-      setPushToken(pushtoken);
+      console.log({ pushtoken: pushTokenData.data });
+      setPushToken(pushTokenData.data);
 
       // store the push token in backend
       await axios.put(
         "https://sierra-backend.onrender.com/store-push-token",
-        { pushToken: pushtoken },
+        { pushToken: pushTokenData.data },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -144,6 +102,37 @@ export const UserProvider = ({ children }) => {
 
     if (user) configurePushNotification();
   }, [user]);
+
+  // handle push notification tap when app is in background
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const { receiverId } = response.notification.request.content.data;
+
+        // set chat as marked in chats state
+        setChats((prevChats) => {
+          const updatedChats = [...prevChats];
+          const indexToBeUpdated = updatedChats.findIndex(
+            (chat) =>
+              chat.senderId._id === receiverId ||
+              chat.receiverId._id === receiverId
+          );
+          updatedChats[indexToBeUpdated] = {
+            ...updatedChats[indexToBeUpdated],
+            unreadCount: 0,
+            isRead: true,
+          };
+          return updatedChats;
+        });
+
+        navigation.navigate("ChatScreen", { receiverId: receiverId });
+      }
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   // fetch theme from device local storage
   useEffect(() => {

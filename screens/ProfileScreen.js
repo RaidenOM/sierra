@@ -7,6 +7,7 @@ import axios from "axios";
 import { ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { UserContext } from "../store/app-context";
+import { ChatContext } from "../store/chat-context";
 
 function ProfileScreen() {
   const navigation = useNavigation();
@@ -15,10 +16,23 @@ function ProfileScreen() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const { theme } = useContext(UserContext);
+  const { chats, setChats } = useContext(ChatContext);
 
   const isDarkTheme = theme === "dark";
 
   const handleChat = () => {
+    setChats((prevChats) => {
+      const updatedChats = [...prevChats];
+      const indexToBeUpdated = updatedChats.findIndex(
+        (chat) => chat.senderId._id === id || chat.receiverId._id === id
+      );
+      updatedChats[indexToBeUpdated] = {
+        ...updatedChats[indexToBeUpdated],
+        unreadCount: 0,
+        isRead: true,
+      };
+      return updatedChats;
+    });
     navigation.navigate("ChatScreen", {
       receiverId: id,
     });

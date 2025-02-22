@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import React, { useContext, useEffect } from "react";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import {
@@ -300,11 +300,11 @@ function Navigation() {
 export default function App() {
   return (
     <NavigationContainer>
-      <UserProvider>
-        <ChatProvider>
+      <ChatProvider>
+        <UserProvider>
           <Navigation />
-        </ChatProvider>
-      </UserProvider>
+        </UserProvider>
+      </ChatProvider>
     </NavigationContainer>
   );
 }

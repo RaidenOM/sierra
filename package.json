@@ -45,7 +45,8 @@
     "socket.io-client": "^4.8.1",
     "expo-notifications": "~0.28.19",
     "expo-task-manager": "~11.8.2",
-    "expo-constants": "~16.0.2"
+    "expo-constants": "~16.0.2",
+    "expo-linking": "~6.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"

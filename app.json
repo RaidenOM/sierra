@@ -21,6 +21,7 @@
         "foregroundImage": "./assets/sierra.png",
         "backgroundColor": "#ffffff"
       },
+      "useNextNotificationsApi": true,
       "package": "com.sierra.app",
       "googleServicesFile": "./google-services.json",
       "permissions": [
@@ -37,11 +38,11 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/sierra_monochrome.png",
+          "icon": "./assets/notification_icon.png",
           "color": "#ffffff",
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": true,
-          "useNextNotificationsApi": true
+          "sound": []
         }
       ]
     ],
