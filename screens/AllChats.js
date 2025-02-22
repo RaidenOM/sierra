@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../store/app-context";
 import axios from "axios";
-import { AppState, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import ChatItem from "../components/ChatItem";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -10,31 +10,20 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ChatContext } from "../store/chat-context";
 
 export default function AllChats() {
-  const { socket, user, token, typingUsers, playMessageReceivedSound, theme } =
-    useContext(UserContext);
+  const {
+    socket,
+    user,
+    token,
+    typingUsers,
+    playMessageReceivedSound,
+    theme,
+    appState,
+  } = useContext(UserContext);
   const { chats, setChats } = useContext(ChatContext);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const isDarkTheme = theme === "dark";
-  const [appState, setAppState] = useState(AppState.currentState);
-
-  // handler to handle app state change
-  useEffect(() => {
-    const handleAppStateChange = (nextState) => {
-      console.log("App state changed");
-      setAppState(nextState);
-    };
-
-    const subscription = AppState.addEventListener(
-      "change",
-      handleAppStateChange
-    );
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -57,31 +46,29 @@ export default function AllChats() {
     if (!socket) return;
 
     const handleNewMessage = async (message) => {
-      if (appState === "active") {
-        console.log("Received chat-notify message:", message);
+      console.log("Received chat-notify message:", message);
 
-        await playMessageReceivedSound();
-        setChats((prevChats) => {
-          const updatedChats = [...prevChats];
-          const otherPersonId =
-            message.senderId._id === user._id
-              ? message.receiverId._id
-              : message.senderId._id;
+      if (appState === "active") await playMessageReceivedSound();
+      setChats((prevChats) => {
+        const updatedChats = [...prevChats];
+        const otherPersonId =
+          message.senderId._id === user._id
+            ? message.receiverId._id
+            : message.senderId._id;
 
-          const indexToBeUpdated = updatedChats.findIndex(
-            (chat) =>
-              chat.senderId._id === otherPersonId ||
-              chat.receiverId._id === otherPersonId
-          );
+        const indexToBeUpdated = updatedChats.findIndex(
+          (chat) =>
+            chat.senderId._id === otherPersonId ||
+            chat.receiverId._id === otherPersonId
+        );
 
-          if (indexToBeUpdated >= 0) {
-            updatedChats.splice(indexToBeUpdated, 1);
-          }
-          updatedChats.unshift(message);
+        if (indexToBeUpdated >= 0) {
+          updatedChats.splice(indexToBeUpdated, 1);
+        }
+        updatedChats.unshift(message);
 
-          return updatedChats;
-        });
-      }
+        return updatedChats;
+      });
     };
 
     socket.on("new-message", handleNewMessage);

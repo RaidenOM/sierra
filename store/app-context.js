@@ -10,12 +10,11 @@ import { Audio } from "expo-av";
 import * as Notifications from "expo-notifications";
 import { useNavigation } from "@react-navigation/native";
 import Constants from "expo-constants";
-import * as Linking from "expo-linking";
 import { ChatContext } from "./chat-context";
 
 // connect socket io to backend
 const socket = io("https://sierra-backend.onrender.com", {
-  transports: ["websocket"],
+  transports: ["websocket", "polling"],
 });
 
 export const UserContext = createContext();
@@ -27,7 +26,7 @@ export const UserProvider = ({ children }) => {
   const [contacts, setContacts] = useState([]);
   const [token, setToken] = useState();
   const [pushToken, setPushToken] = useState();
-  const [messageRecievedSound, setMessageReceivedSound] = useState(null);
+  const [messageReceivedSound, setMessageReceivedSound] = useState(null);
   const [messageSentSound, setMessageSentSound] = useState(null);
   const [theme, setTheme] = useState("dark");
   const [fontsLoaded] = useFonts({
@@ -36,6 +35,7 @@ export const UserProvider = ({ children }) => {
   const [typingUsers, setTypingUsers] = useState({});
   const { chats, setChats } = useContext(ChatContext);
   const navigation = useNavigation();
+  const [appState, setAppState] = useState(AppState.currentState);
 
   Notifications.setNotificationHandler({
     handleNotification: async (notification) => {
@@ -117,11 +117,13 @@ export const UserProvider = ({ children }) => {
               chat.senderId._id === receiverId ||
               chat.receiverId._id === receiverId
           );
-          updatedChats[indexToBeUpdated] = {
-            ...updatedChats[indexToBeUpdated],
-            unreadCount: 0,
-            isRead: true,
-          };
+          if (indexToBeUpdated >= 0) {
+            updatedChats[indexToBeUpdated] = {
+              ...updatedChats[indexToBeUpdated],
+              unreadCount: 0,
+              isRead: true,
+            };
+          }
           return updatedChats;
         });
 
@@ -266,11 +268,22 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // join room if successsful login
+  // join room if successsful login or (if user is logged in and socket reconnects)
   useEffect(() => {
     if (user) {
       console.log("Joining room " + user._id);
       socket.emit("join-room", user._id);
+
+      const handleReconnect = () => {
+        console.log("Reconnected, rejoining room " + user._id);
+        socket.emit("join-room", user._id);
+      };
+
+      socket.on("connect", handleReconnect);
+
+      return () => {
+        socket.off("connect", handleReconnect);
+      };
     }
   }, [user]);
 
@@ -292,14 +305,35 @@ export const UserProvider = ({ children }) => {
     loadSound();
 
     return () => {
-      if (messageRecievedSound) messageRecievedSound.unloadAsync();
+      if (messageReceivedSound) messageReceivedSound.unloadAsync();
       if (messageSentSound) messageSentSound.unloadAsync();
     };
   }, []);
 
+  // handle app state change
+  useEffect(() => {
+    const handleAppStateChange = (nextState) => {
+      console.log("App state changed");
+      setAppState(nextState);
+    };
+
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+    return () => subscription.remove();
+  }, [user]);
+
+  // reconnect user if app state chagnes and socket is disconnectd
+  useEffect(() => {
+    if (appState === "active" && user && !socket.connected) {
+      socket.connect();
+    }
+  }, [user, socket, appState]);
+
   const playMessageReceivedSound = async () => {
-    if (messageRecievedSound) {
-      await messageRecievedSound.replayAsync();
+    if (messageReceivedSound) {
+      await messageReceivedSound.replayAsync();
     }
   };
 
@@ -312,6 +346,7 @@ export const UserProvider = ({ children }) => {
   const logout = async () => {
     await AsyncStorage.removeItem("token");
     socket.emit("leave-room", user._id);
+    if (socket.connected) socket.disconnect();
 
     // delete the push token from backend
     await axios.put(
@@ -347,6 +382,7 @@ export const UserProvider = ({ children }) => {
         playMessageReceivedSound,
         theme,
         toggleTheme,
+        appState,
       }}
     >
       {children}
