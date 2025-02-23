@@ -110,18 +110,11 @@ export default function AllChats() {
 
   async function handlePress(otherPersonId) {
     setChats((prevChats) => {
-      const updatedChats = [...prevChats];
-      const indexToBeUpdated = updatedChats.findIndex(
-        (chat) =>
-          chat.senderId._id === otherPersonId ||
-          chat.receiverId._id === otherPersonId
+      prevChats.map((chat) =>
+        chat.senderId._id === otherPersonId
+          ? { ...chat, isRead: true, unreadCount: 0 }
+          : chat
       );
-      updatedChats[indexToBeUpdated] = {
-        ...updatedChats[indexToBeUpdated],
-        unreadCount: 0,
-        isRead: true,
-      };
-      return updatedChats;
     });
     navigation.navigate("ChatScreen", {
       receiverId: otherPersonId,

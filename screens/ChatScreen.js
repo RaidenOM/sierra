@@ -5,7 +5,6 @@ import {
   FlatList,
   StyleSheet,
   Image,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
   Alert,
@@ -13,7 +12,6 @@ import {
   Keyboard,
 } from "react-native";
 import {
-  DarkTheme,
   useIsFocused,
   useNavigation,
   useRoute,
@@ -169,13 +167,13 @@ function ChatScreen() {
         }
       );
 
-      setChats((prevChats) =>
+      setChats((prevChats) => {
         prevChats.map((chat) =>
-          chat.senderId._id === receiverId || chat.receiverId._id === receiverId
-            ? { ...chat, unreadCount: 0, isRead: true }
+          chat.senderId._id === receiverId
+            ? { ...chat, isRead: true, unreadCount: 0 }
             : chat
-        )
-      );
+        );
+      });
     };
 
     if (!isFocused) markAsRead();

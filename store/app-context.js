@@ -111,20 +111,11 @@ export const UserProvider = ({ children }) => {
 
         // set chat as marked in chats state
         setChats((prevChats) => {
-          const updatedChats = [...prevChats];
-          const indexToBeUpdated = updatedChats.findIndex(
-            (chat) =>
-              chat.senderId._id === receiverId ||
-              chat.receiverId._id === receiverId
+          prevChats.map((chat) =>
+            chat.senderId._id === receiverId
+              ? { ...chat, isRead: true, unreadCount: 0 }
+              : chat
           );
-          if (indexToBeUpdated >= 0) {
-            updatedChats[indexToBeUpdated] = {
-              ...updatedChats[indexToBeUpdated],
-              unreadCount: 0,
-              isRead: true,
-            };
-          }
-          return updatedChats;
         });
 
         navigation.navigate("ChatScreen", { receiverId: receiverId });
