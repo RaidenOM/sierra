@@ -26,6 +26,7 @@ import ViewImageScreen from "./screens/ViewImageScreen";
 import ViewVideoScreen from "./screens/ViewVideoScreen";
 import EditProfileScreen from "./screens/EditProfileScreen";
 import { ChatProvider } from "./store/chat-context";
+import AppInfo from "./screens/AppInfo";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -132,7 +133,7 @@ function MainAppStack() {
             <View style={styles.headerButtonContainer}>
               <TouchableOpacity
                 style={{
-                  marginHorizontal: 15,
+                  marginRight: 15,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
@@ -153,6 +154,22 @@ function MainAppStack() {
                 style={{ justifyContent: "center", alignItems: "center" }}
               >
                 <Ionicons name="person-circle" size={30} color={tintColor} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  marginLeft: 15,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  navigation.navigate("AppInfo");
+                }}
+              >
+                <Ionicons
+                  name="information-circle-outline"
+                  size={30}
+                  color={isDarkTheme ? "white" : "black"}
+                />
               </TouchableOpacity>
             </View>
           ),
@@ -261,6 +278,11 @@ function MainAppStack() {
             </View>
           ),
         }}
+      />
+      <Stack.Screen
+        component={AppInfo}
+        name="AppInfo"
+        options={{ title: "About" }}
       />
     </Stack.Navigator>
   );
