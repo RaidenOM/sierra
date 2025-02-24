@@ -110,7 +110,7 @@ export default function AllChats() {
 
   async function handlePress(otherPersonId) {
     setChats((prevChats) => {
-      prevChats.map((chat) =>
+      return prevChats.map((chat) =>
         chat.senderId._id === otherPersonId
           ? { ...chat, isRead: true, unreadCount: 0 }
           : chat

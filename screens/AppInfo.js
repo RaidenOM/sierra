@@ -30,11 +30,9 @@ export default function AppInfo() {
           </Text>
           <View style={styles.lightTextContainer}>
             <Text style={[styles.textCenter, { color: "#7f8c8d" }]}>
-              Made by Om Kumar
+              Designed by Om Kumar
             </Text>
-            <Text style={[styles.textCenter, { color: "#7f8c8d" }]}>
-              ©2025-26
-            </Text>
+            <Text style={[styles.textCenter, { color: "#7f8c8d" }]}>©2025</Text>
           </View>
         </View>
       </>

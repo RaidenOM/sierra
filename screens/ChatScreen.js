@@ -168,7 +168,7 @@ function ChatScreen() {
       );
 
       setChats((prevChats) => {
-        prevChats.map((chat) =>
+        return prevChats.map((chat) =>
           chat.senderId._id === receiverId
             ? { ...chat, isRead: true, unreadCount: 0 }
             : chat

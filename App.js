@@ -282,7 +282,21 @@ function MainAppStack() {
       <Stack.Screen
         component={AppInfo}
         name="AppInfo"
-        options={{ title: "About" }}
+        options={{
+          headerTitle: () => (
+            <View>
+              <Text
+                style={{
+                  fontFamily: "Orbitron_400Regular",
+                  fontSize: 20,
+                  color: "#6993ff",
+                }}
+              >
+                About
+              </Text>
+            </View>
+          ),
+        }}
       />
     </Stack.Navigator>
   );
@@ -294,17 +308,28 @@ function Navigation() {
 
   if (loading || !fontsLoaded) {
     return (
-      <View style={styles.loadingContainer}>
-        <Image
-          source={require("./assets/sierra.png")}
-          resizeMode="center"
-          style={{ height: 400 }}
+      <>
+        <View
+          style={[
+            styles.loadingContainer,
+            { backgroundColor: isDarkTheme ? "black" : "white" },
+          ]}
+        >
+          <Image
+            source={require("./assets/sierra.png")}
+            resizeMode="center"
+            style={{ height: 400 }}
+          />
+          <ActivityIndicator size="large" color="#4CAF50" />
+          <Text style={{ marginTop: 20, color: "#7f8c8d" }}>
+            Designed by Om Kumar
+          </Text>
+        </View>
+        <StatusBar
+          backgroundColor={isDarkTheme ? "black" : "white"}
+          barStyle={isDarkTheme ? "light-content" : "dark-content"}
         />
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={{ marginTop: 20, color: "#7f8c8d" }}>
-          Designed by Om Kumar
-        </Text>
-      </View>
+      </>
     );
   }
 

@@ -22,7 +22,7 @@ function ProfileScreen() {
 
   const handleChat = () => {
     setChats((prevChats) => {
-      prevChats.map((chat) =>
+      return prevChats.map((chat) =>
         chat.senderId._id === id
           ? { ...chat, isRead: true, unreadCount: 0 }
           : chat
