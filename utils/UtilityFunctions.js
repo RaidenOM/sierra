@@ -1,5 +1,4 @@
 import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
-import * as Localization from "expo-localization";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 

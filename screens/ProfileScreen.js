@@ -65,14 +65,24 @@ function ProfileScreen() {
               { backgroundColor: isDarkTheme ? "rgb(30,30,30)" : "white" },
             ]}
           >
-            <Image
-              source={
-                user.profilePhoto
-                  ? { uri: user.profilePhoto }
-                  : require("../assets/image/user.png")
-              }
-              style={styles.profileImage}
-            />
+            <TouchableOpacity
+              onPress={() => {
+                console.log(user.profilePhoto);
+                navigation.navigate("ViewImageScreen", {
+                  mediaURL: user.profilePhoto,
+                  username: user.username,
+                });
+              }}
+            >
+              <Image
+                source={
+                  user.profilePhoto
+                    ? { uri: user.profilePhoto }
+                    : require("../assets/image/user.png")
+                }
+                style={styles.profileImage}
+              />
+            </TouchableOpacity>
             <Text
               style={[styles.name, { color: isDarkTheme ? "#EAEAEA" : "#333" }]}
             >

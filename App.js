@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from "react";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import React, { useContext } from "react";
+import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import {
@@ -27,6 +27,7 @@ import ViewVideoScreen from "./screens/ViewVideoScreen";
 import EditProfileScreen from "./screens/EditProfileScreen";
 import { ChatProvider } from "./store/chat-context";
 import AppInfo from "./screens/AppInfo";
+import ChatBotScreen from "./screens/ChatBotScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -222,19 +223,7 @@ function MainAppStack() {
         name="ViewImageScreen"
         component={ViewImageScreen}
         options={{
-          headerTitle: () => (
-            <View>
-              <Text
-                style={{
-                  fontFamily: "Orbitron_400Regular",
-                  fontSize: 20,
-                  color: "#fff",
-                }}
-              >
-                Viewing Image
-              </Text>
-            </View>
-          ),
+          title: "",
           headerStyle: {
             backgroundColor: "black",
           },
@@ -293,6 +282,25 @@ function MainAppStack() {
                 }}
               >
                 About
+              </Text>
+            </View>
+          ),
+        }}
+      />
+      <Stack.Screen
+        component={ChatBotScreen}
+        name="ChatBotScreen"
+        options={{
+          headerTitle: () => (
+            <View>
+              <Text
+                style={{
+                  fontFamily: "Orbitron_400Regular",
+                  fontSize: 20,
+                  color: "#6993ff",
+                }}
+              >
+                Sierra Intelligence
               </Text>
             </View>
           ),

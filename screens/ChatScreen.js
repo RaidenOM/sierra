@@ -56,7 +56,6 @@ function ChatScreen() {
   const [thumbnails, setThumbnails] = useState({});
   const [showPicker, setShowPicker] = useState(false);
   const [audioName, setAudioName] = useState("");
-  const [inputHeight, setInputHeight] = useState(40);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const [receiver, setReceiver] = useState(null);
@@ -585,7 +584,6 @@ function ChatScreen() {
         setSelectedImageUri("");
         setSelectedVideoUri("");
         setSelectedAudioUri("");
-        setInputHeight(40);
 
         await playMessageSentSound();
       } catch (error) {
@@ -775,7 +773,7 @@ function ChatScreen() {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <Text style={styles.sendButtonText}>
-                  <Ionicons name="arrow-forward" size={20} />
+                  <Ionicons name="send" size={20} />
                 </Text>
               )}
             </TouchableOpacity>

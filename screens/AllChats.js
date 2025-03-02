@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../store/app-context";
 import axios from "axios";
-import { Alert, StyleSheet } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity } from "react-native";
 import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import ChatItem from "../components/ChatItem";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -174,6 +174,20 @@ export default function AllChats() {
             )}
           </>
         )}
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("ChatBotScreen");
+          }}
+        >
+          <LinearGradient
+            style={styles.aiButtonBorder}
+            colors={["#ff0000", "#ff00e6", "#4800ff"]}
+          >
+            <View style={styles.aiButton}>
+              <Text style={{ color: "#959596", fontSize: 20 }}>AI</Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
       </>
     );
   }
@@ -232,5 +246,28 @@ const styles = StyleSheet.create({
   noChatsText: {
     fontSize: 16,
     color: "#7f8c8d",
+  },
+  aiButtonBorder: {
+    position: "absolute",
+    right: 20,
+    bottom: 20,
+    height: 55,
+    width: 55,
+    borderRadius: 27.5,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -5 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  aiButton: {
+    height: 50,
+    width: 50,
+    borderRadius: 25,
+    backgroundColor: "#e9e8eb",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -33,7 +33,7 @@ export const UserProvider = ({ children }) => {
     Orbitron_400Regular,
   });
   const [typingUsers, setTypingUsers] = useState({});
-  const { chats, setChats } = useContext(ChatContext);
+  const { setChats } = useContext(ChatContext);
   const navigation = useNavigation();
   const [appState, setAppState] = useState(AppState.currentState);
 

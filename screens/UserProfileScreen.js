@@ -3,9 +3,10 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { UserContext } from "../store/app-context";
 import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
 
 export default function UserProfileScreen({ navigation }) {
-  const { user, logout, loading, theme } = useContext(UserContext);
+  const { user, logout, theme } = useContext(UserContext);
   const isDarkTheme = theme === "dark";
 
   function renderContent() {
@@ -17,14 +18,23 @@ export default function UserProfileScreen({ navigation }) {
             { backgroundColor: isDarkTheme ? "rgb(30,30,30)" : "white" },
           ]}
         >
-          <Image
-            source={
-              user.profilePhoto
-                ? { uri: user.profilePhoto }
-                : require("../assets/image/user.png")
-            }
-            style={styles.profileImage}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("ViewImageScreen", {
+                mediaURL: user.profilePhoto,
+                username: user.username,
+              });
+            }}
+          >
+            <Image
+              source={
+                user.profilePhoto
+                  ? { uri: user.profilePhoto }
+                  : require("../assets/image/user.png")
+              }
+              style={styles.profileImage}
+            />
+          </TouchableOpacity>
           <Text
             style={[styles.name, { color: isDarkTheme ? "#EAEAEA" : "#333" }]}
           >
