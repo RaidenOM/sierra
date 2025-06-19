@@ -5,6 +5,7 @@ import {
   Text,
   View,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import ContactItem from "../components/ContactItem";
 import { useNavigation } from "@react-navigation/native";
@@ -12,12 +13,20 @@ import { UserContext } from "../store/app-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
+import axios from "axios";
 
 function AllContacts() {
-  const { contacts, fetchContacts, user, theme } = useContext(UserContext);
+  const { contacts, fetchContacts, user, theme, token } =
+    useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const isDarkTheme = theme === "dark";
+
+  const contactWithNumberAndNames = contacts.map((contact) => {
+    return { phone: contact.phone, savedName: contact.savedName };
+  });
+
+  console.log(contactWithNumberAndNames);
 
   useEffect(() => {
     const getContacts = async () => {
@@ -34,29 +43,78 @@ function AllContacts() {
     });
   };
 
+  const handleUploadToCloud = async () => {
+    if (!loading)
+      Alert.alert(
+        "Upload to Cloud",
+        "Are you sure you want to sync your contacts to the cloud? Doing so will enable you to access them on Sierra Web",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Upload",
+            style: "default",
+            onPress: async () => {
+              try {
+                await axios.post(
+                  "https://sierra-backend.onrender.com/contacts",
+                  contactWithNumberAndNames,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                );
+                Alert.alert(
+                  "Upload Success",
+                  "Successfully uploaded contacts to cloud"
+                );
+              } catch (error) {
+                Alert.alert(
+                  "Upload Failed",
+                  "An error occured uploading contacts to cloud"
+                );
+              }
+            },
+          },
+        ]
+      );
+  };
+
   function renderContactList() {
     return (
       <>
-        <View style={styles.refreshButtonContainer}>
+        <View style={styles.header}>
           <Text
             style={[styles.title, { color: isDarkTheme ? "#EAEAEA" : "#333" }]}
           >
             Contacts
           </Text>
-          {!loading ? (
+          <View style={styles.headerButtonsContainer}>
             <TouchableOpacity
-              onPress={async () => {
-                setLoading(true);
-                await fetchContacts();
-                setLoading(false);
-              }}
-              disabled={loading}
+              style={{ marginRight: 20 }}
+              onPress={handleUploadToCloud}
             >
-              <Ionicons name="refresh" size={24} color={"#7f8c8d"} />
+              <Ionicons
+                name="cloud-upload-outline"
+                size={24}
+                color={"#7f8c8d"}
+              />
             </TouchableOpacity>
-          ) : (
-            <ActivityIndicator color="#4CAF50" />
-          )}
+            {!loading ? (
+              <TouchableOpacity
+                onPress={async () => {
+                  setLoading(true);
+                  await fetchContacts();
+                  setLoading(false);
+                }}
+                disabled={loading}
+              >
+                <Ionicons name="refresh" size={24} color={"#7f8c8d"} />
+              </TouchableOpacity>
+            ) : (
+              <ActivityIndicator color="#4CAF50" size={24} />
+            )}
+          </View>
         </View>
         {contacts.length > 0 ? (
           <FlatList
@@ -130,13 +188,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#7f8c8d",
   },
-  refreshButtonContainer: {
+  header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
     marginTop: 15,
     paddingHorizontal: 15,
+  },
+  headerButtonsContainer: {
+    flexDirection: "row",
   },
 });
 
