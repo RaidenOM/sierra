@@ -37,16 +37,6 @@ export const UserProvider = ({ children }) => {
   const navigation = useNavigation();
   const [appState, setAppState] = useState(AppState.currentState);
 
-  Notifications.setNotificationHandler({
-    handleNotification: async (notification) => {
-      return {
-        shouldShowAlert: AppState.currentState === "active" ? false : true,
-        shouldPlaySound: AppState.currentState === "active" ? false : true,
-        shouldSetBadge: AppState.currentState === "active" ? false : true,
-      };
-    },
-  });
-
   // configure push notification
   useEffect(() => {
     const configurePushNotification = async () => {
@@ -102,30 +92,6 @@ export const UserProvider = ({ children }) => {
 
     if (user) configurePushNotification();
   }, [user]);
-
-  // handle push notification tap when app is in background
-  useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        const { receiverId } = response.notification.request.content.data;
-
-        // set chat as marked in chats state
-        setChats((prevChats) => {
-          return prevChats.map((chat) =>
-            chat.senderId._id === receiverId
-              ? { ...chat, isRead: true, unreadCount: 0 }
-              : chat
-          );
-        });
-
-        navigation.navigate("ChatScreen", { receiverId: receiverId });
-      }
-    );
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
 
   // fetch theme from device local storage
   useEffect(() => {

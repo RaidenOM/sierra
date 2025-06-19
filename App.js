@@ -57,8 +57,12 @@ function HomeTab() {
         component={AllChats}
         name="AllChats"
         options={{
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="logo-wechat" size={30} color={color} />
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              name={focused ? "chatbubbles" : "chatbubbles-outline"}
+              size={size}
+              color={color}
+            />
           ),
           tabBarLabel: "Chats",
         }}
@@ -67,8 +71,12 @@ function HomeTab() {
         component={AllContacts}
         name="AllContacts"
         options={{
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="people" size={30} color={color} />
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              name={focused ? "people" : "people-outline"}
+              size={size}
+              color={color}
+            />
           ),
           tabBarLabel: "Contacts",
         }}
