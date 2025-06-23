@@ -29,6 +29,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import EmojiSelector from "react-native-emoji-selector";
 import CustomInput from "../components/CustomInput";
 import { ChatContext } from "../store/chat-context";
+import * as Progress from "react-native-progress";
 
 const getAudioMimeType = (extension) => {
   switch (extension.toLowerCase()) {
@@ -57,7 +58,7 @@ function ChatScreen() {
   const [showPicker, setShowPicker] = useState(false);
   const [audioName, setAudioName] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [receiver, setReceiver] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -579,6 +580,11 @@ function ChatScreen() {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
+          onUploadProgress: (progressData) => {
+            setUploadProgress(
+              (progressData.loaded / progressData.loaded) * 100
+            );
+          },
         });
         setNewMessage("");
         setSelectedImageUri("");
@@ -590,6 +596,7 @@ function ChatScreen() {
         console.error("Error sending message", error);
       } finally {
         setSendLoading(false);
+        setUploadProgress(0);
       }
     }
   };
@@ -770,7 +777,11 @@ function ChatScreen() {
               disabled={sendLoading}
             >
               {sendLoading ? (
-                <ActivityIndicator color="#fff" />
+                <Progress.Circle
+                  progress={uploadProgress / 100}
+                  color="#0f0"
+                  borderWidth={0}
+                />
               ) : (
                 <Text style={styles.sendButtonText}>
                   <Ionicons name="send" size={20} />

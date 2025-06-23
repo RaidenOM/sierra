@@ -28,6 +28,7 @@ import EditProfileScreen from "./screens/EditProfileScreen";
 import { ChatProvider } from "./store/chat-context";
 import AppInfo from "./screens/AppInfo";
 import ChatBotScreen from "./screens/ChatBotScreen";
+import * as Progress from "react-native-progress";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -331,15 +332,37 @@ function Navigation() {
             { backgroundColor: isDarkTheme ? "black" : "white" },
           ]}
         >
-          <Image
-            source={require("./assets/sierra.png")}
-            resizeMode="center"
-            style={{ height: 400 }}
-          />
-          <ActivityIndicator size="large" color="#4CAF50" />
-          <Text style={{ marginTop: 20, color: "#7f8c8d" }}>
-            Designed by Om Kumar
-          </Text>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              source={require("./assets/sierra.png")}
+              resizeMode="contain"
+              style={{ width: 150, height: 150 }}
+            />
+          </View>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Progress.Bar
+              indeterminate
+              color={isDarkTheme ? "#ffffffaa" : "#000000aa"}
+              width={150}
+              borderWidth={0}
+              unfilledColor={isDarkTheme ? "#333" : "#ccc"}
+            />
+            <Text style={{ marginTop: 20, color: "#7f8c8d" }}>
+              Designed by Om Kumar
+            </Text>
+          </View>
         </View>
         <StatusBar
           backgroundColor={isDarkTheme ? "black" : "white"}
@@ -384,8 +407,6 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#fff",
   },
 });
