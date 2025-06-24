@@ -9,7 +9,6 @@ import {
   Text,
   StatusBar,
   Image,
-  ActivityIndicator,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { CardStyleInterpolators } from "@react-navigation/stack";
@@ -29,6 +28,7 @@ import { ChatProvider } from "./store/chat-context";
 import AppInfo from "./screens/AppInfo";
 import ChatBotScreen from "./screens/ChatBotScreen";
 import * as Progress from "react-native-progress";
+import SettingsScreen from "./screens/SettingsScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -134,50 +134,26 @@ function MainAppStack() {
         name="HomeTab"
         component={HomeTab}
         options={({ navigation }) => ({
-          headerTitle: ({ tintColor }) => (
+          headerLeft: ({ tintColor }) => (
             <Text style={[styles.headerTitle, { color: tintColor }]}>
               Sierra
             </Text>
           ),
+          headerTitle: "",
           headerRight: ({ tintColor }) => (
             <View style={styles.headerButtonContainer}>
               <TouchableOpacity
                 style={{
-                  marginRight: 15,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
                 onPress={() => {
-                  toggleTheme();
+                  navigation.navigate("SettingsScreen");
                 }}
               >
                 <Ionicons
-                  name={isDarkTheme ? "sunny" : "moon"}
-                  size={20}
-                  color={isDarkTheme ? "white" : "black"}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("UserProfileScreen");
-                }}
-                style={{ justifyContent: "center", alignItems: "center" }}
-              >
-                <Ionicons name="person-circle" size={30} color={tintColor} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  marginLeft: 15,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={() => {
-                  navigation.navigate("AppInfo");
-                }}
-              >
-                <Ionicons
-                  name="information-circle-outline"
-                  size={30}
+                  name="settings-outline"
+                  size={25}
                   color={isDarkTheme ? "white" : "black"}
                 />
               </TouchableOpacity>
@@ -315,6 +291,25 @@ function MainAppStack() {
           ),
         }}
       />
+      <Stack.Screen
+        component={SettingsScreen}
+        name="SettingsScreen"
+        options={{
+          headerTitle: () => (
+            <View>
+              <Text
+                style={{
+                  fontFamily: "Orbitron_400Regular",
+                  fontSize: 20,
+                  color: "#6993ff",
+                }}
+              >
+                Settings
+              </Text>
+            </View>
+          ),
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -399,14 +394,23 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: "Orbitron_400Regular",
     fontSize: 32,
+    marginLeft: 15,
   },
   headerButtonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginRight: 10,
+    marginRight: 15,
   },
   loadingContainer: {
     flex: 1,
     backgroundColor: "#fff",
   },
 });
+
+/*
+Dark Mode (=  )
+Profile Details
+Logout
+Delete Profile
+App Info
+*/

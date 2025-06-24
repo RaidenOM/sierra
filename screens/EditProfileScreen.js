@@ -170,20 +170,8 @@ export default function EditProfileScreen() {
               multiline
             />
           </View>
-          <CustomButton
-            onPress={handleConfirm}
-            disabled={loading}
-            style={{
-              marginBottom: 15,
-            }}
-          >
+          <CustomButton onPress={handleConfirm} disabled={loading}>
             {loading ? <ActivityIndicator color="#fff" /> : "Update Profile"}
-          </CustomButton>
-          <CustomButton
-            style={{ backgroundColor: "red" }}
-            onPress={profileDeleteHandler}
-          >
-            Delete Profile
           </CustomButton>
         </View>
       </>
@@ -265,7 +253,7 @@ const styles = StyleSheet.create({
   },
   bioContainer: {
     width: "100%",
-    marginBottom: 15,
+    marginBottom: 50,
   },
   label: {
     fontSize: 16,

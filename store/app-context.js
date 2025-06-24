@@ -322,6 +322,31 @@ export const UserProvider = ({ children }) => {
     setPushToken(null);
   };
 
+  const profileDeleteHandler = async () => {
+    Alert.alert(
+      "Delete Profile",
+      "Are you sure you want to delete your profile and all data related to it?",
+      [
+        { style: "cancel", text: "Cancel" },
+        {
+          style: "destructive",
+          text: "Yes",
+          onPress: async () => {
+            //logout first
+            await logout();
+
+            //then, delete profile
+            await axios.delete("https://sierra-backend.onrender.com/profile", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -340,6 +365,7 @@ export const UserProvider = ({ children }) => {
         theme,
         toggleTheme,
         appState,
+        profileDeleteHandler,
       }}
     >
       {children}

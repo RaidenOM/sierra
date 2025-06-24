@@ -6,7 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 
 export default function UserProfileScreen({ navigation }) {
-  const { user, logout, theme } = useContext(UserContext);
+  const { user, theme } = useContext(UserContext);
   const isDarkTheme = theme === "dark";
 
   function renderContent() {
@@ -52,15 +52,6 @@ export default function UserProfileScreen({ navigation }) {
                 style={[styles.iconLabel, { color: isDarkTheme && "white" }]}
               >
                 Edit
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.iconButton} onPress={logout}>
-              <Ionicons name="log-out-outline" size={28} color="#e74c3c" />
-              <Text
-                style={[styles.iconLabel, { color: isDarkTheme && "white" }]}
-              >
-                Logout
               </Text>
             </TouchableOpacity>
           </View>

@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 5,
-    marginBottom: 15,
   },
   secondaryButton: {
     backgroundColor: "#ccc",

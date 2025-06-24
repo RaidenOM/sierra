@@ -26,8 +26,6 @@ function AllContacts() {
     return { phone: contact.phone, savedName: contact.savedName };
   });
 
-  console.log(contactWithNumberAndNames);
-
   useEffect(() => {
     const getContacts = async () => {
       await fetchContacts();
