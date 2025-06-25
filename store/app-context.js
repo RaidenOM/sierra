@@ -332,15 +332,28 @@ export const UserProvider = ({ children }) => {
           style: "destructive",
           text: "Yes",
           onPress: async () => {
-            //logout first
-            await logout();
+            // final alert
+            Alert.alert("Warning", "This action cannot be undone", [
+              { text: "Cancel", style: "cancel" },
+              {
+                style: "destructive",
+                text: "I Understand",
+                onPress: async () => {
+                  //logout first
+                  await logout();
 
-            //then, delete profile
-            await axios.delete("https://sierra-backend.onrender.com/profile", {
-              headers: {
-                Authorization: `Bearer ${token}`,
+                  //then, delete profile
+                  await axios.delete(
+                    "https://sierra-backend.onrender.com/profile",
+                    {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    }
+                  );
+                },
               },
-            });
+            ]);
           },
         },
       ]
